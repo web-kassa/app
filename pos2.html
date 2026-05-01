@@ -271,12 +271,36 @@
         function initPay(methodCode, methodName) {
             if (!cart.length) return;
             pendingMethod = methodCode; 
+
+            // --- НОВАЯ МАГИЯ ЦВЕТА ---
+            // 1. Словарь цветов из ваших кнопок
+            const colors = {
+                'cash': '#27ae60',        // Зеленый (Наличные)
+                'qr_kaspi': '#c0392b',    // Красный (QR)
+                'installment': '#8e44ad', // Фиолетовый (Red)
+                'pos_terminal': '#2980b9',// Синий (Карта)
+                'transfer': '#f39c12'     // Оранжевый (Перевод)
+            };
+            const activeColor = colors[methodCode] || '#2ecc71'; // Цвет по умолчанию
+
+            // 2. Перекрашиваем чек
+            document.querySelector('.receipt-box').style.borderColor = activeColor;
+            document.getElementById('r-method').style.color = activeColor;
+            
+            const btnConfirm = document.getElementById('btn-confirm');
+            btnConfirm.style.background = activeColor;
+            // Для желто-оранжевого делаем черный текст, для остальных белый
+            btnConfirm.style.color = methodCode === 'transfer' ? '#000' : '#fff';
+            // ---------------------------
+
+            // Заполняем текст (как и было раньше)
             document.getElementById('r-title').innerText = mode === 'sale' ? "ПОДТВЕРДИТЬ ПРОДАЖУ" : "ПОДТВЕРДИТЬ ВОЗВРАТ";
             document.getElementById('r-method').innerText = "Оплата: " + methodName;
             document.getElementById('r-items-list').innerHTML = cart.map(c => `
                 <div class="r-item"><span>${c.name}</span><b>${c.qty} x ${c.price.toLocaleString()}</b></div>
             `).join('');
             document.getElementById('r-total').innerText = "ИТОГО: " + cart.reduce((a, b) => a + (b.price * b.qty), 0).toLocaleString() + " ₸";
+            
             document.getElementById('receipt-modal').style.display = 'flex';
         }
 
