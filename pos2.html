@@ -159,7 +159,7 @@
             <!-- Умная шапка -->
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 10px;">
                 <div id="rep-header-title" style="font-size: 14px; font-weight: bold; color: #fff;">ОТЧЕТ ЗА СЕГОДНЯ</div>
-                <input type="date" id="rep-date" style="background: #222; color: #fff; border: 1px solid #444; padding: 5px; border-radius: 4px; color-scheme: dark; font-family: inherit; outline: none; font-size: 11px; cursor: pointer;" onchange="renderReport()">
+                <input type="date" id="rep-date" style="background: #222; color: #fff; border: 1px solid #444; padding: 5px; border-radius: 4px; color-scheme: dark; font-family: inherit; outline: none; font-size: 11px; cursor: pointer;" oninput="renderReport()" onchange="renderReport()">
             </div>
             
             <div id="rep-list" style="flex-grow: 1; overflow-y: auto; padding-right: 5px;"></div>
@@ -336,9 +336,15 @@
 
                 const cartTotal = cart.reduce((sum, item) => sum + (item.qty * item.price), 0);
                 
+                // --- НОВЫЙ КОД: СОХРАНЯЕМ Z-ОТЧЕТ С ДАТОЙ ---
                 const colors = {'cash':'#27ae60', 'qr_kaspi':'#c0392b', 'installment':'#8e44ad', 'pos_terminal':'#2980b9', 'transfer':'#f39c12'};
                 let history = JSON.parse(localStorage.getItem('daily_history') || '[]');
+                
+                // Создаем правильный ярлык даты
+                const isoDate = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+                
                 history.push({
+                    date: isoDate, // <-- ТЕПЕРЬ ДАТА СОХРАНЯЕТСЯ
                     time: localTime.split(' ')[1] || now.toLocaleTimeString('ru-RU', {hour: '2-digit', minute:'2-digit'}),
                     type: mode,
                     methodName: document.getElementById('r-method').innerText.replace("Оплата: ", ""),
@@ -347,6 +353,7 @@
                     total: cartTotal
                 });
                 localStorage.setItem('daily_history', JSON.stringify(history));
+                // ---------------------------------------------
 
                 const methodMap = { 'cash': 'sum-cash', 'qr_kaspi': 'sum-qr', 'qr': 'sum-qr', 'installment': 'sum-red', 'pos_terminal': 'sum-card', 'card': 'sum-card', 'transfer': 'sum-trans' };
                 const targetId = methodMap[pendingMethod];
@@ -511,7 +518,12 @@
                 titleEl.innerText = `ОТЧЕТ ЗА ${dParts[2]}.${dParts[1]}.${dParts[0]}`;
             }
             
-            let history = allHistory.filter(h => h.date === selectedDate || !h.date);
+            // ПРАВИЛЬНАЯ ФИЛЬТРАЦИЯ
+            // Если у чека нет даты (пробит до обновления), жестко привязываем его к сегодняшнему дню
+            let history = allHistory.filter(h => {
+                let itemDate = h.date ? h.date : today; 
+                return itemDate === selectedDate;
+            });
             
             let repList = document.getElementById('rep-list');
             let totalsBox = document.getElementById('rep-totals');
