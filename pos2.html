@@ -5,6 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>POS Noir V5.3.0</title>
+
+/* СТИЛИ БЛОКОВ ОТЧЕТА */
+    .hist-block { background: #141414; border: 1px solid #333; border-left-width: 4px; border-radius: 4px; padding: 10px; margin-bottom: 8px; }
+    .hb-head { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 6px; font-weight: bold; border-bottom: 1px dashed #333; padding-bottom: 6px; text-transform: uppercase; }
+    .hb-item { display: flex; justify-content: space-between; font-size: 11px; color: #aaa; margin-bottom: 4px; }
+    .hb-type-r { text-decoration: line-through; opacity: 0.6; } /* Перечеркиваем товары в возврате */
+
    <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Courier New", Courier, monospace; }
     
@@ -91,6 +98,8 @@
         <div class="modes">
             <button id="ms" class="m-btn active-s" onclick="sm('sale')">ПРОДАЖА</button>
             <button id="mr" class="m-btn" onclick="sm('return')">ВОЗВРАТ</button>
+            <!-- КНОПКА ОТЧЕТА 📊 -->
+            <button class="m-btn" style="flex: 0.2; background: #111; color: #888; padding: 12px 0; border-color: #333;" onclick="openReport()">📊</button>
         </div>
         
         <div class="search-area" style="display: flex; gap: 10px;">
@@ -136,6 +145,18 @@
     </div>
 
     <div id="receipt-modal" class="modal-overlay">
+<!-- ОКНО Z-ОТЧЕТА -->
+    <div id="report-modal" class="modal-overlay">
+        <div class="receipt-box" style="max-height: 85vh; display: flex; flex-direction: column; width: 100%; max-width: 400px; padding: 15px; border-color: #555;">
+            <div class="r-title">ОТЧЕТ ЗА СМЕНУ</div>
+            <div id="rep-list" style="flex-grow: 1; overflow-y: auto; margin-top: 10px; padding-right: 5px;"></div>
+            <div id="rep-totals" style="margin-top: 15px; border-top: 2px solid #444; padding-top: 10px;"></div>
+            <div class="modal-btns">
+                <button class="cancel-btn" onclick="closeReport()">ЗАКРЫТЬ</button>
+                <button class="confirm-btn" style="background: #e74c3c; color: #fff; font-size: 11px;" onclick="clearReport()">ОЧИСТИТЬ СМЕНУ</button>
+            </div>
+        </div>
+    </div>
         <div class="receipt-box">
             <div id="r-title" class="r-title">ПОДТВЕРЖДЕНИЕ</div>
             <div id="r-method" class="r-method">Метод оплаты</div>
@@ -325,6 +346,21 @@
                 localStorage.setItem('txQueue', JSON.stringify(queue));
 
                 const cartTotal = cart.reduce((sum, item) => sum + (item.qty * item.price), 0);
+		const cartTotal = cart.reduce((sum, item) => sum + (item.qty * item.price), 0);
+                
+                // --- СОХРАНЕНИЕ В ЛОКАЛЬНЫЙ Z-ОТЧЕТ ---
+                const colors = {'cash':'#27ae60', 'qr_kaspi':'#c0392b', 'installment':'#8e44ad', 'pos_terminal':'#2980b9', 'transfer':'#f39c12'};
+                let history = JSON.parse(localStorage.getItem('daily_history') || '[]');
+                history.push({
+                    time: localTime.split(' ')[1], // Берем только время
+                    type: mode,
+                    methodName: document.getElementById('r-method').innerText.replace("Оплата: ", ""),
+                    color: colors[pendingMethod] || '#2ecc71',
+                    cart: JSON.parse(JSON.stringify(cart)), 
+                    total: cartTotal
+                });
+                localStorage.setItem('daily_history', JSON.stringify(history));
+                // -------------------------------------
                 const methodMap = { 'cash': 'sum-cash', 'qr_kaspi': 'sum-qr', 'qr': 'sum-qr', 'installment': 'sum-red', 'pos_terminal': 'sum-card', 'card': 'sum-card', 'transfer': 'sum-trans' };
                 const targetId = methodMap[pendingMethod];
                 
@@ -460,6 +496,52 @@
                 }
             });
         }
-    </script>
+   // --- ФУНКЦИИ Z-ОТЧЕТА ---
+        function openReport() {
+            let history = JSON.parse(localStorage.getItem('daily_history') || '[]');
+            let repList = document.getElementById('rep-list');
+            let totalsBox = document.getElementById('rep-totals');
+            let totals = { sale: 0, return: 0 };
+            
+            if (history.length === 0) {
+                repList.innerHTML = '<div style="text-align:center; color:#666; margin-top:20px;">ОПЕРАЦИЙ ПОКА НЕТ</div>';
+                totalsBox.innerHTML = '';
+            } else {
+                repList.innerHTML = history.map(h => {
+                    let isRet = h.type === 'return';
+                    if (isRet) totals.return += h.total; else totals.sale += h.total;
+                    
+                    let itemsHtml = h.cart.map(c => 
+                        `<div class="hb-item"><span>${c.name} (${c.qty} шт)</span><span>${(c.qty*c.price).toLocaleString()} ₸</span></div>`
+                    ).join('');
+                    
+                    // Вот она, цветовая магия для каждого блока!
+                    return `
+                    <div class="hist-block" style="border-left-color: ${h.color};">
+                        <div class="hb-head" style="color: ${h.color};">
+                            <span>${h.time} | ${isRet ? 'ВОЗВРАТ' : 'ПРОДАЖА'} | ${h.methodName}</span>
+                            <span>${isRet ? '-' : ''}${h.total.toLocaleString()} ₸</span>
+                        </div>
+                        <div class="hb-items ${isRet ? 'hb-type-r' : ''}">${itemsHtml}</div>
+                    </div>`;
+                }).join('');
+                
+                totalsBox.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; color:#2ecc71; font-size: 12px; margin-bottom: 4px;"><span>ПРОДАЖИ:</span><span>${totals.sale.toLocaleString()} ₸</span></div>
+                    <div style="display:flex; justify-content:space-between; color:#e74c3c; font-size: 12px; margin-bottom: 4px;"><span>ВОЗВРАТЫ:</span><span>${totals.return.toLocaleString()} ₸</span></div>
+                    <div style="display:flex; justify-content:space-between; color:#fff; font-weight:bold; font-size: 16px; margin-top:8px; border-top: 1px dashed #555; padding-top: 8px;"><span>В КАССЕ ЗА ДЕНЬ:</span><span>${(totals.sale - totals.return).toLocaleString()} ₸</span></div>
+                `;
+            }
+            document.getElementById('report-modal').style.display = 'flex';
+        }
+
+        function closeReport() { document.getElementById('report-modal').style.display = 'none'; }
+        function clearReport() {
+            if(confirm("Закрыть смену и очистить экран отчета?\n(Все операции уже сохранены в Google Таблицах)")) {
+                localStorage.removeItem('daily_history');
+                closeReport();
+            }
+        } 
+</script>
 </body>
 </html>
