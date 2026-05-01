@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pos-cache-v18'; // Сейчас мы на 6-й версии!
+const CACHE_NAME = 'pos-cache-v19'; // Сейчас мы на 6-й версии!
 
 const urlsToCache = [
     './pos2.html',
