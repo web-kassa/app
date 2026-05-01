@@ -152,15 +152,22 @@
         </div>
     </div>
 
-    <!-- ОКНО Z-ОТЧЕТА -->
+    <!-- ОКНО Z-ОТЧЕТА С КАЛЕНДАРЕМ -->
     <div id="report-modal" class="modal-overlay">
         <div class="receipt-box" style="max-height: 85vh; display: flex; flex-direction: column; width: 100%; max-width: 400px; padding: 15px; border-color: #555;">
-            <div class="r-title">ОТЧЕТ ЗА СМЕНУ</div>
-            <div id="rep-list" style="flex-grow: 1; overflow-y: auto; margin-top: 10px; padding-right: 5px;"></div>
+            
+            <!-- Умная шапка -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 10px;">
+                <div id="rep-header-title" style="font-size: 14px; font-weight: bold; color: #fff;">ОТЧЕТ ЗА СЕГОДНЯ</div>
+                <input type="date" id="rep-date" style="background: #222; color: #fff; border: 1px solid #444; padding: 5px; border-radius: 4px; color-scheme: dark; font-family: inherit; outline: none; font-size: 11px; cursor: pointer;" onchange="renderReport()">
+            </div>
+            
+            <div id="rep-list" style="flex-grow: 1; overflow-y: auto; padding-right: 5px;"></div>
             <div id="rep-totals" style="margin-top: 15px; border-top: 2px solid #444; padding-top: 10px;"></div>
-            <div class="modal-btns">
-                <button class="cancel-btn" onclick="closeReport()">ЗАКРЫТЬ</button>
-                <button class="confirm-btn" style="background: #e74c3c; color: #fff; font-size: 11px;" onclick="clearReport()">ОЧИСТИТЬ СМЕНУ</button>
+            
+            <!-- Оставили только кнопку ЗАКРЫТЬ -->
+            <div class="modal-btns" style="margin-top: 15px;">
+                <button class="cancel-btn" style="width: 100%;" onclick="closeReport()">ЗАКРЫТЬ ОТЧЕТ</button>
             </div>
         </div>
     </div>
@@ -476,14 +483,42 @@
             });
         }
 
+        // --- ЛОГИКА УМНОГО Z-ОТЧЕТА ---
         function openReport() {
-            let history = JSON.parse(localStorage.getItem('daily_history') || '[]');
+            document.getElementById('report-modal').style.display = 'flex';
+            
+            const now = new Date();
+            const today = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+            
+            const dateInput = document.getElementById('rep-date');
+            if (!dateInput.value) dateInput.value = today;
+            
+            renderReport();
+        }
+
+        function renderReport() {
+            let allHistory = JSON.parse(localStorage.getItem('daily_history') || '[]');
+            const selectedDate = document.getElementById('rep-date').value;
+            
+            const now = new Date();
+            const today = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+            const titleEl = document.getElementById('rep-header-title');
+            
+            if (selectedDate === today) {
+                titleEl.innerText = "ОТЧЕТ ЗА СЕГОДНЯ";
+            } else {
+                const dParts = selectedDate.split('-'); 
+                titleEl.innerText = `ОТЧЕТ ЗА ${dParts[2]}.${dParts[1]}.${dParts[0]}`;
+            }
+            
+            let history = allHistory.filter(h => h.date === selectedDate || !h.date);
+            
             let repList = document.getElementById('rep-list');
             let totalsBox = document.getElementById('rep-totals');
             let totals = { sale: 0, return: 0 };
             
             if (history.length === 0) {
-                repList.innerHTML = '<div style="text-align:center; color:#666; margin-top:20px;">ОПЕРАЦИЙ ПОКА НЕТ</div>';
+                repList.innerHTML = '<div style="text-align:center; color:#666; margin-top:30px; font-size: 12px;">ЗА ЭТУ ДАТУ ОПЕРАЦИЙ НЕТ</div>';
                 totalsBox.innerHTML = '';
             } else {
                 repList.innerHTML = history.map(h => {
@@ -507,20 +542,12 @@
                 totalsBox.innerHTML = `
                     <div style="display:flex; justify-content:space-between; color:#2ecc71; font-size: 12px; margin-bottom: 4px;"><span>ПРОДАЖИ:</span><span>${totals.sale.toLocaleString()} ₸</span></div>
                     <div style="display:flex; justify-content:space-between; color:#e74c3c; font-size: 12px; margin-bottom: 4px;"><span>ВОЗВРАТЫ:</span><span>${totals.return.toLocaleString()} ₸</span></div>
-                    <div style="display:flex; justify-content:space-between; color:#fff; font-weight:bold; font-size: 16px; margin-top:8px; border-top: 1px dashed #555; padding-top: 8px;"><span>В КАССЕ ЗА ДЕНЬ:</span><span>${(totals.sale - totals.return).toLocaleString()} ₸</span></div>
+                    <div style="display:flex; justify-content:space-between; color:#fff; font-weight:bold; font-size: 16px; margin-top:8px; border-top: 1px dashed #555; padding-top: 8px;"><span>В КАССЕ (ЗА ДАТУ):</span><span>${(totals.sale - totals.return).toLocaleString()} ₸</span></div>
                 `;
             }
-            document.getElementById('report-modal').style.display = 'flex';
         }
 
         function closeReport() { document.getElementById('report-modal').style.display = 'none'; }
-        
-        function clearReport() {
-            if(confirm("Закрыть смену и очистить экран отчета?\n(Все операции уже сохранены в Google Таблицах)")) {
-                localStorage.removeItem('daily_history');
-                closeReport();
-            }
-        }
 
         load();
     </script>
