@@ -362,7 +362,8 @@
             const list = document.getElementById('cart-list');
             list.innerHTML = cart.map((item, idx) => `
                 <div class="cart-row" id="r-${item.id}">
-                    <div class="row-top">${item.name}</div>
+                    <!-- Добавили отступ справа, чтобы очень длинное название не наехало на старую цену -->
+                    <div class="row-top" style="padding-right: 75px;">${item.name}</div>
                     <div class="row-ctrl">
                         <div class="qty-box">
                             <button class="q-btn" onclick="qty('${item.id}',-1)">-</button>
@@ -371,9 +372,9 @@
                             <button class="q-btn" onclick="qty('${item.id}',1)">+</button>
                         </div>
                         
-                        <!-- БЛОК С ЦЕНОЙ -->
-                        <div style="display: flex; flex-direction: column; align-items: flex-end;">
-                            <span style="color: #666; font-size: 10px; margin-bottom: 2px; padding-right: 2px;">
+                        <!-- Обертка инпута с 'парящей' ценой -->
+                        <div style="position: relative;">
+                            <span style="position: absolute; bottom: calc(100% + 4px); right: 0; color: #666; font-size: 10px; white-space: nowrap; pointer-events: none;">
                                 ${item.origPrice ? item.origPrice.toLocaleString() : item.price.toLocaleString()} ₸
                             </span>
                             <input type="text" inputmode="numeric" class="p-input" value="${item.price}" 
