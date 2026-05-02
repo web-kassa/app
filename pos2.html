@@ -251,22 +251,10 @@
 
         function handleFocus(elem, rowId) {
             elem.select(); 
-            // Увеличиваем задержку для iOS и добавляем жесткий фокус
             setTimeout(() => { 
                 const row = document.getElementById(rowId);
-                if (row) {
-                    // Поднимаем элемент
-                    row.scrollIntoView({behavior: "smooth", block: "center"}); 
-                    
-                    // Хак для Safari: принудительно "дергаем" скролл на 1 пиксель, 
-                    // чтобы заставить iOS перерисовать экран
-                    const cartList = document.getElementById('cart-list');
-                    if (cartList) {
-                        cartList.scrollTop += 1;
-                        cartList.scrollTop -= 1;
-                    }
-                }
-            }, 450); // Даем 450мс — этого хватит даже старым айфонам на холодном старте
+                if (row) row.scrollIntoView({behavior: "smooth", block: "center"}); 
+            }, 350);
         }
 
         function update() {
