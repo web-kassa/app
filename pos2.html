@@ -494,7 +494,6 @@
             const repList = document.getElementById('rep-list');
             const totalsBox = document.getElementById('rep-totals');
             
-            // Формируем заголовок
             const now = new Date();
             const today = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
             if (selectedDate === today) {
@@ -504,7 +503,6 @@
                 titleEl.innerText = `ОТЧЕТ ЗА ${dParts[2]}.${dParts[1]}.${dParts[0]}`;
             }
 
-            // Показываем загрузку
             repList.innerHTML = '<div style="text-align:center; color:#f39c12; margin-top:30px; font-size: 12px; font-weight: bold;">⏳ СКАЧИВАЮ ДАННЫЕ ИЗ БАЗЫ...</div>';
             totalsBox.innerHTML = '';
 
@@ -514,24 +512,27 @@
             }
 
             try {
-                // 1. Добавили "&t=" + Date.now() чтобы браузер не подсовывал старый кэшированный ответ
                 const response = await fetch(APPS_SCRIPT_URL + "?action=report&date=" + selectedDate + "&t=" + Date.now());
                 const data = await response.json();
                 
-                // 2. ДИАГНОСТИКА: Если Google-скрипт упал с ошибкой
                 if (data.error) {
                     repList.innerHTML = `<div style="text-align:center; color:#e74c3c; margin-top:30px; font-size: 11px;"><b>ОШИБКА В GOOGLE SCRIPT:</b><br>${data.error}</div>`;
                     return;
                 }
 
-                // 3. ДИАГНОСТИКА: Если скрипт работает по старой версии (вернул товары вместо отчета)
                 if (!data.report) {
-                    repList.innerHTML = `<div style="text-align:center; color:#f39c12; margin-top:30px; font-size: 11px;"><b>СВЯЗЬ ИДЕТ СО СТАРОЙ ВЕРСИЕЙ СЕРВЕРА</b><br>Проверьте, не изменился ли APPS_SCRIPT_URL при публикации новой версии.</div>`;
+                    repList.innerHTML = `<div style="text-align:center; color:#f39c12; margin-top:30px; font-size: 11px;"><b>СВЯЗЬ ИДЕТ СО СТАРОЙ ВЕРСИЕЙ СЕРВЕРА</b><br>Убедитесь, что выпустили новую версию скрипта.</div>`;
                     return;
                 }
                 
+                // ВЫВОД ШПИОНСКОГО БЛОКА
                 if (data.report.length === 0) {
-                    repList.innerHTML = '<div style="text-align:center; color:#666; margin-top:30px; font-size: 12px;">ЗА ЭТУ ДАТУ ОПЕРАЦИЙ НЕТ</div>';
+                    let dbgText = data.debug && data.debug.length > 0 ? data.debug.join('<br><br>') : "Нет транзакций в таблице";
+                    repList.innerHTML = `
+                        <div style="text-align:center; color:#666; margin-top:30px; font-size: 12px;">ЗА ЭТУ ДАТУ ОПЕРАЦИЙ НЕТ</div>
+                        <div style="margin-top:20px; text-align:left; background:#111; padding:10px; border-radius:5px; border:1px solid #333; color:#f39c12; font-size:9px; word-break:break-all;">
+                            <b>ДАННЫЕ ОТ ШПИОНА (5 последних строк таблицы):</b><br><br>${dbgText}
+                        </div>`;
                     return;
                 }
 
@@ -539,7 +540,6 @@
                 const names = { 'cash': 'Наличные', 'qr_kaspi': 'Kaspi QR', 'installment': 'Kaspi Red', 'pos_terminal': 'Карта', 'transfer': 'Перевод' };
                 let totals = { sale: 0, return: 0 };
                 
-                // Отрисовываем полученные с сервера чеки
                 repList.innerHTML = data.report.map(h => {
                     let isRet = h.type === 'return';
                     if (isRet) totals.return += h.total; else totals.sale += h.total;
