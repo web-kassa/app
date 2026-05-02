@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pos-v30'; // <--- ВОТ ТУТ ПИШЕТСЯ ВЕРСИЯ, КОТОРУЮ ПОКАЖЕТ КАССА
+const CACHE_NAME = 'pos-v31'; // <--- ВОТ ТУТ ПИШЕТСЯ ВЕРСИЯ, КОТОРУЮ ПОКАЖЕТ КАССА
 
 const ASSETS = [
   './',
@@ -6,8 +6,7 @@ const ASSETS = [
   './pos2.html',
   './config.js',
   './manifest.json',
-  './icon-192.png',
-  './icon-512.png'
+  './icon.png' // <--- Вот она, разгадка! Мы указали правильное имя.
 ];
 
 self.addEventListener('install', e => {
