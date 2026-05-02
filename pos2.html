@@ -49,7 +49,9 @@
         #cart-list:empty { padding: 0; }
         
         .cart-row { background: #111; padding: 6px; border-radius: 4px; margin-bottom: 3px; border: 1px solid #222; }
-        .row-top { font-size: 11px; font-weight: bold; color: #888; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .row-top { font-size: 11px; font-weight: bold; color: #888; margin-bottom: 4px; 
+    display: flex; justify-content: space-between; gap: 10px; 
+}
         .row-ctrl { display: flex; justify-content: space-between; align-items: center; }
         
         .qty-box { display: flex; align-items: center; background: #000; border: 1px solid #333; border-radius: 4px; }
@@ -344,7 +346,7 @@
             const p = db.find(x => x.id === id);
             const inC = cart.find(x => x.id === id);
             if (inC) inC.qty++;
-            else cart.push({id:p.id, name:p.name, qty:1, price:p.price, cost:p.cost});
+            else cart.push({id:p.id, name:p.name, qty:1, price:p.price, origPrice:p.price, cost:p.cost});
             update();
         }
 
@@ -360,7 +362,10 @@
             const list = document.getElementById('cart-list');
             list.innerHTML = cart.map((item, idx) => `
                 <div class="cart-row" id="r-${item.id}">
-                    <div class="row-top">${item.name}</div>
+                    <div class="row-top">
+                        <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${item.name}</span>
+                        <span style="color: #555; font-size: 10px; font-weight: normal;">${item.origPrice ? item.origPrice.toLocaleString() : item.price.toLocaleString()} ₸</span>
+                    </div>
                     <div class="row-ctrl">
                         <div class="qty-box">
                             <button class="q-btn" onclick="qty('${item.id}',-1)">-</button>
