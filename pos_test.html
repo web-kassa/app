@@ -336,7 +336,7 @@
                 db = data.items || [];
                 const t = data.totals || { cash: 0, qr_kaspi: 0, pos_terminal: 0, transfer: 0, installment: 0 };
 
-// СОХРАНЯЕМ ПИН-КОД С СЕРВЕРА
+                // СОХРАНЯЕМ ПИН-КОД С СЕРВЕРА
                 if (data.pin) localStorage.setItem('pos_pin', data.pin);
                 
                 document.getElementById('sum-cash').innerText = t.cash.toLocaleString() + ' ₸';
@@ -614,7 +614,8 @@
                     localStorage.setItem('db_cache', JSON.stringify(db));
                     localStorage.setItem('totals_cache', JSON.stringify(t));
 
-			if (data.pin) localStorage.setItem('pos_pin', data.pin);
+			        // СОХРАНЯЕМ ПИН-КОД С СЕРВЕРА
+                    if (data.pin) localStorage.setItem('pos_pin', data.pin);
 
                     document.getElementById('sum-cash').innerText = t.cash.toLocaleString() + ' ₸';
                     document.getElementById('sum-qr').innerText = t.qr_kaspi.toLocaleString() + ' ₸';
@@ -762,52 +763,81 @@
 
         function closeReport() { document.getElementById('report-modal').style.display = 'none'; }
 
-        // --- ЛОГИКА ПИН-КОДА ---
+        // --- БРОНИРОВАННАЯ ЛОГИКА ПИН-КОДА ---
         let currentPin = '';
         let targetAction = null; 
-         
+        let isChecking = false; // Блокировка клавиатуры во время проверки
 
         function openPinModal(actionFunction) {
             currentPin = '';
             targetAction = actionFunction;
+            isChecking = false;
             updatePinDisplay();
             document.getElementById('pin-modal').style.display = 'flex';
         }
 
         function closePinModal() {
             document.getElementById('pin-modal').style.display = 'none';
+            isChecking = false;
         }
 
         function pinPress(digit) {
+            if (isChecking) return; // Игнорируем нажатия, пока идет проверка
+
             if (currentPin.length < 4) {
                 currentPin += digit;
                 updatePinDisplay();
             }
+            
+            // Как только ввели 4 цифры
             if (currentPin.length === 4) {
-                setTimeout(checkPin, 100); 
+                isChecking = true; // Блокируем кнопки
+                setTimeout(checkPin, 150); // Пауза, чтобы появилась 4-я точка
             }
         }
 
         function pinClear() {
             currentPin = '';
+            isChecking = false;
             updatePinDisplay();
         }
 
         function updatePinDisplay() {
-            document.getElementById('pin-display').innerText = '•'.repeat(currentPin.length);
+            const display = document.getElementById('pin-display');
+            if (display) display.innerText = '•'.repeat(currentPin.length);
         }
 
         function checkPin() {
-            if (currentPin === TRUE_PIN) {
-                closePinModal();
-                if (targetAction) targetAction(); 
-            } else {
-                const display = document.getElementById('pin-display');
-                display.style.color = '#e74c3c';
-                setTimeout(() => {
-                    display.style.color = '#f1c40f'; 
-                    pinClear();
-                }, 400);
+            try {
+                // Достаем пароль из памяти телефона
+                let truePin = localStorage.getItem('pos_pin');
+                if (!truePin) truePin = '0000'; // Страховка, если интернета не было
+                
+                // ЖЕСТКАЯ ОЧИСТКА: убираем случайные пробелы из таблицы Google
+                truePin = String(truePin).trim(); 
+
+                if (currentPin === truePin) {
+                    // Пароль верный
+                    closePinModal();
+                    if (targetAction) targetAction(); 
+                } else {
+                    // Пароль неверный
+                    const display = document.getElementById('pin-display');
+                    if (display) {
+                        display.style.color = '#e74c3c'; // Красим в красный
+                        
+                        setTimeout(() => {
+                            display.style.color = '#f1c40f'; // Возвращаем желтый
+                            pinClear(); // Очищаем и снимаем блокировку
+                        }, 400);
+                    } else {
+                        pinClear();
+                    }
+                }
+            } catch (error) {
+                // Если произошла скрытая ошибка памяти - показываем ее!
+                alert("Ошибка скрипта: " + error.message);
+                pinClear();
             }
         }
 
