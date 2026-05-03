@@ -115,7 +115,7 @@
         <div class="modes">
             <button id="ms" class="m-btn active-s" onclick="sm('sale')" data-i18n="btn_sale">ПРОДАЖА</button>
             <button id="mr" class="m-btn" onclick="sm('return')" data-i18n="btn_return">ВОЗВРАТ</button>
-            <button class="m-btn" style="flex: 0.2; background: #111; color: #888; padding: 12px 0; border-color: #333;" onclick="openPinModal(openReport)">📊</button>
+            <button class="m-btn" style="flex: 0.2; background: #111; color: #888; padding: 12px 0; border-color: #333;" onclick="openPinModal(function(){ openReport(); })">📊 ПИН</button>
         </div>
         
         <div class="search-area" style="display: flex; gap: 10px;">
