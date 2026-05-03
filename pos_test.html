@@ -854,6 +854,9 @@ let selectedItemId = null;
 function openItemMenu(id) {
     selectedItemId = id;
     const item = db.find(x => x.id === id);
+
+alert("Ссылка на фото с сервера: " + item.img);
+
     document.getElementById('menu-item-name').innerText = item.name;
     
     // Если фото есть - показываем предпросмотр
