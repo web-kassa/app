@@ -101,6 +101,27 @@
         .lang-btn.active { background: #1a3a20; color: #2ecc71; border-color: #2ecc71; }
         
         .queue-badge { background: #e74c3c; color: #fff; padding: 2px 6px; border-radius: 10px; font-size: 10px; font-weight: bold; display: none; margin-left: 5px; }
+
+/* Модальное окно ПИН-кода */
+        #pin-modal .modal-content { max-width: 320px; padding: 20px; background: #0a0a0a; }
+        
+        .pin-display { 
+            height: 50px; background: #000; border: 1px solid #333; border-radius: 6px; 
+            margin-bottom: 20px; display: flex; justify-content: center; align-items: center; 
+            font-size: 36px; color: #f1c40f; letter-spacing: 12px; transition: color 0.2s;
+        }
+        
+        .pin-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        
+        .pin-btn { 
+            background: #1a1a1a; color: #fff; border: 1px solid #333; border-radius: 6px; 
+            height: 65px; font-size: 28px; font-weight: bold; display: flex; 
+            justify-content: center; align-items: center; cursor: pointer; user-select: none;
+        }
+        .pin-btn:active { background: #333; }
+        .pin-btn.action { font-size: 16px; color: #888; font-weight: normal; }
+        .pin-btn.clear { color: #e74c3c; }
+
     </style>
 </head>
 <body>
@@ -109,7 +130,7 @@
         <div class="modes">
             <button id="ms" class="m-btn active-s" onclick="sm('sale')" data-i18n="btn_sale">ПРОДАЖА</button>
             <button id="mr" class="m-btn" onclick="sm('return')" data-i18n="btn_return">ВОЗВРАТ</button>
-            <button class="m-btn" style="flex: 0.2; background: #111; color: #888; padding: 12px 0; border-color: #333;" onclick="openReport()">📊</button>
+            <button onclick="openPinModal(() => { document.getElementById('reports-modal').style.display='flex'; generateReport(); })">📊</button>
         </div>
         
         <div class="search-area" style="display: flex; gap: 10px;">
@@ -215,6 +236,33 @@
             <button class="cancel-btn" style="width: 100%; margin-top: 10px;" onclick="closeSettings()" data-i18n="btn_close">ЗАКРЫТЬ</button>
         </div>
     </div>
+
+<!-- Окно ПИН-кода -->
+    <div id="pin-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div style="text-align: center; color: #888; margin-bottom: 15px; font-size: 14px; font-weight: bold;">
+                ВВЕДИТЕ ПИН-КОД
+            </div>
+            
+            <div id="pin-display" class="pin-display"></div>
+            
+            <div class="pin-grid">
+                <div class="pin-btn" onclick="pinPress('1')">1</div>
+                <div class="pin-btn" onclick="pinPress('2')">2</div>
+                <div class="pin-btn" onclick="pinPress('3')">3</div>
+                <div class="pin-btn" onclick="pinPress('4')">4</div>
+                <div class="pin-btn" onclick="pinPress('5')">5</div>
+                <div class="pin-btn" onclick="pinPress('6')">6</div>
+                <div class="pin-btn" onclick="pinPress('7')">7</div>
+                <div class="pin-btn" onclick="pinPress('8')">8</div>
+                <div class="pin-btn" onclick="pinPress('9')">9</div>
+                <div class="pin-btn action clear" onclick="pinClear()">СБРОС</div>
+                <div class="pin-btn" onclick="pinPress('0')">0</div>
+                <div class="pin-btn action" onclick="closePinModal()">ОТМЕНА</div>
+            </div>
+        </div>
+    </div>
+
 
     <script src="config.js?v=5.4.0"></script>
     <script>
@@ -612,7 +660,31 @@
                 try {
                     const res = await fetch(APPS_SCRIPT_URL + "?t=" + Date.now());
                     const data = await res.json();
-                    db = data.items || [];
+       <!-- Окно ПИН-кода -->
+    <div id="pin-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div style="text-align: center; color: #888; margin-bottom: 15px; font-size: 14px; font-weight: bold;">
+                ВВЕДИТЕ ПИН-КОД
+            </div>
+            
+            <div id="pin-display" class="pin-display"></div>
+            
+            <div class="pin-grid">
+                <div class="pin-btn" onclick="pinPress('1')">1</div>
+                <div class="pin-btn" onclick="pinPress('2')">2</div>
+                <div class="pin-btn" onclick="pinPress('3')">3</div>
+                <div class="pin-btn" onclick="pinPress('4')">4</div>
+                <div class="pin-btn" onclick="pinPress('5')">5</div>
+                <div class="pin-btn" onclick="pinPress('6')">6</div>
+                <div class="pin-btn" onclick="pinPress('7')">7</div>
+                <div class="pin-btn" onclick="pinPress('8')">8</div>
+                <div class="pin-btn" onclick="pinPress('9')">9</div>
+                <div class="pin-btn action clear" onclick="pinClear()">СБРОС</div>
+                <div class="pin-btn" onclick="pinPress('0')">0</div>
+                <div class="pin-btn action" onclick="closePinModal()">ОТМЕНА</div>
+            </div>
+        </div>
+    </div>             db = data.items || [];
                     const t = data.totals || { cash: 0, qr_kaspi: 0, pos_terminal: 0, transfer: 0, installment: 0 };
                     localStorage.setItem('db_cache', JSON.stringify(db));
                     localStorage.setItem('totals_cache', JSON.stringify(t));
@@ -760,6 +832,58 @@
                 let textRet = currentLang === 'kz' ? 'ҚАЙТАРУ:' : 'ВОЗВРАТЫ:';
                 let textIn = currentLang === 'kz' ? 'КАССАДА:' : 'В КАССЕ:';
 
+		let currentPin = '';
+        let targetAction = null; // Сюда запишем, что нужно сделать после ввода (например, открыть отчеты)
+        const TRUE_PIN = '0000'; // Временный пароль для тестов. Потом привяжем к Google Таблице
+
+        function openPinModal(actionFunction) {
+            currentPin = '';
+            targetAction = actionFunction;
+            updatePinDisplay();
+            document.getElementById('pin-modal').style.display = 'flex';
+        }
+
+        function closePinModal() {
+            document.getElementById('pin-modal').style.display = 'none';
+        }
+
+        function pinPress(digit) {
+            if (currentPin.length < 4) {
+                currentPin += digit;
+                updatePinDisplay();
+            }
+            
+            // Как только ввели 4 цифры - проверяем
+            if (currentPin.length === 4) {
+                setTimeout(checkPin, 100); // пауза 0.1 сек, чтобы кассир успел увидеть последнюю точку
+            }
+        }
+
+        function pinClear() {
+            currentPin = '';
+            updatePinDisplay();
+        }
+
+        function updatePinDisplay() {
+            document.getElementById('pin-display').innerText = '•'.repeat(currentPin.length);
+        }
+
+        function checkPin() {
+            if (currentPin === TRUE_PIN) {
+                closePinModal();
+                if (targetAction) targetAction(); // Выполняем то, что планировалось
+            } else {
+                // Ошибка! Экран мигает красным и сбрасывается
+                const display = document.getElementById('pin-display');
+                display.style.color = '#e74c3c';
+                
+                setTimeout(() => {
+                    display.style.color = '#f1c40f'; // Возвращаем желтый
+                    pinClear();
+                }, 400);
+            }
+        }
+
                 totalsBox.innerHTML = `
                     <div style="display:flex; justify-content:space-between; color:#2ecc71; font-size: 12px; margin-bottom: 4px;"><span>${textSale}</span><span>${totals.sale.toLocaleString()} ₸</span></div>
                     <div style="display:flex; justify-content:space-between; color:#e74c3c; font-size: 12px; margin-bottom: 4px;"><span>${textRet}</span><span>${totals.return.toLocaleString()} ₸</span></div>
@@ -772,6 +896,8 @@
         }
 
         function closeReport() { document.getElementById('report-modal').style.display = 'none'; }
+
+
 
         load();
     </script>
