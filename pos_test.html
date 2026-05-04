@@ -342,18 +342,19 @@
         const data = await res.json();
         
         db = data.items || [];
-        // Берем правильные названия прямо из вашего JSON
-        const t = data.totals || { cash: 0, qr: 0, pos: 0, transfer: 0, red: 0 };
+        // Берем объект с итогами (если его нет, создаем пустой, чтобы скрипт не падал)
+        const t = data.totals || {};
 
         // СОХРАНЯЕМ ПИН-КОД С СЕРВЕРА
         if (data.pin) localStorage.setItem('pos_pin', data.pin);
         
-        // Ставим защиту (|| 0), чтобы скрипт больше никогда не падал, даже если сервер ничего не пришлет
+        // Универсальная выгрузка: скрипт ищет все возможные варианты названий. 
+        // Если ничего не находит — ставит 0, но никогда не выдает ошибку.
         document.getElementById('sum-cash').innerText = (t.cash || 0).toLocaleString() + ' ₸';
-        document.getElementById('sum-qr').innerText = (t.qr || 0).toLocaleString() + ' ₸';
-        document.getElementById('sum-red').innerText = (t.red || 0).toLocaleString() + ' ₸';
-        document.getElementById('sum-card').innerText = (t.pos || 0).toLocaleString() + ' ₸';
-        document.getElementById('sum-trans').innerText = (t.transfer || 0).toLocaleString() + ' ₸';
+        document.getElementById('sum-qr').innerText   = (t.qr_kaspi || t.qr || 0).toLocaleString() + ' ₸';
+        document.getElementById('sum-red').innerText  = (t.installment || t.red || 0).toLocaleString() + ' ₸';
+        document.getElementById('sum-card').innerText = (t.pos_terminal || t.pos || t.card || 0).toLocaleString() + ' ₸';
+        document.getElementById('sum-trans').innerText= (t.transfer || 0).toLocaleString() + ' ₸';
         
         render();
 
