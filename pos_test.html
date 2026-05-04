@@ -3,27 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>POS Noir - Testing Lab</title>
-    
-    <!-- КРИТИЧЕСКИ ВАЖНО: Подключаем конфиг первым -->
+    <title>POS Noir - Production</title>
+    <!-- ПОДКЛЮЧЕНИЕ КОНФИГА (Убедитесь, что файл лежит рядом) -->
     <script src="config.js"></script>
-
     <style>
         :root {
-            --bg: #0a0a0a;
-            --card-bg: #141414;
-            --text: #e0e0e0;
+            --bg: #000000;
+            --card-bg: #111111;
+            --text: #ffffff;
             --accent-green: #2ecc71;
             --accent-blue: #3498db;
             --accent-red: #e74c3c;
-            --accent-grey: #7f8c8d;
-            --border: #222;
+            --border: #222222;
         }
 
         body {
             background: var(--bg);
             color: var(--text);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: "Courier New", Courier, monospace; /* Более архивный стиль */
             margin: 0;
             padding: 10px;
             user-select: none;
@@ -32,26 +29,26 @@
         #catalog {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
+            gap: 8px;
             margin-bottom: 100px;
         }
 
         .c-item {
             background: var(--card-bg);
             border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 12px;
+            border-radius: 4px;
+            padding: 10px;
             position: relative;
         }
 
-        .i-name { font-size: 14px; margin-bottom: 5px; font-weight: 500; }
-        .i-price { color: var(--accent-green); font-size: 16px; font-weight: bold; }
-        .i-stock { font-size: 11px; opacity: 0.5; margin-top: 5px; }
+        .i-name { font-size: 13px; margin-bottom: 5px; text-transform: uppercase; }
+        .i-price { color: var(--accent-green); font-size: 15px; font-weight: bold; }
+        .i-stock { font-size: 10px; opacity: 0.5; margin-top: 5px; }
 
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85);
+            background: rgba(0,0,0,0.9);
             display: none;
             justify-content: center;
             align-items: center;
@@ -59,43 +56,36 @@
         }
 
         .settings-box {
-            background: #111;
+            background: #000;
             width: 85%;
-            max-width: 350px;
+            max-width: 320px;
             padding: 20px;
-            border-radius: 12px;
-            border: 1px solid #333;
+            border: 1px solid #444;
             text-align: center;
         }
 
         .s-btn {
             width: 100%;
-            padding: 15px;
-            margin-bottom: 12px;
-            border-radius: 8px;
+            padding: 14px;
+            margin-bottom: 10px;
             border: 1px solid;
             background: transparent;
             font-weight: bold;
-            font-size: 14px;
             cursor: pointer;
             text-transform: uppercase;
         }
 
-        .btn-green { background: #1a3a20; border-color: var(--accent-green); color: var(--accent-green); }
-        .btn-blue  { background: #0f2c40; border-color: var(--accent-blue); color: var(--accent-blue); }
-        .btn-grey  { background: #2c2c2c; border-color: var(--accent-grey); color: var(--accent-grey); }
-        .btn-red   { background: #3c1a1a; border-color: var(--accent-red); color: var(--accent-red); }
-
-        .s-btn:disabled { opacity: 0.5; }
+        .btn-green { border-color: var(--accent-green); color: var(--accent-green); }
+        .btn-blue  { border-color: var(--accent-blue); color: var(--accent-blue); }
+        .btn-grey  { border-color: #666; color: #666; }
+        .btn-red   { border-color: var(--accent-red); color: var(--accent-red); background: #200; }
 
         #item-preview {
             width: 100%;
-            max-height: 250px;
+            max-height: 200px;
             object-fit: contain;
-            border-radius: 4px;
-            background: #000;
             margin-bottom: 15px;
-            border: 1px solid #222;
+            border: 1px solid #333;
         }
     </style>
 </head>
@@ -103,32 +93,19 @@
 
     <div id="catalog"></div>
 
-    <div id="item-menu-modal" class="modal-overlay" onclick="handleOutsideClick()">
+    <div id="item-menu-modal" class="modal-overlay" onclick="closeItemMenu()">
         <div class="settings-box" onclick="event.stopPropagation()">
-            <div id="menu-item-name" style="font-size: 16px; margin-bottom: 15px; font-weight: bold;">Товар</div>
+            <div id="menu-item-name" style="margin-bottom: 15px;">ITEM</div>
             
             <div id="view-photo-container" style="display: none;">
                 <img id="item-preview" src="">
             </div>
 
-            <button id="btn-add-cart" class="s-btn btn-green" onclick="confirmAddFromMenu()">
-                🛒 В КОРЗИНУ
-            </button>
-
-            <button id="btn-save-db" class="s-btn btn-blue" onclick="confirmUpload()" style="display: none;">
-                💾 СОХРАНИТЬ В БАЗУ
-            </button>
-            
-            <button id="btn-take-photo" class="s-btn btn-grey" onclick="triggerCamera()">
-                📸 СДЕЛАТЬ ФОТО
-            </button>
-            <button id="btn-retake-photo" class="s-btn btn-grey" onclick="triggerCamera()" style="display: none;">
-                📸 ПЕРЕСНЯТЬ
-            </button>
-
-            <button id="btn-cancel" class="s-btn btn-red" onclick="handleCancel()" style="margin-top: 10px; margin-bottom: 0;">
-                ЗАКРЫТЬ
-            </button>
+            <button id="btn-add-cart" class="s-btn btn-green" onclick="confirmAddFromMenu()">В КОРЗИНУ</button>
+            <button id="btn-save-db" class="s-btn btn-blue" onclick="confirmUpload()" style="display: none;">СОХРАНИТЬ В БАЗУ</button>
+            <button id="btn-take-photo" class="s-btn btn-grey" onclick="triggerCamera()">СДЕЛАТЬ ФОТО</button>
+            <button id="btn-retake-photo" class="s-btn btn-grey" onclick="triggerCamera()" style="display: none;">ПЕРЕСНЯТЬ</button>
+            <button id="btn-cancel" class="s-btn btn-red" onclick="handleCancel()">ЗАКРЫТЬ</button>
         </div>
     </div>
 
@@ -142,16 +119,13 @@
 
         async function load() {
             try {
-                // APPS_SCRIPT_URL берется из config.js
+                // APPS_SCRIPT_URL берется напрямую из config.js
                 const res = await fetch(APPS_SCRIPT_URL);
-                if (!res.ok) throw new Error("Код ответа сервера: " + res.status);
-                
                 const data = await res.json();
-                db = (data && data.items) ? data.items : (Array.isArray(data) ? data : []);
+                db = data.items || data;
                 render();
             } catch (e) { 
-                console.error(e);
-                alert("Ошибка загрузки: " + e.message + "\nПроверьте config.js и интернет"); 
+                alert("Ошибка: Ссылка в config.js неверна или недоступна");
             }
         }
 
@@ -159,12 +133,12 @@
             const container = document.getElementById('catalog');
             container.innerHTML = db.map(i => {
                 const hasPhoto = i.img && i.img.length > 10;
-                const photoIcon = hasPhoto ? '<span style="color:#f1c40f;margin-right:5px;">🖼️</span>' : '';
+                const photoIcon = hasPhoto ? '● ' : '';
                 return `
                     <div class="c-item" onclick="openItemMenu('${i.id}')">
                         <div class="i-name">${photoIcon}${i.name}</div>
-                        <div class="i-price">${Number(i.price).toLocaleString()} ₸</div>
-                        <div class="i-stock">Остаток: ${i.stock || 0}</div>
+                        <div class="i-price">${i.price} ₸</div>
+                        <div class="i-stock">STK: ${i.stock || 0}</div>
                     </div>
                 `;
             }).join('');
@@ -174,16 +148,14 @@
             selectedItemId = id;
             tempBase64 = null;
             const item = db.find(x => x.id === id);
-            
             document.getElementById('menu-item-name').innerText = item.name;
-            resetUIState();
-
-            const preview = document.getElementById('item-preview');
-            const cancelBtn = document.getElementById('btn-cancel');
-
+            
+            showElement('btn-add-cart', true);
+            showElement('btn-save-db', false);
+            
             if (item.img && item.img.length > 10) {
                 showElement('view-photo-container', true);
-                preview.src = item.img;
+                document.getElementById('item-preview').src = item.img;
                 showElement('btn-take-photo', false);
                 showElement('btn-retake-photo', true);
             } else {
@@ -191,28 +163,21 @@
                 showElement('btn-take-photo', true);
                 showElement('btn-retake-photo', false);
             }
-            
-            cancelBtn.innerText = "ЗАКРЫТЬ"; 
+            document.getElementById('btn-cancel').innerText = "ЗАКРЫТЬ";
             document.getElementById('item-menu-modal').style.display = 'flex';
         }
 
         function handleCancel() {
-            if (tempBase64) {
-                openItemMenu(selectedItemId);
-            } else {
-                closeItemMenu();
-            }
+            if (tempBase64) { openItemMenu(selectedItemId); } 
+            else { closeItemMenu(); }
         }
 
-        function handleOutsideClick() { closeItemMenu(); }
         function closeItemMenu() { document.getElementById('item-menu-modal').style.display = 'none'; }
-
         function triggerCamera() { document.getElementById('camera-input').click(); }
 
-        async function handlePhoto(event) {
+        function handlePhoto(event) {
             const file = event.target.files[0];
             if (!file) return;
-
             const reader = new FileReader();
             reader.onload = function(e) {
                 const img = new Image();
@@ -220,17 +185,15 @@
                     const canvas = document.getElementById('resize-canvas');
                     const ctx = canvas.getContext('2d');
                     const MAX_W = 800;
-                    let w = img.width;
-                    let h = img.height;
+                    let w = img.width, h = img.height;
                     if (w > MAX_W) { h *= MAX_W/w; w = MAX_W; }
                     canvas.width = w; canvas.height = h;
                     ctx.drawImage(img, 0, 0, w, h);
-                    
                     tempBase64 = canvas.toDataURL('image/jpeg', 0.7);
                     
                     document.getElementById('item-preview').src = tempBase64;
                     showElement('view-photo-container', true);
-                    showElement('btn-add-cart', false); 
+                    showElement('btn-add-cart', false);
                     showElement('btn-save-db', true);
                     showElement('btn-take-photo', false);
                     showElement('btn-retake-photo', true);
@@ -243,50 +206,23 @@
 
         async function confirmUpload() {
             const btn = document.getElementById('btn-save-db');
-            btn.innerText = "⌛ СОХРАНЕНИЕ...";
-            btn.disabled = true;
-
+            btn.innerText = "SAVE...";
             try {
                 const res = await fetch(APPS_SCRIPT_URL, {
                     method: 'POST',
-                    body: JSON.stringify({
-                        action: 'upload_photo',
-                        item_id: selectedItemId,
-                        base64: tempBase64
-                    })
+                    body: JSON.stringify({ action: 'upload_photo', item_id: selectedItemId, base64: tempBase64 })
                 });
-                const result = await res.json();
-                if (result.success) {
-                    btn.innerText = "✅ ГОТОВО";
-                    setTimeout(() => location.reload(), 800);
-                } else { throw new Error(result.error); }
-            } catch (e) {
-                alert("Ошибка сохранения: " + e.message);
-                btn.innerText = "💾 СОХРАНИТЬ В БАЗУ";
-                btn.disabled = false;
-            }
+                location.reload();
+            } catch (e) { alert("Ошибка сохранения"); }
         }
 
         function confirmAddFromMenu() {
-            if (typeof add === "function") {
-                add(selectedItemId);
-            } else {
-                alert("Товар добавлен в корзину!");
-            }
+            if (typeof add === "function") { add(selectedItemId); }
             closeItemMenu();
         }
 
         function showElement(id, isShow) { document.getElementById(id).style.display = isShow ? 'block' : 'none'; }
         
-        function resetUIState() {
-            showElement('btn-add-cart', true);
-            showElement('btn-save-db', false);
-            document.getElementById('btn-save-db').disabled = false;
-            document.getElementById('btn-save-db').innerText = "💾 СОХРАНИТЬ В БАЗУ";
-            document.getElementById('btn-cancel').disabled = false;
-        }
-
-        // Запуск
         load();
     </script>
 </body>
