@@ -736,11 +736,17 @@ const photoIcon = hasPhoto ? '<span style="background-color: #f1c40f; color: #00
             
             const now = new Date();
             const today = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+            
+            // --- НАЧАЛО ИСПРАВЛЕНИЙ ---
+            // 1. Разбиваем системную дату (ГГГГ-ММ-ДД) на части
+            const dParts = selectedDate.split('-'); 
+            // 2. Собираем её для сервера в правильном формате (ДД.ММ.ГГГГ)
+            const serverDate = `${dParts[2]}.${dParts[1]}.${dParts[0]}`; 
+
             if (selectedDate === today) {
                 titleEl.innerText = currentLang === 'kz' ? "БҮГІНГІ ЕСЕП" : "ОТЧЕТ ЗА СЕГОДНЯ";
             } else {
-                const dParts = selectedDate.split('-'); 
-                titleEl.innerText = (currentLang === 'kz' ? "ЕСЕП: " : "ОТЧЕТ ЗА ") + `${dParts[2]}.${dParts[1]}.${dParts[0]}`;
+                titleEl.innerText = (currentLang === 'kz' ? "ЕСЕП: " : "ОТЧЕТ ЗА ") + serverDate;
             }
 
             repList.innerHTML = `<div style="text-align:center; color:#f39c12; margin-top:30px; font-size: 12px; font-weight: bold;">⏳ ${currentLang==='kz'?"ЖҮКТЕЛУДЕ...":"СКАЧИВАЮ ДАННЫЕ..."}</div>`;
@@ -752,7 +758,13 @@ const photoIcon = hasPhoto ? '<span style="background-color: #f1c40f; color: #00
             }
 
             try {
-                const response = await fetch(APPS_SCRIPT_URL + "?action=report&date=" + selectedDate + "&t=" + Date.now());
+                // 3. Отправляем на сервер ПРАВИЛЬНУЮ дату (serverDate)
+                // 4. Добавляем redirect: 'follow', чтобы PWA на iPhone не блокировал запрос
+                const response = await fetch(APPS_SCRIPT_URL + "?action=report&date=" + serverDate + "&t=" + Date.now(), {
+                    redirect: 'follow'
+                });
+                // --- КОНЕЦ ИСПРАВЛЕНИЙ ---
+
                 const data = await response.json();
                 if (data.error) {
                     repList.innerHTML = `<div style="text-align:center; color:#e74c3c; margin-top:30px; font-size: 11px;"><b>ОШИБКА:</b><br>${data.error}</div>`;
