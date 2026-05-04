@@ -365,7 +365,8 @@
         catalog.innerHTML = db.map(i => {
             // Безопасная проверка фото
             const hasPhoto = i.img && i.img.toString().length > 10;
-            const photoIcon = hasPhoto ? '<span style="margin-right:5px; color:#f1c40f;">📷</span>' : '';
+            // Делаем заметную желтую плашку "ФОТО" вместо эмодзи
+const photoIcon = hasPhoto ? '<span style="background-color: #f1c40f; color: #000; font-size: 10px; font-weight: bold; padding: 2px 4px; border-radius: 4px; margin-right: 6px; vertical-align: middle;">ФОТО</span>' : '';
             
             // Защита от пустых цен и остатков (превращаем в числа)
             const price = Number(i.price) || 0;
