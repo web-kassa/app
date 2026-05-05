@@ -992,6 +992,10 @@ preview.innerHTML = `<img src="${safeUrl}" onclick="openFullscreen('${safeUrl}')
         function triggerCamera() {
             document.getElementById('camera-input').click();
         }
+        
+        function triggerGallery() {
+            document.getElementById('gallery-input').click();
+        }
 
         async function handlePhoto(event) {
             const file = event.target.files[0];
@@ -1157,8 +1161,9 @@ function forceCloseFs() {
         }
     </script>
 
-    <!-- Скрытый инпут для вызова камеры и холст для сжатия -->
+    <!-- Скрытые инпуты для камеры/галереи и холст для сжатия -->
     <input type="file" id="camera-input" accept="image/*" capture="environment" style="display: none;" onchange="handlePhoto(event)">
+    <input type="file" id="gallery-input" accept="image/*" style="display: none;" onchange="handlePhoto(event)">
     <canvas id="resize-canvas" style="display: none;"></canvas>
 
     <!-- Меню выбора действия для товара -->
@@ -1176,13 +1181,29 @@ function forceCloseFs() {
                 💾 СОХРАНИТЬ В БАЗУ
             </button>
 
-            <button id="btn-take-photo" onclick="triggerCamera()" style="background: #222; color: #eee; border-color: #555; margin-bottom: 12px; width: 100%; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 14px; text-transform: uppercase; border: 1px solid; cursor: pointer;">
-                📸 СДЕЛАТЬ ФОТО
-            </button>
+            <!-- Блок кнопок добавления фото -->
+            <div id="btn-take-photo" style="margin-bottom: 12px; width: 100%;">
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="triggerCamera()" style="flex: 1; background: #222; color: #eee; border-color: #555; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 13px; text-transform: uppercase; border: 1px solid; cursor: pointer;">
+                        📸 КАМЕРА
+                    </button>
+                    <button onclick="triggerGallery()" style="flex: 1; background: #222; color: #eee; border-color: #555; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 13px; text-transform: uppercase; border: 1px solid; cursor: pointer;">
+                        📂 ГАЛЕРЕЯ
+                    </button>
+                </div>
+            </div>
 
-            <button id="btn-retake-photo" onclick="triggerCamera()" style="display: none; background: #222; color: #eee; border-color: #555; margin-bottom: 12px; width: 100%; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 14px; text-transform: uppercase; border: 1px solid; cursor: pointer;">
-                📸 ПЕРЕСНЯТЬ
-            </button>
+            <!-- Блок кнопок замены фото (Переснять) -->
+            <div id="btn-retake-photo" style="display: none; margin-bottom: 12px; width: 100%;">
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="triggerCamera()" style="flex: 1; background: #222; color: #eee; border-color: #555; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 13px; text-transform: uppercase; border: 1px solid; cursor: pointer;">
+                        🔄 КАМЕРА
+                    </button>
+                    <button onclick="triggerGallery()" style="flex: 1; background: #222; color: #eee; border-color: #555; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 13px; text-transform: uppercase; border: 1px solid; cursor: pointer;">
+                        🔄 ГАЛЕРЕЯ
+                    </button>
+                </div>
+            </div>
 
             <button id="btn-cancel-modal" class="cancel-btn" style="width: 100%; margin-top: 10px; background: #3a1a1a; color: #e74c3c; border-color: #e74c3c; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 14px; text-transform: uppercase; border: 1px solid; cursor: pointer;" onclick="handleCancelModal()">
                 ЗАКРЫТЬ
