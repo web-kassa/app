@@ -1033,10 +1033,11 @@ preview.innerHTML = `<img src="${safeUrl}" onclick="openFullscreen('${safeUrl}')
             reader.readAsDataURL(file);
         }
 
-// --- ЛОГИКА ЗУМА ДЛЯ ФОТОГРАФИЙ ---
+// --- ЛОГИКА ЗУМА ДЛЯ ФОТОГРАФИЙ (УНИВЕРСАЛЬНАЯ: Touch + Mouse) ---
 let fsScale = 1, fsX = 0, fsY = 0;
 let fsStartX = 0, fsStartY = 0;
 let fsInitDist = 0, fsInitScale = 1;
+let isDragging = false; // Флаг для мышки
 
 function openFullscreen(src) {
     const img = document.getElementById('fullscreen-img');
@@ -1047,51 +1048,74 @@ function openFullscreen(src) {
     img.style.transform = `translate(0px, 0px) scale(1)`;
     document.getElementById('fullscreen-photo').style.display = 'flex';
 
-    // Вешаем обработчики жестов только один раз
+    // Вешаем обработчики только один раз
     if (!img.dataset.gestures) {
         img.dataset.gestures = "true";
         
+        // 1. МОБИЛЬНЫЕ ЖЕСТЫ (Пальцы)
         img.addEventListener('touchstart', (e) => {
             if (e.touches.length === 2) {
-                // Старт щипка (2 пальца)
                 fsInitDist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
                 fsInitScale = fsScale;
             } else if (e.touches.length === 1) {
-                // Старт перетаскивания (1 палец)
                 fsStartX = e.touches[0].pageX - fsX;
                 fsStartY = e.touches[0].pageY - fsY;
             }
         }, { passive: false });
 
         img.addEventListener('touchmove', (e) => {
-            if (e.cancelable) e.preventDefault(); // Блокируем фон от случайного скролла
-            
+            if (e.cancelable) e.preventDefault();
             if (e.touches.length === 2) {
-                // Увеличение (щипок)
                 const currentDist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
-                fsScale = Math.min(Math.max(1, fsInitScale * (currentDist / fsInitDist)), 5); // Зум от 1x до 5x
+                fsScale = Math.min(Math.max(1, fsInitScale * (currentDist / fsInitDist)), 5);
                 img.style.transform = `translate(${fsX}px, ${fsY}px) scale(${fsScale})`;
             } else if (e.touches.length === 1 && fsScale > 1) {
-                // Перетаскивание (работает только если фото уже увеличено)
                 fsX = e.touches[0].pageX - fsStartX;
                 fsY = e.touches[0].pageY - fsStartY;
                 img.style.transform = `translate(${fsX}px, ${fsY}px) scale(${fsScale})`;
             }
         }, { passive: false });
+
+        // 2. ПК ЖЕСТЫ (Мышка)
+        // Зум колесиком
+        img.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const zoomAmount = e.deltaY > 0 ? 0.9 : 1.1; // Крутим вниз = отдаляем, вверх = приближаем
+            fsScale = Math.min(Math.max(1, fsScale * zoomAmount), 5);
+            if (fsScale === 1) { fsX = 0; fsY = 0; } // Центрируем при сбросе
+            img.style.transform = `translate(${fsX}px, ${fsY}px) scale(${fsScale})`;
+        }, { passive: false });
+
+        // Перетаскивание зажатой мышкой
+        img.addEventListener('mousedown', (e) => {
+            if (fsScale > 1) {
+                isDragging = true;
+                fsStartX = e.pageX - fsX;
+                fsStartY = e.pageY - fsY;
+            }
+        });
+        
+        window.addEventListener('mousemove', (e) => {
+            if (isDragging && fsScale > 1) {
+                fsX = e.pageX - fsStartX;
+                fsY = e.pageY - fsStartY;
+                img.style.transform = `translate(${fsX}px, ${fsY}px) scale(${fsScale})`;
+            }
+        });
+        
+        window.addEventListener('mouseup', () => { isDragging = false; });
     }
 }
 
 // Умное закрытие по клику мимо фото
 function closeFullscreen(e) {
-    // Не закрывать, если мы случайно тапнули по фото во время зума
     if (e && e.target.id === 'fullscreen-img' && fsScale > 1) return; 
     forceCloseFs();
 }
 
-// Принудительное закрытие (по кнопке ✕)
 function forceCloseFs() {
     document.getElementById('fullscreen-photo').style.display = 'none';
-    fsScale = 1; fsX = 0; fsY = 0; // Сбрасываем позицию для следующего раза
+    fsScale = 1; fsX = 0; fsY = 0; isDragging = false;
 }
 // --- КОНЕЦ ЛОГИКИ ЗУМА ---
 
