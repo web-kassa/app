@@ -119,7 +119,10 @@
         </div>
         
         <div class="search-area" style="display: flex; gap: 10px;">
-            <input type="text" id="sb" class="s-input" data-i18n-placeholder="search_placeholder" placeholder="ПОИСК..." onkeyup="filter()" style="flex-grow: 1; margin: 0;">
+            <div style="position: relative; flex-grow: 1; margin: 0;">
+                <input type="text" id="sb" class="s-input" data-i18n-placeholder="search_placeholder" placeholder="ПОИСК..." oninput="handleSearchInput()" style="width: 100%; padding-right: 35px;">
+                <span id="clear-search" onclick="clearSearch()" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #888; font-size: 16px; cursor: pointer; display: none; padding: 5px; height: 100%; align-items: center; justify-content: center;">✕</span>
+            </div>
             <button id="btn-install" style="display: none; padding: 0 15px; background: #1a3a20; color: #2ecc71; border: 1px solid #2ecc71; border-radius: 4px; cursor: pointer; white-space: nowrap; font-family: inherit;">
                 💾 На ПК
             </button>
@@ -419,6 +422,20 @@
                 const name = el.querySelector('.i-name').innerText.toLowerCase();
                 el.style.display = name.includes(q) ? 'flex' : 'none';
             });
+        }
+
+function handleSearchInput() {
+            const val = document.getElementById('sb').value;
+            document.getElementById('clear-search').style.display = val.length > 0 ? 'flex' : 'none';
+            filter(); 
+        }
+
+        function clearSearch() {
+            const sb = document.getElementById('sb');
+            sb.value = '';
+            document.getElementById('clear-search').style.display = 'none';
+            filter();
+            sb.focus(); // Возвращаем фокус, чтобы можно было сразу печатать новый запрос
         }
 
         function add(id) {
@@ -938,7 +955,8 @@
                 
                 if (fileId) {
                     const safeUrl = `https://lh3.googleusercontent.com/d/${fileId}`;
-                    preview.innerHTML = `<img src="${safeUrl}" style="max-width: 100%; max-height: 250px; border-radius: 8px; border: 1px solid #444; margin-top: 10px;">`;
+                    // Замени эту строку внутри openItemMenu:
+preview.innerHTML = `<img src="${safeUrl}" onclick="openFullscreen('${safeUrl}')" style="max-width: 100%; max-height: 250px; border-radius: 8px; border: 1px solid #444; margin-top: 10px; cursor: zoom-in;">`;
                 } else {
                     preview.innerHTML = '<div style="color:red;">Ошибка формата ссылки</div>';
                 }
@@ -1001,7 +1019,7 @@
                     tempBase64 = canvas.toDataURL('image/jpeg', 0.7);
                     
                     // Показываем черновик
-                    document.getElementById('photo-preview').innerHTML = `<img src="${tempBase64}" style="max-width: 100%; max-height: 250px; border-radius: 8px; border: 1px solid #444; margin-top: 10px;">`;
+                    document.getElementById('photo-preview').innerHTML = `<img src="${tempBase64}" onclick="openFullscreen('${tempBase64}')" style="max-width: 100%; max-height: 250px; border-radius: 8px; border: 1px solid #444; margin-top: 10px; cursor: zoom-in;">`;
                     
                     // Переключаем кнопки: прячем корзину, показываем базу
                     document.getElementById('btn-add-cart').style.display = 'none';
@@ -1014,6 +1032,14 @@
             };
             reader.readAsDataURL(file);
         }
+
+function openFullscreen(src) {
+    document.getElementById('fullscreen-img').src = src;
+    document.getElementById('fullscreen-photo').style.display = 'flex';
+}
+function closeFullscreen() {
+    document.getElementById('fullscreen-photo').style.display = 'none';
+}
 
         async function confirmUpload() {
             if (!navigator.onLine) {
@@ -1085,5 +1111,12 @@
             </button>
         </div>
     </div>
+
+<!-- Окно полноэкранного просмотра фото -->
+<div id="fullscreen-photo" class="modal-overlay" style="z-index: 2000;" onclick="closeFullscreen()">
+    <img id="fullscreen-img" style="max-width: 95%; max-height: 95%; object-fit: contain; border-radius: 8px;">
+</div>
+
+
 </body>
 </html>
