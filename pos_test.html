@@ -20,7 +20,20 @@
 
         .header-area { flex-shrink: 0; border-bottom: 1px solid #222; }
         .modes { display: flex; padding: 4px; gap: 4px; }
-        .m-btn { flex: 1; padding: 6px; border: 1px solid #333; background: #111; color: #444; font-weight: 900; border-radius: 4px; font-size: 13px; text-transform: uppercase; transition: 0.2s; }
+        .m-btn { 
+            flex: 1; 
+            height: 35px; /* Жестко фиксируем высоту */
+            line-height: 1; /* Убираем скрытые отступы текста */
+            padding: 0; 
+            border: 1px solid #333; 
+            background: #111; 
+            color: #444; 
+            font-weight: 900; 
+            border-radius: 4px; 
+            font-size: 13px; 
+            text-transform: uppercase; 
+            transition: 0.2s; 
+        }
         .m-btn.active-s { background: #1a3a20; color: #2ecc71; border-color: #2ecc71; }
         .m-btn.active-r { background: #3a1a1a; color: #e74c3c; border-color: #e74c3c; }
 
@@ -146,7 +159,7 @@
         <div class="modes">
             <button id="ms" class="m-btn active-s" onclick="sm('sale')" data-i18n="btn_sale">ПРОДАЖА</button>
             <button id="mr" class="m-btn" onclick="sm('return')" data-i18n="btn_return">ВОЗВРАТ</button>
-            <button class="m-btn" style="flex: 0.2; background: #111; color: #888; padding: 6px 0; border-color: #333;" onclick="openPinModal(function(){ openReport(); })">📊 ПИН</button>
+            <button class="m-btn" style="flex: 0.2; background: #111; color: #888; border-color: #333; height: 35px;" onclick="openPinModal(function(){ openReport(); })">📊 ПИН</button>
         </div>
         
         <div class="search-area" style="display: flex; gap: 10px;">
