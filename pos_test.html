@@ -83,11 +83,6 @@
         .cancel-btn { flex: 1; padding: 15px; background: #333; color: #fff; border: 1px solid #555; border-radius: 4px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 12px; }
         .confirm-btn { flex: 2; padding: 15px; background: #2ecc71; color: #000; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 14px; }
 
-        .hist-block { background: #141414; border: 1px solid #333; border-left-width: 4px; border-radius: 4px; padding: 10px; margin-bottom: 8px; }
-        .hb-head { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 6px; font-weight: bold; border-bottom: 1px dashed #333; padding-bottom: 6px; text-transform: uppercase; }
-        .hb-item { display: flex; justify-content: space-between; font-size: 11px; color: #aaa; margin-bottom: 4px; }
-        .hb-type-r { text-decoration: line-through; opacity: 0.6; }
-
         .settings-box { width: 100%; max-width: 350px; background: #111; border: 1px solid #444; padding: 20px; border-radius: 8px; }
         .s-group { margin-bottom: 15px; border-bottom: 1px solid #222; padding-bottom: 15px; }
         .s-title { font-size: 11px; color: #888; margin-bottom: 10px; text-transform: uppercase; font-weight: bold; }
@@ -99,14 +94,78 @@
         
         .queue-badge { background: #e74c3c; color: #fff; padding: 2px 6px; border-radius: 10px; font-size: 10px; font-weight: bold; display: none; margin-left: 5px; }
 
-        /* Модальное окно ПИН-кода */
-        #pin-modal .modal-content { max-width: 320px; padding: 20px; background: #0a0a0a; }
-        .pin-display { height: 50px; background: #000; border: 1px solid #333; border-radius: 6px; margin-bottom: 20px; display: flex; justify-content: center; align-items: center; font-size: 36px; color: #f1c40f; letter-spacing: 12px; transition: color 0.2s; }
-        .pin-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .pin-btn { background: #1a1a1a; color: #fff; border: 1px solid #333; border-radius: 6px; height: 65px; font-size: 28px; font-weight: bold; display: flex; justify-content: center; align-items: center; cursor: pointer; user-select: none; touch-action: manipulation; }
-        .pin-btn:active { background: #333; }
-        .pin-btn.action { font-size: 16px; color: #888; font-weight: normal; }
-        .pin-btn.clear { color: #e74c3c; }
+        /* ========================================== */
+        /* СТИЛИ НОВОГО ОКНА ОТЧЕТОВ                  */
+        /* ========================================== */
+        .ur-modal-window { background: #1a1a1a; width: 100%; max-width: 420px; border-radius: 10px; box-shadow: 0 8px 30px rgba(0,0,0,0.8); overflow: hidden; display: flex; flex-direction: column; max-height: 96vh; border: 1px solid #333; position: relative; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        .ur-modal-header { background: #111; padding: 12px 16px; display: flex; justify-content: center; align-items: center; border-bottom: 1px solid #333; position: relative; }
+        .ur-modal-header h2 { margin: 0; font-size: 14px; font-weight: 600; color: #fff; text-transform: uppercase; letter-spacing: 1px; text-align: center; font-family: 'Segoe UI', sans-serif;}
+        .ur-close-btn { background: none; border: none; color: #888; font-size: 24px; cursor: pointer; padding: 0; line-height: 1; transition: color 0.2s; position: absolute; right: 16px; }
+        
+        .ur-filters-container { background: #252526; padding: 6px 12px; border-bottom: 1px solid #333; }
+        .ur-date-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        .ur-date-input { background: #333; border: 1px solid #444; border-radius: 4px; padding: 4px 8px; font-family: inherit; font-size: 12px; color: #e0e0e0; width: 44%; outline: none; color-scheme: dark; cursor: pointer; }
+        .ur-date-input:focus { border-color: #007acc; }
+        .ur-search-wrapper { position: relative; width: 100%; }
+        .ur-search-input { width: 100%; box-sizing: border-box; padding: 5px 28px 5px 10px; border: 1px solid #444; border-radius: 4px; font-size: 13px; background: #333; color: #e0e0e0; outline: none; font-family: 'Segoe UI', sans-serif;}
+        .ur-clear-search-btn { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #888; font-size: 16px; cursor: pointer; padding: 0; display: none; line-height: 1; }
+
+        .ur-report-view { display: none; flex-direction: column; flex: 1; overflow: hidden; }
+        .ur-report-view.active { display: flex; }
+        
+        /* Сетка для периода */
+        .ur-grid-layout { display: grid; grid-template-columns: 1fr 30px 85px; gap: 8px; align-items: center; }
+        .ur-list-header { padding: 6px 12px; background: #1e1e1e; font-size: 10px; font-weight: 700; color: #666; border-bottom: 1px solid #333; font-family: 'Segoe UI', sans-serif;}
+        .ur-period-body { flex: 1; overflow-y: auto; padding: 6px 12px; background: #1e1e1e; }
+        
+        /* Аккордеон товаров */
+        .ur-item-wrapper { margin-bottom: 4px; font-family: 'Segoe UI', sans-serif;}
+        .ur-item-card { padding: 6px 8px; border: 1px solid #333; border-radius: 5px; background: #2d2d30; cursor: pointer; transition: background 0.2s; }
+        .ur-item-name { font-size: 12px; color: #e0e0e0; line-height: 1.2; }
+        .ur-item-qty { color: #888; font-size: 12px; text-align: right;}
+        .ur-item-sum { font-weight: 700; font-size: 13px; display: flex; justify-content: flex-end; align-items: center; gap: 4px; }
+        .ur-dropdown-icon { font-size: 8px; color: #555; transition: transform 0.2s; }
+        .ur-item-wrapper.active .ur-dropdown-icon { transform: rotate(180deg); color: #007acc; }
+        .ur-item-wrapper.active .ur-item-card { border-bottom-left-radius: 0; border-bottom-right-radius: 0; border-color: #444; }
+        .ur-item-details { background: #252526; border: 1px solid #333; border-top: none; border-bottom-left-radius: 5px; border-bottom-right-radius: 5px; max-height: 0; overflow: hidden; transition: max-height 0.2s ease-out; }
+        .ur-item-wrapper.active .ur-item-details { max-height: 80px; padding: 6px 8px; }
+        .ur-detail-row { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 3px; }
+        .ur-avg-price { color: #666; font-style: italic; margin-left: 4px; }
+
+        .ur-period-footer { background: #1a1a1b; padding: 8px 12px; border-top: 1px solid #333; font-family: 'Segoe UI', sans-serif;}
+        .ur-footer-row { font-size: 12px; color: #888; margin-bottom: 2px; display: grid; grid-template-columns: 1fr 30px 85px; gap: 8px; }
+        .ur-footer-row.result { margin-top: 5px; padding-top: 5px; border-top: 1px dashed #444; font-size: 14px; font-weight: 700; color: #fff; }
+        
+        /* ЧЕКОВЫЙ ЛОГ (Смена) */
+        .ur-shift-body { flex: 1; overflow-y: auto; padding: 12px; background: #111; font-family: 'Segoe UI', sans-serif;}
+        .ur-check-card { border-radius: 6px; padding: 10px; margin-bottom: 10px; border-left: 3px solid; background: #1a1a1a; }
+        .ur-check-sale { border-color: #4ade80; } 
+        .ur-check-return { border-color: #f87171; } 
+        .ur-check-header { display: flex; justify-content: space-between; font-size: 11px; font-weight: bold; margin-bottom: 8px; color: #4ade80; }
+        .ur-check-return .ur-check-header { color: #5ea1e6; } 
+        .ur-check-item { display: flex; justify-content: space-between; font-size: 13px; color: #ccc; margin-bottom: 4px; }
+        .ur-shift-footer { padding: 15px; border-top: 1px dashed #333; background: #111; font-family: 'Segoe UI', sans-serif;}
+        .ur-shift-footer-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 5px; }
+        .ur-shift-total { font-size: 18px; font-weight: bold; color: #fff; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #444; display: flex; justify-content: space-between; align-items: center; }
+
+        /* ЭКРАН ПИН-КОДА ВНУТРИ НОВОГО ОТЧЕТА */
+        .ur-pin-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #121212; z-index: 1000; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.2s ease, visibility 0.2s ease; }
+        .ur-pin-overlay.hidden { opacity: 0; visibility: hidden; }
+        .ur-pin-title { color: #fff; font-size: 16px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; font-family: 'Segoe UI', sans-serif;}
+        .ur-pin-error { color: #f87171; font-size: 12px; min-height: 18px; margin-bottom: 15px; opacity: 0; font-family: 'Segoe UI', sans-serif;}
+        .ur-pin-error.show { opacity: 1; }
+        .ur-pin-dots { display: flex; gap: 15px; margin-bottom: 30px; }
+        .ur-pin-dot { width: 12px; height: 12px; border-radius: 50%; border: 2px solid #555; }
+        .ur-pin-dot.filled { background: #fff; border-color: #fff; }
+        .ur-numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; max-width: 260px; width: 100%; }
+        .ur-num-btn { background: #222; border: 1px solid #333; border-radius: 50%; width: 70px; height: 70px; display: flex; justify-content: center; align-items: center; font-size: 24px; color: #fff; cursor: pointer; user-select: none; margin: 0 auto; transition: background 0.1s; font-family: 'Segoe UI', sans-serif;}
+        .ur-num-btn:active { background: #444; }
+        .ur-num-btn.action-btn { background: transparent; border: none; font-size: 14px; color: #888; }
+        
+        /* Утилиты цветов */
+        .ur-text-green { color: #4ade80; } 
+        .ur-text-red { color: #f87171; }
     </style>
 </head>
 <body>
@@ -115,7 +174,7 @@
         <div class="modes">
             <button id="ms" class="m-btn active-s" onclick="sm('sale')" data-i18n="btn_sale">ПРОДАЖА</button>
             <button id="mr" class="m-btn" onclick="sm('return')" data-i18n="btn_return">ВОЗВРАТ</button>
-            <button class="m-btn" style="flex: 0.2; background: #111; color: #888; padding: 12px 0; border-color: #333;" onclick="openPinModal(function(){ openReport(); })">📊 ПИН</button>
+            <button class="m-btn" style="flex: 0.2; background: #111; color: #888; padding: 12px 0; border-color: #333;" onclick="openUnifiedReport()">📊 ПИН</button>
         </div>
         
         <div class="search-area" style="display: flex; gap: 10px;">
@@ -160,7 +219,6 @@
         </div>
     </div>
 
-    <!-- ОКНО ЧЕКА -->
     <div id="receipt-modal" class="modal-overlay">
         <div class="receipt-box">
             <div id="r-title" class="r-title">ПОДТВЕРЖДЕНИЕ</div>
@@ -175,24 +233,106 @@
         </div>
     </div>
 
-    <!-- ОКНО ОТЧЕТА -->
-    <div id="report-modal" class="modal-overlay">
-        <div class="receipt-box" style="max-height: 85vh; display: flex; flex-direction: column; width: 100%; max-width: 400px; padding: 15px; border-color: #555;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 10px;">
-                <div id="rep-header-title" style="font-size: 14px; font-weight: bold; color: #fff;">ОТЧЕТ ЗА СЕГОДНЯ</div>
-                <input type="date" id="rep-date" style="background: #222; color: #fff; border: 1px solid #444; padding: 5px; border-radius: 4px; color-scheme: dark; font-family: inherit; outline: none; font-size: 11px; cursor: pointer;" onclick="if(this.showPicker) this.showPicker();" oninput="renderReport()" onchange="renderReport()">
-            </div>
+    <div id="unified-report-modal" class="modal-overlay">
+        <div class="ur-modal-window">
             
-            <div id="rep-list" style="flex-grow: 1; overflow-y: auto; padding-right: 5px;"></div>
-            <div id="rep-totals" style="margin-top: 15px; border-top: 2px solid #444; padding-top: 10px;"></div>
-            
-            <div class="modal-btns" style="margin-top: 15px;">
-                <button class="cancel-btn" style="width: 100%;" onclick="closeReport()" data-i18n="btn_close_report">ЗАКРЫТЬ ОТЧЕТ</button>
+            <div class="ur-pin-overlay" id="unified-pin-overlay">
+                <div class="ur-pin-title">Введите ПИН-код</div>
+                <div class="ur-pin-error" id="unifiedPinError">Неверный код</div>
+                <div class="ur-pin-dots">
+                    <div class="ur-pin-dot"></div><div class="ur-pin-dot"></div><div class="ur-pin-dot"></div><div class="ur-pin-dot"></div>
+                </div>
+                <div class="ur-numpad" onclick="handlePinPadClick(event)">
+                    <div class="ur-num-btn" data-val="1">1</div><div class="ur-num-btn" data-val="2">2</div><div class="ur-num-btn" data-val="3">3</div>
+                    <div class="ur-num-btn" data-val="4">4</div><div class="ur-num-btn" data-val="5">5</div><div class="ur-num-btn" data-val="6">6</div>
+                    <div class="ur-num-btn" data-val="7">7</div><div class="ur-num-btn" data-val="8">8</div><div class="ur-num-btn" data-val="9">9</div>
+                    <div class="ur-num-btn action-btn" data-val="clear">СБРОС</div>
+                    <div class="ur-num-btn" data-val="0">0</div>
+                    <div class="ur-num-btn action-btn" data-val="del">⌫</div>
+                </div>
+                <button onclick="closeUnifiedReport()" style="margin-top: 20px; background: transparent; border: none; color: #888; text-transform: uppercase; font-size: 12px;">ЗАКРЫТЬ</button>
             </div>
+
+            <div class="ur-modal-header">
+                <h2 id="ur-mainTitle">ОТЧЕТ ЗА СМЕНУ</h2>
+                <button class="ur-close-btn" onclick="lockApp()">×</button>
+            </div>
+
+            <div class="ur-filters-container" id="ur-filtersContainer" style="display: none;">
+                <div class="ur-date-row">
+                    <input type="date" id="ur-dateStart" class="ur-date-input" onclick="this.showPicker()">
+                    <span class="ur-date-separator">—</span>
+                    <input type="date" id="ur-dateEnd" class="ur-date-input" onclick="this.showPicker()">
+                </div>
+                <div class="ur-search-wrapper" id="ur-searchWrapper" style="display: none;">
+                    <input type="text" id="ur-searchInput" class="ur-search-input" placeholder="Поиск товара...">
+                    <button id="ur-clearSearchBtn" class="ur-clear-search-btn">×</button>
+                </div>
+            </div>
+
+            <div id="ur-viewPeriod" class="ur-report-view">
+                <div class="ur-list-header ur-grid-layout">
+                    <div>НАИМЕНОВАНИЕ</div>
+                    <div class="ur-col-qty">КОЛ.</div>
+                    <div class="ur-col-sum">СУММА</div>
+                </div>
+
+                <div class="ur-period-body" id="ur-itemsList">
+                    <div class="ur-item-wrapper" onclick="this.classList.toggle('active')">
+                        <div class="ur-item-card ur-grid-layout">
+                            <div class="ur-item-name">Смартфон Samsung Galaxy S23 Ultra 256GB Black (Б/У)</div>
+                            <div class="ur-col-qty ur-item-qty">12</div>
+                            <div class="ur-col-sum ur-item-sum ur-text-green">1 800 000 <span class="ur-dropdown-icon">▼</span></div>
+                        </div>
+                        <div class="ur-item-details">
+                            <div class="ur-detail-row">
+                                <span class="ur-detail-label">Продажи (13) <span class="ur-avg-price">~ 150 000</span></span>
+                                <span class="ur-text-green">1 950 000</span>
+                            </div>
+                            <div class="ur-detail-row">
+                                <span class="ur-detail-label">Возвраты (1) <span class="ur-avg-price">по 150 000</span></span>
+                                <span class="ur-text-red">-150 000</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ur-item-wrapper" onclick="this.classList.toggle('active')">
+                        <div class="ur-item-card ur-grid-layout">
+                            <div class="ur-item-name">Перфоратор Makita HR2470</div>
+                            <div class="ur-col-qty ur-item-qty">-1</div>
+                            <div class="ur-col-sum ur-item-sum ur-text-red">-45 000 <span class="ur-dropdown-icon">▼</span></div>
+                        </div>
+                        <div class="ur-item-details">
+                            <div class="ur-detail-row">
+                                <span class="ur-detail-label">Возвраты (1) <span class="ur-avg-price">по 45 000</span></span>
+                                <span class="ur-text-red">-45 000</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ur-period-footer">
+                    <div class="ur-footer-row">
+                        <div>Продажи:</div><div class="ur-col-qty">13</div><div class="ur-col-sum">1 950 000</div>
+                    </div>
+                    <div class="ur-footer-row ur-text-red">
+                        <div>Возвраты:</div><div class="ur-col-qty">-1</div><div class="ur-col-sum">-45 000</div>
+                    </div>
+                    <div class="ur-footer-row result">
+                        <div>Итого (чистая):</div><div class="ur-col-qty">12</div><div class="ur-col-sum">1 905 000</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="ur-viewShift" class="ur-report-view active">
+                <div class="ur-shift-body" id="ur-shift-body-content">
+                    </div>
+                <div class="ur-shift-footer" id="ur-shift-footer-content">
+                    </div>
+            </div>
+
         </div>
     </div>
 
-    <!-- ОКНО НАСТРОЕК -->
     <div id="settings-modal" class="modal-overlay">
         <div class="settings-box">
             <div class="r-title" style="margin-bottom: 20px;" data-i18n="settings_title">НАСТРОЙКИ</div>
@@ -225,31 +365,56 @@
         </div>
     </div>
 
-    <!-- ОКНО ПИН-КОДА -->
-    <div id="pin-modal" class="modal-overlay" style="display: none;">
-        <div class="modal-content">
-            <div style="text-align: center; color: #888; margin-bottom: 15px; font-size: 14px; font-weight: bold;">
-                ВВЕДИТЕ ПИН-КОД
-            </div>
+    <div id="item-menu-modal" class="modal-overlay" onclick="handleCancelModal()">
+        <div class="settings-box" onclick="event.stopPropagation()">
+            <div id="menu-item-name" class="r-title" style="font-size: 14px; margin-bottom: 20px;">Название товара</div>
+
+            <div id="photo-preview" style="text-align: center; margin: 10px 0; min-height: 20px;"></div>
             
-            <div id="pin-display" class="pin-display"></div>
+            <button id="btn-add-cart" onclick="confirmAddFromMenu()" style="background: #1a3a20; color: #2ecc71; border-color: #2ecc71; margin-bottom: 12px; width: 100%; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 14px; text-transform: uppercase; border: 1px solid; cursor: pointer;">
+                🛒 <span data-i18n="btn_add_cart">В КОРЗИНУ</span>
+            </button>
             
-            <div class="pin-grid">
-                <div class="pin-btn" onclick="pinPress('1')">1</div>
-                <div class="pin-btn" onclick="pinPress('2')">2</div>
-                <div class="pin-btn" onclick="pinPress('3')">3</div>
-                <div class="pin-btn" onclick="pinPress('4')">4</div>
-                <div class="pin-btn" onclick="pinPress('5')">5</div>
-                <div class="pin-btn" onclick="pinPress('6')">6</div>
-                <div class="pin-btn" onclick="pinPress('7')">7</div>
-                <div class="pin-btn" onclick="pinPress('8')">8</div>
-                <div class="pin-btn" onclick="pinPress('9')">9</div>
-                <div class="pin-btn action clear" onclick="pinClear()">СБРОС</div>
-                <div class="pin-btn" onclick="pinPress('0')">0</div>
-                <div class="pin-btn action" onclick="closePinModal()">ОТМЕНА</div>
+            <button id="btn-save-db" onclick="confirmUpload()" style="display: none; background: #0f2c40; color: #3498db; border-color: #3498db; margin-bottom: 12px; width: 100%; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 14px; text-transform: uppercase; border: 1px solid; cursor: pointer;">
+                💾 <span data-i18n="btn_save_db">СОХРАНИТЬ В БАЗУ</span>
+            </button>
+
+            <div id="btn-take-photo" style="margin-bottom: 12px; width: 100%;">
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="triggerCamera()" style="flex: 1; background: #222; color: #eee; border-color: #555; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 13px; text-transform: uppercase; border: 1px solid; cursor: pointer;">
+                        📸 <span data-i18n="btn_camera">КАМЕРА</span>
+                    </button>
+                    <button onclick="triggerGallery()" style="flex: 1; background: #222; color: #eee; border-color: #555; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 13px; text-transform: uppercase; border: 1px solid; cursor: pointer;">
+                        📂 <span data-i18n="btn_gallery">ГАЛЕРЕЯ</span>
+                    </button>
+                </div>
             </div>
+
+            <div id="btn-retake-photo" style="display: none; margin-bottom: 12px; width: 100%;">
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="triggerCamera()" style="flex: 1; background: #222; color: #eee; border-color: #555; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 13px; text-transform: uppercase; border: 1px solid; cursor: pointer;">
+                        🔄 <span data-i18n="btn_camera">КАМЕРА</span>
+                    </button>
+                    <button onclick="triggerGallery()" style="flex: 1; background: #222; color: #eee; border-color: #555; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 13px; text-transform: uppercase; border: 1px solid; cursor: pointer;">
+                        🔄 <span data-i18n="btn_gallery">ГАЛЕРЕЯ</span>
+                    </button>
+                </div>
+            </div>
+
+            <button id="btn-cancel-modal" class="cancel-btn" style="width: 100%; margin-top: 10px; background: #3a1a1a; color: #e74c3c; border-color: #e74c3c; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 14px; text-transform: uppercase; border: 1px solid; cursor: pointer;" onclick="handleCancelModal()">
+                ЗАКРЫТЬ
+            </button>
         </div>
     </div>
+
+    <div id="fullscreen-photo" class="modal-overlay" style="z-index: 2000; flex-direction: column;" onclick="closeFullscreen(event)">
+        <div style="position: absolute; top: 15px; right: 20px; background: rgba(0,0,0,0.6); color: #fff; width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 20px; font-weight: bold; cursor: pointer; z-index: 2001;" onclick="forceCloseFs()">✕</div>
+        <img id="fullscreen-img" style="max-width: 95%; max-height: 95%; object-fit: contain; border-radius: 8px; touch-action: none;">
+    </div>
+
+    <input type="file" id="camera-input" accept="image/*" capture="environment" style="display: none;" onchange="handlePhoto(event)">
+    <input type="file" id="gallery-input" accept="image/*" style="display: none;" onchange="handlePhoto(event)">
+    <canvas id="resize-canvas" style="display: none;"></canvas>
 
     <script src="config.js?v=5.4.0"></script>
     <script>
@@ -260,13 +425,11 @@
                 total_label_sale: "ИТОГО:", total_label_return: "К ВОЗВРАТУ:",
                 pay_cash: "Нал", pay_qr: "QR", pay_red: "Red", pay_card: "Карт", pay_trans: "Пер",
                 btn_cancel: "ОТМЕНА", btn_confirm: "ПОДТВЕРДИТЬ", btn_close: "ЗАКРЫТЬ",
-                btn_close_report: "ЗАКРЫТЬ ОТЧЕТ", settings_title: "НАСТРОЙКИ",
-                settings_lang: "ЯЗЫК ИНТЕРФЕЙСА", settings_sync: "СИНХРОНИЗАЦИЯ", settings_system: "СИСТЕМА",
+                settings_title: "НАСТРОЙКИ", settings_lang: "ЯЗЫК ИНТЕРФЕЙСА", settings_sync: "СИНХРОНИЗАЦИЯ", settings_system: "СИСТЕМА",
                 btn_sync: "Отправить чеки", btn_update: "Обновить кэш",
                 msg_sync_empty: "Все чеки уже отправлены!", msg_sync_success: "Синхронизация успешна!", msg_sync_error: "Ошибка сети. Проверьте интернет.",
                 txt_sale_confirm: "ПОДТВЕРДИТЬ ПРОДАЖУ", txt_return_confirm: "ПОДТВЕРДИТЬ ВОЗВРАТ",
                 txt_payment: "Оплата: ", txt_total: "ИТОГО: ",
-                // НОВЫЕ СЛОВА ДЛЯ ФОТО:
                 btn_add_cart: "В КОРЗИНУ", btn_save_db: "СОХРАНИТЬ В БАЗУ", 
                 btn_camera: "КАМЕРА", btn_gallery: "ГАЛЕРЕЯ",
                 btn_saving: "СОХРАНЕНИЕ...", btn_saved: "СОХРАНЕНО!"
@@ -277,13 +440,11 @@
                 total_label_sale: "БАРЛЫҒЫ:", total_label_return: "ҚАЙТАРЫЛАТЫН:",
                 pay_cash: "Қолма", pay_qr: "QR", pay_red: "Red", pay_card: "Карта", pay_trans: "Аудр",
                 btn_cancel: "БАС ТАРТУ", btn_confirm: "РАСТАУ", btn_close: "ЖАБУ",
-                btn_close_report: "ЕСЕПТІ ЖАБУ", settings_title: "ПАРАМЕТРЛЕР",
-                settings_lang: "ИНТЕРФЕЙС ТІЛІ", settings_sync: "СЕРВЕРМЕН СИНХРОНДАУ", settings_system: "ЖҮЙЕ",
+                settings_title: "ПАРАМЕТРЛЕР", settings_lang: "ИНТЕРФЕЙС ТІЛІ", settings_sync: "СЕРВЕРМЕН СИНХРОНДАУ", settings_system: "ЖҮЙЕ",
                 btn_sync: "Чектерді жіберу", btn_update: "Кэшті жаңарту",
                 msg_sync_empty: "Жіберетін чектер жоқ!", msg_sync_success: "Синхрондау сәтті аяқталды!", msg_sync_error: "Желі қатесі. Интернетті тексеріңіз.",
                 txt_sale_confirm: "САТУДЫ РАСТАУ", txt_return_confirm: "ҚАЙТАРУДЫ РАСТАУ",
                 txt_payment: "Төлем: ", txt_total: "БАРЛЫҒЫ: ",
-                // НОВЫЕ СЛОВА ДЛЯ ФОТО:
                 btn_add_cart: "СЕБЕТКЕ САЛУ", btn_save_db: "БАЗАҒА САҚТАУ", 
                 btn_camera: "КАМЕРА", btn_gallery: "ГАЛЕРЕЯ",
                 btn_saving: "САҚТАЛУДА...", btn_saved: "САҚТАЛДЫ!"
@@ -323,106 +484,85 @@
         }
 
         async function load() {
-    // 1. Быстрая загрузка из кэша (как у вас)
-    try {
-        const cachedDb = localStorage.getItem('db_cache');
-        const cachedTotals = localStorage.getItem('totals_cache');
-        if (cachedDb) db = JSON.parse(cachedDb);
-        if (cachedTotals) {
-            const t = JSON.parse(cachedTotals);
-            document.getElementById('sum-cash').innerText = (t.cash || 0).toLocaleString() + ' ₸';
-            document.getElementById('sum-qr').innerText = (t.qr_kaspi || t.qr || 0).toLocaleString() + ' ₸';
-            document.getElementById('sum-red').innerText = (t.installment || 0).toLocaleString() + ' ₸';
-            document.getElementById('sum-card').innerText = (t.pos_terminal || t.card || 0).toLocaleString() + ' ₸';
-            document.getElementById('sum-trans').innerText = (t.transfer || 0).toLocaleString() + ' ₸';
+            try {
+                const cachedDb = localStorage.getItem('db_cache');
+                const cachedTotals = localStorage.getItem('totals_cache');
+                if (cachedDb) db = JSON.parse(cachedDb);
+                if (cachedTotals) {
+                    const t = JSON.parse(cachedTotals);
+                    document.getElementById('sum-cash').innerText = (t.cash || 0).toLocaleString() + ' ₸';
+                    document.getElementById('sum-qr').innerText = (t.qr_kaspi || t.qr || 0).toLocaleString() + ' ₸';
+                    document.getElementById('sum-red').innerText = (t.installment || 0).toLocaleString() + ' ₸';
+                    document.getElementById('sum-card').innerText = (t.pos_terminal || t.card || 0).toLocaleString() + ' ₸';
+                    document.getElementById('sum-trans').innerText = (t.transfer || 0).toLocaleString() + ' ₸';
+                }
+                if (db && db.length > 0) render();
+            } catch (e) { console.warn("Ошибка чтения кэша", e); }
+
+            if (!navigator.onLine) return; 
+
+            try {
+                const res = await fetch(APPS_SCRIPT_URL + "?t=" + Date.now(), { redirect: 'follow' });
+                if (!res.ok) throw new Error("Ошибка сервера: " + res.status);
+
+                const data = await res.json();
+                db = data.items || [];
+                const t = data.totals || {};
+
+                if (data.pin_cashier) localStorage.setItem('pos_pin_cashier', String(data.pin_cashier));
+                if (data.pin_admin) localStorage.setItem('pos_pin_admin', String(data.pin_admin));
+                
+                document.getElementById('sum-cash').innerText = (t.cash || 0).toLocaleString() + ' ₸';
+                document.getElementById('sum-qr').innerText   = (t.qr_kaspi || t.qr || 0).toLocaleString() + ' ₸';
+                document.getElementById('sum-red').innerText  = (t.installment || t.red || 0).toLocaleString() + ' ₸';
+                document.getElementById('sum-card').innerText = (t.pos_terminal || t.pos || t.card || 0).toLocaleString() + ' ₸';
+                document.getElementById('sum-trans').innerText= (t.transfer || 0).toLocaleString() + ' ₸';
+                
+                render();
+
+                localStorage.setItem('db_cache', JSON.stringify(db));
+                localStorage.setItem('totals_cache', JSON.stringify(t));
+                
+            } catch (e) { 
+                document.getElementById('catalog').innerHTML = `
+                    <div style="color:#ff4444; padding:20px; text-align:center; border: 1px solid red; margin: 10px; border-radius: 8px;">
+                        <b>ОШИБКА СЕТИ (PWA):</b><br>${e.message}
+                    </div>
+                `;
+            }
         }
-        if (db && db.length > 0) render();
-    } catch (e) { console.warn("Ошибка чтения кэша", e); }
-
-    if (!navigator.onLine) return; 
-
-    // 2. Запрос свежих данных с сервера
-    try {
-        // ДОБАВЛЕН redirect: 'follow', чтобы PWA не боялся переадресаций Гугла
-        const res = await fetch(APPS_SCRIPT_URL + "?t=" + Date.now(), {
-            redirect: 'follow'
-        });
-        
-        if (!res.ok) throw new Error("Ошибка сервера: " + res.status);
-
-        const data = await res.json();
-        
-        db = data.items || [];
-        // Берем объект с итогами (если его нет, создаем пустой, чтобы скрипт не падал)
-        const t = data.totals || {};
-
-        // СОХРАНЯЕМ ПИН-КОД С СЕРВЕРА
-        if (data.pin) localStorage.setItem('pos_pin', data.pin);
-        
-        // Универсальная выгрузка: скрипт ищет все возможные варианты названий. 
-        // Если ничего не находит — ставит 0, но никогда не выдает ошибку.
-        document.getElementById('sum-cash').innerText = (t.cash || 0).toLocaleString() + ' ₸';
-        document.getElementById('sum-qr').innerText   = (t.qr_kaspi || t.qr || 0).toLocaleString() + ' ₸';
-        document.getElementById('sum-red').innerText  = (t.installment || t.red || 0).toLocaleString() + ' ₸';
-        document.getElementById('sum-card').innerText = (t.pos_terminal || t.pos || t.card || 0).toLocaleString() + ' ₸';
-        document.getElementById('sum-trans').innerText= (t.transfer || 0).toLocaleString() + ' ₸';
-        
-        render();
-
-        localStorage.setItem('db_cache', JSON.stringify(db));
-        localStorage.setItem('totals_cache', JSON.stringify(t));
-        
-    } catch (e) { 
-        // ВМЕСТО ПУСТОТЫ ВЫВОДИМ ОШИБКУ НА ЭКРАН!
-        document.getElementById('catalog').innerHTML = `
-            <div style="color:#ff4444; padding:20px; text-align:center; border: 1px solid red; margin: 10px; border-radius: 8px;">
-                <b>ОШИБКА СЕТИ (PWA):</b><br>${e.message}
-            </div>
-        `;
-    }
-}
 
         function render() {
-    const catalog = document.getElementById('catalog');
-    
-    // Защита: если база пуста или еще не загрузилась
-    if (!db || db.length === 0) {
-        catalog.innerHTML = '<div style="color:#aaa; padding:20px; text-align:center;">Загрузка товаров...</div>';
-        return;
-    }
+            const catalog = document.getElementById('catalog');
+            if (!db || db.length === 0) {
+                catalog.innerHTML = '<div style="color:#aaa; padding:20px; text-align:center;">Загрузка товаров...</div>';
+                return;
+            }
 
-    try {
-        catalog.innerHTML = db.map(i => {
-            // Безопасная проверка фото
-            const hasPhoto = i.img && i.img.toString().length > 10;
-            
-            // Настраиваем цвета: желтая, если фото есть, серая, если нет
-            const badgeBg = hasPhoto ? '#f1c40f' : '#333';
-            const badgeColor = hasPhoto ? '#000' : '#888';
-            
-            // Делаем плашку кликабельной и добавляем stopPropagation, чтобы клик не ушел на строку
-            const photoBadge = `<span onclick="openItemMenu('${i.id}'); event.stopPropagation();" style="background-color: ${badgeBg}; color: ${badgeColor}; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px; margin-right: 8px; vertical-align: middle; cursor: pointer; border: 1px solid #444;">ФОТО</span>`;
-            
-            const price = Number(i.price) || 0;
-            const stock = Number(i.stock) || 0;
+            try {
+                catalog.innerHTML = db.map(i => {
+                    const hasPhoto = i.img && i.img.toString().length > 10;
+                    const badgeBg = hasPhoto ? '#f1c40f' : '#333';
+                    const badgeColor = hasPhoto ? '#000' : '#888';
+                    const photoBadge = `<span onclick="openItemMenu('${i.id}'); event.stopPropagation();" style="background-color: ${badgeBg}; color: ${badgeColor}; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px; margin-right: 8px; vertical-align: middle; cursor: pointer; border: 1px solid #444;">ФОТО</span>`;
+                    const price = Number(i.price) || 0;
+                    const stock = Number(i.stock) || 0;
 
-            // ВОЗВРАЩАЕМ СТАРУЮ ЛОГИКУ: клик по строке вызывает add()
-            return `
-                <div class="c-item" onclick="add('${i.id}')">
-                    <div class="i-name" style="display: flex; align-items: center;">
-                        ${photoBadge}
-                        <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${i.name || 'Без названия'}</span>
-                    </div>
-                    <div class="i-price">${price.toLocaleString()} ₸</div>
-                    <div class="i-stock">${stock}</div>
-                </div>
-            `;
-        }).join('');
-    } catch (e) {
-        console.error("Ошибка отрисовки: ", e);
-        catalog.innerHTML = '<div style="color:red; padding:20px;">Ошибка вывода товаров. Обновите базу.</div>';
-    }
-}
+                    return `
+                        <div class="c-item" onclick="add('${i.id}')">
+                            <div class="i-name" style="display: flex; align-items: center;">
+                                ${photoBadge}
+                                <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${i.name || 'Без названия'}</span>
+                            </div>
+                            <div class="i-price">${price.toLocaleString()} ₸</div>
+                            <div class="i-stock">${stock}</div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (e) {
+                catalog.innerHTML = '<div style="color:red; padding:20px;">Ошибка вывода товаров. Обновите базу.</div>';
+            }
+        }
 
         function filter() {
             let q = document.getElementById('sb').value.toLowerCase();
@@ -432,7 +572,7 @@
             });
         }
 
-function handleSearchInput() {
+        function handleSearchInput() {
             const val = document.getElementById('sb').value;
             document.getElementById('clear-search').style.display = val.length > 0 ? 'flex' : 'none';
             filter(); 
@@ -443,7 +583,7 @@ function handleSearchInput() {
             sb.value = '';
             document.getElementById('clear-search').style.display = 'none';
             filter();
-            sb.focus(); // Возвращаем фокус, чтобы можно было сразу печатать новый запрос
+            sb.focus(); 
         }
 
         function add(id) {
@@ -690,8 +830,8 @@ function handleSearchInput() {
                     localStorage.setItem('db_cache', JSON.stringify(db));
                     localStorage.setItem('totals_cache', JSON.stringify(t));
 
-			        // СОХРАНЯЕМ ПИН-КОД С СЕРВЕРА
-                    if (data.pin) localStorage.setItem('pos_pin', data.pin);
+                    if (data.pin_cashier) localStorage.setItem('pos_pin_cashier', String(data.pin_cashier));
+                    if (data.pin_admin) localStorage.setItem('pos_pin_admin', String(data.pin_admin));
 
                     document.getElementById('sum-cash').innerText = t.cash.toLocaleString() + ' ₸';
                     document.getElementById('sum-qr').innerText = t.qr_kaspi.toLocaleString() + ' ₸';
@@ -708,8 +848,15 @@ function handleSearchInput() {
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.addEventListener('controllerchange', () => {
                 displayAppVersion();
-                if (typeof cart !== 'undefined' && cart.length === 0) window.location.reload(true); 
-                else isUpdatePending = true; 
+                if (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') {
+                    console.log('💻 Локальный тест: авто-перезагрузка заблокирована');
+                    return; 
+                }
+                if (typeof cart !== 'undefined' && cart.length === 0) {
+                    window.location.reload(true); 
+                } else {
+                    isUpdatePending = true; 
+                }
             });
         }
 
@@ -750,189 +897,8 @@ function handleSearchInput() {
             });
         }
 
-        function openReport() {
-            document.getElementById('report-modal').style.display = 'flex';
-            const now = new Date();
-            const today = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
-            const dateInput = document.getElementById('rep-date');
-            
-            dateInput.value = today; // Теперь дата всегда сбрасывается на текущую
-            
-            renderReport();
-        }
-
-        async function renderReport() {
-            const selectedDate = document.getElementById('rep-date').value;
-            const titleEl = document.getElementById('rep-header-title');
-            const repList = document.getElementById('rep-list');
-            const totalsBox = document.getElementById('rep-totals');
-            
-            const now = new Date();
-            const today = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
-            
-            // --- НАЧАЛО ИСПРАВЛЕНИЙ ---
-            // 1. Разбиваем системную дату (ГГГГ-ММ-ДД) на части
-            const dParts = selectedDate.split('-'); 
-            // 2. Собираем её для сервера в правильном формате (ДД.ММ.ГГГГ)
-            const serverDate = `${dParts[2]}.${dParts[1]}.${dParts[0]}`; 
-
-            if (selectedDate === today) {
-                titleEl.innerText = currentLang === 'kz' ? "БҮГІНГІ ЕСЕП" : "ОТЧЕТ ЗА СЕГОДНЯ";
-            } else {
-                titleEl.innerText = (currentLang === 'kz' ? "ЕСЕП: " : "ОТЧЕТ ЗА ") + serverDate;
-            }
-
-            repList.innerHTML = `<div style="text-align:center; color:#f39c12; margin-top:30px; font-size: 12px; font-weight: bold;">⏳ ${currentLang==='kz'?"ЖҮКТЕЛУДЕ...":"СКАЧИВАЮ ДАННЫЕ..."}</div>`;
-            totalsBox.innerHTML = '';
-
-            if (!navigator.onLine) {
-                repList.innerHTML = `<div style="text-align:center; color:#e74c3c; margin-top:30px; font-size: 12px;">${currentLang==='kz'?"ИНТЕРНЕТ ЖОҚ":"НЕТ ИНТЕРНЕТА"}</div>`;
-                return;
-            }
-
-            try {
-                // 3. Отправляем на сервер ПРАВИЛЬНУЮ дату (serverDate)
-                // 4. Добавляем redirect: 'follow', чтобы PWA на iPhone не блокировал запрос
-                const response = await fetch(APPS_SCRIPT_URL + "?action=report&date=" + serverDate + "&t=" + Date.now(), {
-                    redirect: 'follow'
-                });
-                // --- КОНЕЦ ИСПРАВЛЕНИЙ ---
-
-                const data = await response.json();
-                if (data.error) {
-                    repList.innerHTML = `<div style="text-align:center; color:#e74c3c; margin-top:30px; font-size: 11px;"><b>ОШИБКА:</b><br>${data.error}</div>`;
-                    return;
-                }
-                if (!data.report) {
-                    repList.innerHTML = `<div style="text-align:center; color:#f39c12; margin-top:30px; font-size: 11px;"><b>СВЯЗЬ ИДЕТ СО СТАРОЙ ВЕРСИЕЙ СЕРВЕРА</b></div>`;
-                    return;
-                }
-                if (data.report.length === 0) {
-                    repList.innerHTML = `<div style="text-align:center; color:#666; margin-top:30px; font-size: 12px;">${currentLang==='kz'?"ОПЕРАЦИЯЛАР ЖОҚ":"ЗА ЭТУ ДАТУ ОПЕРАЦИЙ НЕТ"}</div>`;
-                    return;
-                }
-
-                const colors = { 'cash': '#27ae60', 'qr_kaspi': '#c0392b', 'installment': '#8e44ad', 'pos_terminal': '#2980b9', 'transfer': '#f39c12' };
-                const names = { 'cash': translations[currentLang].pay_cash, 'qr_kaspi': 'Kaspi QR', 'installment': 'Kaspi Red', 'pos_terminal': translations[currentLang].pay_card, 'transfer': translations[currentLang].pay_trans };
-                let totals = { sale: 0, return: 0 };
-                
-                repList.innerHTML = data.report.map(h => {
-                    let isRet = h.type === 'return';
-                    if (isRet) totals.return += h.total; else totals.sale += h.total;
-                    let itemsHtml = h.cart.map(c => `<div class="hb-item"><span>${c.name} (${c.qty})</span><span>${(c.qty*c.price).toLocaleString()} ₸</span></div>`).join('');
-                    let blockColor = colors[h.methodCode] || '#2ecc71';
-                    let methodName = names[h.methodCode] || h.methodCode;
-                    let typeName = isRet ? (currentLang==='kz'?'ҚАЙТАРУ':'ВОЗВРАТ') : (currentLang==='kz'?'САТУ':'ПРОДАЖА');
-
-                    return `
-                    <div class="hist-block" style="border-left-color: ${blockColor};">
-                        <div class="hb-head" style="color: ${blockColor};">
-                            <span>${h.time} | ${typeName} | ${methodName}</span>
-                            <span>${isRet ? '-' : ''}${h.total.toLocaleString()} ₸</span>
-                        </div>
-                        <div class="hb-items ${isRet ? 'hb-type-r' : ''}">${itemsHtml}</div>
-                    </div>`;
-                }).join('');
-                
-                let textSale = currentLang === 'kz' ? 'САТУ:' : 'ПРОДАЖИ:';
-                let textRet = currentLang === 'kz' ? 'ҚАЙТАРУ:' : 'ВОЗВРАТЫ:';
-                let textIn = currentLang === 'kz' ? 'КАССАДА:' : 'В КАССЕ:';
-
-                totalsBox.innerHTML = `
-                    <div style="display:flex; justify-content:space-between; color:#2ecc71; font-size: 12px; margin-bottom: 4px;"><span>${textSale}</span><span>${totals.sale.toLocaleString()} ₸</span></div>
-                    <div style="display:flex; justify-content:space-between; color:#e74c3c; font-size: 12px; margin-bottom: 4px;"><span>${textRet}</span><span>${totals.return.toLocaleString()} ₸</span></div>
-                    <div style="display:flex; justify-content:space-between; color:#fff; font-weight:bold; font-size: 16px; margin-top:8px; border-top: 1px dashed #555; padding-top: 8px;"><span>${textIn}</span><span>${(totals.sale - totals.return).toLocaleString()} ₸</span></div>
-                `;
-
-            } catch (error) {
-                repList.innerHTML = '<div style="text-align:center; color:#e74c3c; margin-top:30px; font-size: 12px;">ОШИБКА СВЯЗИ С СЕРВЕРОМ</div>';
-            }
-        }
-
-        function closeReport() { document.getElementById('report-modal').style.display = 'none'; }
-
-        // --- БРОНИРОВАННАЯ ЛОГИКА ПИН-КОДА ---
-        let currentPin = '';
-        let targetAction = null; 
-        let isChecking = false; // Блокировка клавиатуры во время проверки
-
-        function openPinModal(actionFunction) {
-            currentPin = '';
-            targetAction = actionFunction;
-            isChecking = false;
-            updatePinDisplay();
-            document.getElementById('pin-modal').style.display = 'flex';
-        }
-
-        function closePinModal() {
-            document.getElementById('pin-modal').style.display = 'none';
-            isChecking = false;
-        }
-
-        function pinPress(digit) {
-            if (isChecking) return; // Игнорируем нажатия, пока идет проверка
-
-            if (currentPin.length < 4) {
-                currentPin += digit;
-                updatePinDisplay();
-            }
-            
-            // Как только ввели 4 цифры
-            if (currentPin.length === 4) {
-                isChecking = true; // Блокируем кнопки
-                setTimeout(checkPin, 150); // Пауза, чтобы появилась 4-я точка
-            }
-        }
-
-        function pinClear() {
-            currentPin = '';
-            isChecking = false;
-            updatePinDisplay();
-        }
-
-        function updatePinDisplay() {
-            const display = document.getElementById('pin-display');
-            if (display) display.innerText = '•'.repeat(currentPin.length);
-        }
-
-        function checkPin() {
-            try {
-                // Достаем пароль из памяти телефона
-                let truePin = localStorage.getItem('pos_pin');
-                if (!truePin) truePin = '0000'; // Страховка, если интернета не было
-                
-                // ЖЕСТКАЯ ОЧИСТКА: убираем случайные пробелы из таблицы Google
-                truePin = String(truePin).trim(); 
-
-                if (currentPin === truePin) {
-                    // Пароль верный
-                    closePinModal();
-                    if (targetAction) targetAction(); 
-                } else {
-                    // Пароль неверный
-                    const display = document.getElementById('pin-display');
-                    if (display) {
-                        display.style.color = '#e74c3c'; // Красим в красный
-                        
-                        setTimeout(() => {
-                            display.style.color = '#f1c40f'; // Возвращаем желтый
-                            pinClear(); // Очищаем и снимаем блокировку
-                        }, 400);
-                    } else {
-                        pinClear();
-                    }
-                }
-            } catch (error) {
-                // Если произошла скрытая ошибка памяти - показываем ее!
-                alert("Ошибка скрипта: " + error.message);
-                pinClear();
-            }
-        }
-
-        load();
-
         let selectedItemId = null;
-        let tempBase64 = null; // Хранилище для черновика фото
+        let tempBase64 = null; 
 
         function openItemMenu(id) {
             selectedItemId = id;
@@ -950,7 +916,6 @@ function handleSearchInput() {
 
             btnAddCart.style.display = 'block';
             btnSaveDb.style.display = 'none';
-            // Подтягиваем перевод
             btnSaveDb.innerHTML = '💾 <span data-i18n="btn_save_db">' + translations[currentLang].btn_save_db + '</span>';
             btnSaveDb.disabled = false;
 
@@ -974,17 +939,14 @@ function handleSearchInput() {
                 btnRetakePhoto.style.display = 'none';
             }
             
-            // Динамический перевод кнопки "Закрыть"
             btnCancel.innerText = translations[currentLang].btn_close;
             document.getElementById('item-menu-modal').style.display = 'flex';
         }
 
         function handleCancelModal() {
             if (tempBase64) {
-                // Если есть черновик фото - просто сбрасываем его и возвращаемся к просмотру
                 openItemMenu(selectedItemId);
             } else {
-                // Иначе закрываем окно
                 closeItemMenu();
             }
         }
@@ -1036,7 +998,6 @@ function handleSearchInput() {
                     document.getElementById('btn-take-photo').style.display = 'none';
                     document.getElementById('btn-retake-photo').style.display = 'block';
                     
-                    // Динамический перевод кнопки "Отмена"
                     document.getElementById('btn-cancel-modal').innerText = translations[currentLang].btn_cancel;
                 };
                 img.src = e.target.result;
@@ -1044,91 +1005,82 @@ function handleSearchInput() {
             reader.readAsDataURL(file);
         }
 
-// --- ЛОГИКА ЗУМА ДЛЯ ФОТОГРАФИЙ (УНИВЕРСАЛЬНАЯ: Touch + Mouse) ---
-let fsScale = 1, fsX = 0, fsY = 0;
-let fsStartX = 0, fsStartY = 0;
-let fsInitDist = 0, fsInitScale = 1;
-let isDragging = false; // Флаг для мышки
+        let fsScale = 1, fsX = 0, fsY = 0;
+        let fsStartX = 0, fsStartY = 0;
+        let fsInitDist = 0, fsInitScale = 1;
+        let isDragging = false; 
 
-function openFullscreen(src) {
-    const img = document.getElementById('fullscreen-img');
-    img.src = src;
-    
-    // Сброс масштаба при открытии
-    fsScale = 1; fsX = 0; fsY = 0;
-    img.style.transform = `translate(0px, 0px) scale(1)`;
-    document.getElementById('fullscreen-photo').style.display = 'flex';
+        function openFullscreen(src) {
+            const img = document.getElementById('fullscreen-img');
+            img.src = src;
+            
+            fsScale = 1; fsX = 0; fsY = 0;
+            img.style.transform = `translate(0px, 0px) scale(1)`;
+            document.getElementById('fullscreen-photo').style.display = 'flex';
 
-    // Вешаем обработчики только один раз
-    if (!img.dataset.gestures) {
-        img.dataset.gestures = "true";
-        
-        // 1. МОБИЛЬНЫЕ ЖЕСТЫ (Пальцы)
-        img.addEventListener('touchstart', (e) => {
-            if (e.touches.length === 2) {
-                fsInitDist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
-                fsInitScale = fsScale;
-            } else if (e.touches.length === 1) {
-                fsStartX = e.touches[0].pageX - fsX;
-                fsStartY = e.touches[0].pageY - fsY;
+            if (!img.dataset.gestures) {
+                img.dataset.gestures = "true";
+                
+                img.addEventListener('touchstart', (e) => {
+                    if (e.touches.length === 2) {
+                        fsInitDist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
+                        fsInitScale = fsScale;
+                    } else if (e.touches.length === 1) {
+                        fsStartX = e.touches[0].pageX - fsX;
+                        fsStartY = e.touches[0].pageY - fsY;
+                    }
+                }, { passive: false });
+
+                img.addEventListener('touchmove', (e) => {
+                    if (e.cancelable) e.preventDefault();
+                    if (e.touches.length === 2) {
+                        const currentDist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
+                        fsScale = Math.min(Math.max(1, fsInitScale * (currentDist / fsInitDist)), 5);
+                        img.style.transform = `translate(${fsX}px, ${fsY}px) scale(${fsScale})`;
+                    } else if (e.touches.length === 1 && fsScale > 1) {
+                        fsX = e.touches[0].pageX - fsStartX;
+                        fsY = e.touches[0].pageY - fsStartY;
+                        img.style.transform = `translate(${fsX}px, ${fsY}px) scale(${fsScale})`;
+                    }
+                }, { passive: false });
+
+                img.addEventListener('wheel', (e) => {
+                    e.preventDefault();
+                    const zoomAmount = e.deltaY > 0 ? 0.9 : 1.1; 
+                    fsScale = Math.min(Math.max(1, fsScale * zoomAmount), 5);
+                    if (fsScale === 1) { fsX = 0; fsY = 0; } 
+                    img.style.transform = `translate(${fsX}px, ${fsY}px) scale(${fsScale})`;
+                }, { passive: false });
+
+                img.addEventListener('mousedown', (e) => {
+                    if (fsScale > 1) {
+                        isDragging = true;
+                        fsStartX = e.pageX - fsX;
+                        fsStartY = e.pageY - fsY;
+                    }
+                });
+                
+                window.addEventListener('mousemove', (e) => {
+                    if (isDragging && fsScale > 1) {
+                        fsX = e.pageX - fsStartX;
+                        fsY = e.pageY - fsStartY;
+                        img.style.transform = `translate(${fsX}px, ${fsY}px) scale(${fsScale})`;
+                    }
+                });
+                
+                window.addEventListener('mouseup', () => { isDragging = false; });
             }
-        }, { passive: false });
+        }
 
-        img.addEventListener('touchmove', (e) => {
-            if (e.cancelable) e.preventDefault();
-            if (e.touches.length === 2) {
-                const currentDist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
-                fsScale = Math.min(Math.max(1, fsInitScale * (currentDist / fsInitDist)), 5);
-                img.style.transform = `translate(${fsX}px, ${fsY}px) scale(${fsScale})`;
-            } else if (e.touches.length === 1 && fsScale > 1) {
-                fsX = e.touches[0].pageX - fsStartX;
-                fsY = e.touches[0].pageY - fsStartY;
-                img.style.transform = `translate(${fsX}px, ${fsY}px) scale(${fsScale})`;
-            }
-        }, { passive: false });
+        function closeFullscreen(e) {
+            if (e && e.target.id === 'fullscreen-img' && fsScale > 1) return; 
+            forceCloseFs();
+        }
 
-        // 2. ПК ЖЕСТЫ (Мышка)
-        // Зум колесиком
-        img.addEventListener('wheel', (e) => {
-            e.preventDefault();
-            const zoomAmount = e.deltaY > 0 ? 0.9 : 1.1; // Крутим вниз = отдаляем, вверх = приближаем
-            fsScale = Math.min(Math.max(1, fsScale * zoomAmount), 5);
-            if (fsScale === 1) { fsX = 0; fsY = 0; } // Центрируем при сбросе
-            img.style.transform = `translate(${fsX}px, ${fsY}px) scale(${fsScale})`;
-        }, { passive: false });
-
-        // Перетаскивание зажатой мышкой
-        img.addEventListener('mousedown', (e) => {
-            if (fsScale > 1) {
-                isDragging = true;
-                fsStartX = e.pageX - fsX;
-                fsStartY = e.pageY - fsY;
-            }
-        });
-        
-        window.addEventListener('mousemove', (e) => {
-            if (isDragging && fsScale > 1) {
-                fsX = e.pageX - fsStartX;
-                fsY = e.pageY - fsStartY;
-                img.style.transform = `translate(${fsX}px, ${fsY}px) scale(${fsScale})`;
-            }
-        });
-        
-        window.addEventListener('mouseup', () => { isDragging = false; });
-    }
-}
-
-// Умное закрытие по клику мимо фото
-function closeFullscreen(e) {
-    if (e && e.target.id === 'fullscreen-img' && fsScale > 1) return; 
-    forceCloseFs();
-}
-
-function forceCloseFs() {
-    document.getElementById('fullscreen-photo').style.display = 'none';
-    fsScale = 1; fsX = 0; fsY = 0; isDragging = false;
-}
-// --- КОНЕЦ ЛОГИКИ ЗУМА ---
+        function forceCloseFs() {
+            document.getElementById('fullscreen-photo').style.display = 'none';
+            fsScale = 1; fsX = 0; fsY = 0; isDragging = false;
+        }
 
         async function confirmUpload() {
             if (!navigator.onLine) {
@@ -1137,7 +1089,6 @@ function forceCloseFs() {
             }
 
             const btnSaveDb = document.getElementById('btn-save-db');
-            // Перевод статуса сохранения
             btnSaveDb.innerText = "⏳ " + translations[currentLang].btn_saving;
             btnSaveDb.disabled = true;
 
@@ -1167,64 +1118,190 @@ function forceCloseFs() {
                 btnSaveDb.disabled = false;
             }
         }
+
+        // ==========================================
+        // ЛОГИКА НОВОГО ОКНА ОТЧЕТОВ И ПИН-КОДА
+        // ==========================================
+        let reportPin = '';
+
+        const todayStr = () => {
+            const now = new Date();
+            return now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+        };
+
+        function formatDateUI(dateString) {
+            return new Date(dateString).toLocaleDateString('ru-RU');
+        }
+
+        function openUnifiedReport() {
+            document.getElementById('unified-report-modal').style.display = 'flex';
+            lockApp(); 
+        }
+
+        function closeUnifiedReport() {
+            document.getElementById('unified-report-modal').style.display = 'none';
+            lockApp();
+        }
+
+        function lockApp() {
+            reportPin = '';
+            document.querySelectorAll('#unified-report-modal .ur-pin-dot').forEach(d => d.classList.remove('filled'));
+            document.getElementById('unified-pin-overlay').classList.remove('hidden');
+            document.getElementById('ur-dateStart').value = todayStr();
+            document.getElementById('ur-dateEnd').value = todayStr();
+            document.getElementById('ur-filtersContainer').style.display = 'none';
+        }
+
+        function handlePinPadClick(e) {
+            if (!e.target.classList.contains('ur-num-btn')) return;
+            const digit = e.target.getAttribute('data-val');
+            
+            const err = document.getElementById('unifiedPinError');
+            if(err) err.classList.remove('show');
+
+            if (digit === 'clear') reportPin = '';
+            else if (digit === 'del') reportPin = reportPin.slice(0, -1);
+            else if (reportPin.length < 4) reportPin += digit;
+
+            document.querySelectorAll('#unified-report-modal .ur-pin-dot').forEach((dot, index) => {
+                dot.classList.toggle('filled', index < reportPin.length);
+            });
+
+            if (reportPin.length === 4) setTimeout(checkRepPin, 100);
+        }
+
+        function checkRepPin() {
+            const cashierPin = localStorage.getItem('pos_pin_cashier') ? String(localStorage.getItem('pos_pin_cashier')).trim() : '1111';
+            const adminPin = localStorage.getItem('pos_pin_admin') ? String(localStorage.getItem('pos_pin_admin')).trim() : '9999';
+            
+            if (reportPin === cashierPin) {
+                // КАССИР
+                document.getElementById('ur-filtersContainer').style.display = 'none';
+                document.getElementById('ur-mainTitle').innerText = (currentLang === 'kz' ? 'ЕСЕП: ' : 'ОТЧЕТ ЗА ') + formatDateUI(todayStr());
+                document.getElementById('unified-pin-overlay').classList.add('hidden');
+                document.getElementById('ur-viewPeriod').classList.remove('active');
+                document.getElementById('ur-viewShift').classList.add('active');
+                fetchShiftReport(todayStr());
+            } 
+            else if (reportPin === adminPin) {
+                // АДМИН
+                document.getElementById('ur-filtersContainer').style.display = 'block';
+                document.getElementById('unified-pin-overlay').classList.add('hidden');
+                routeAdminView();
+            } 
+            else {
+                // ОШИБКА
+                document.getElementById('unifiedPinError').classList.add('show');
+                reportPin = '';
+                document.querySelectorAll('#unified-report-modal .ur-pin-dot').forEach(d => d.classList.remove('filled'));
+            }
+        }
+
+        function routeAdminView() {
+            const dStart = document.getElementById('ur-dateStart').value;
+            const dEnd = document.getElementById('ur-dateEnd').value;
+            
+            if (dStart === dEnd) {
+                document.getElementById('ur-mainTitle').innerText = (currentLang === 'kz' ? 'ЕСЕП: ' : 'ОТЧЕТ ЗА ') + formatDateUI(dStart);
+                document.getElementById('ur-searchWrapper').style.display = 'none'; 
+                document.getElementById('ur-viewPeriod').classList.remove('active');
+                document.getElementById('ur-viewShift').classList.add('active');
+                fetchShiftReport(dStart);
+            } else {
+                document.getElementById('ur-mainTitle').innerText = currentLang === 'kz' ? 'ТАУАРЛАР ҚОЗҒАЛЫСЫ' : 'ДВИЖЕНИЕ ТОВАРОВ ЗА ПЕРИОД';
+                document.getElementById('ur-searchWrapper').style.display = 'block'; 
+                document.getElementById('ur-viewShift').classList.remove('active');
+                document.getElementById('ur-viewPeriod').classList.add('active');
+            }
+        }
+
+        document.getElementById('ur-dateStart').addEventListener('change', routeAdminView);
+        document.getElementById('ur-dateEnd').addEventListener('change', routeAdminView);
+
+        async function fetchShiftReport(dateStr) {
+            const shiftBody = document.getElementById('ur-shift-body-content');
+            const shiftFooter = document.getElementById('ur-shift-footer-content');
+            
+            const dParts = dateStr.split('-'); 
+            const serverDate = `${dParts[2]}.${dParts[1]}.${dParts[0]}`; 
+
+            shiftBody.innerHTML = `<div style="text-align:center; color:#f39c12; margin-top:30px; font-size: 12px; font-weight: bold;">⏳ ${currentLang==='kz'?"ЖҮКТЕЛУДЕ...":"СКАЧИВАЮ ДАННЫЕ..."}</div>`;
+            shiftFooter.innerHTML = '';
+
+            if (!navigator.onLine) {
+                shiftBody.innerHTML = `<div style="text-align:center; color:#e74c3c; margin-top:30px; font-size: 12px;">${currentLang==='kz'?"ИНТЕРНЕТ ЖОҚ":"НЕТ ИНТЕРНЕТА"}</div>`;
+                return;
+            }
+
+            try {
+                const response = await fetch(APPS_SCRIPT_URL + "?action=report&date=" + serverDate + "&t=" + Date.now(), { redirect: 'follow' });
+                const data = await response.json();
+                
+                if (data.error || !data.report || data.report.length === 0) {
+                    shiftBody.innerHTML = `<div style="text-align:center; color:#666; margin-top:30px; font-size: 12px;">${data.error || (currentLang==='kz'?"ОПЕРАЦИЯЛАР ЖОҚ":"ЗА ЭТУ ДАТУ ОПЕРАЦИЙ НЕТ")}</div>`;
+                    return;
+                }
+
+                const names = { 'cash': translations[currentLang].pay_cash, 'qr_kaspi': 'Kaspi QR', 'installment': 'Kaspi Red', 'pos_terminal': translations[currentLang].pay_card, 'transfer': translations[currentLang].pay_trans };
+                let totals = { sale: 0, return: 0 };
+                
+                shiftBody.innerHTML = data.report.map(h => {
+                    let isRet = h.type === 'return';
+                    if (isRet) totals.return += h.total; else totals.sale += h.total;
+                    let methodName = names[h.methodCode] || h.methodCode;
+                    let typeName = isRet ? (currentLang==='kz'?'ҚАЙТАРУ':'ВОЗВРАТ') : (currentLang==='kz'?'САТУ':'ПРОДАЖА');
+
+                    let itemsHtml = h.cart.map(c => `
+                        <div class="ur-check-item" ${isRet ? 'style="text-decoration: line-through;"' : ''}>
+                            <span>${c.name} (${c.qty})</span>
+                            <span>${(c.qty * c.price).toLocaleString()} ₸</span>
+                        </div>
+                    `).join('');
+
+                    return `
+                        <div class="ur-check-card ${isRet ? 'ur-check-return' : 'ur-check-sale'}">
+                            <div class="ur-check-header">
+                                <span>${h.time} | ${typeName} | ${methodName}</span>
+                                <span>${isRet ? '-' : ''}${h.total.toLocaleString()} ₸</span>
+                            </div>
+                            ${itemsHtml}
+                        </div>
+                    `;
+                }).join('');
+                
+                let textSale = currentLang === 'kz' ? 'САТУ:' : 'ПРОДАЖИ:';
+                let textRet = currentLang === 'kz' ? 'ҚАЙТАРУ:' : 'ВОЗВРАТЫ:';
+                let textIn = currentLang === 'kz' ? 'КАССАДА:' : 'В КАССЕ:';
+
+                shiftFooter.innerHTML = `
+                    <div class="ur-shift-footer-row ur-text-green"><span>${textSale}</span><span>${totals.sale.toLocaleString()} ₸</span></div>
+                    <div class="ur-shift-footer-row ur-text-red"><span>${textRet}</span><span>${totals.return.toLocaleString()} ₸</span></div>
+                    <div class="ur-shift-total"><span>${textIn}</span><span>${(totals.sale - totals.return).toLocaleString()} ₸</span></div>
+                `;
+
+            } catch (error) {
+                shiftBody.innerHTML = '<div style="text-align:center; color:#e74c3c; margin-top:30px; font-size: 12px;">ОШИБКА СВЯЗИ С СЕРВЕРОМ</div>';
+            }
+        }
+
+        // Поиск для Периода (Макет)
+        document.getElementById('ur-searchInput').addEventListener('input', function() {
+            let filter = this.value.toLowerCase();
+            const clearBtn = document.getElementById('ur-clearSearchBtn');
+            clearBtn.style.display = filter.length > 0 ? 'block' : 'none';
+            document.querySelectorAll('#ur-itemsList .ur-item-wrapper').forEach(item => {
+                let text = item.querySelector('.ur-item-name').innerText.toLowerCase();
+                item.style.display = text.includes(filter) ? '' : 'none';
+            });
+        });
+
+        document.getElementById('ur-clearSearchBtn').addEventListener('click', function() {
+            const searchInput = document.getElementById('ur-searchInput');
+            searchInput.value = '';
+            this.style.display = 'none';
+            searchInput.dispatchEvent(new Event('input'));
+        });
+
     </script>
-
-    <!-- Скрытые инпуты для камеры/галереи и холст для сжатия -->
-    <input type="file" id="camera-input" accept="image/*" capture="environment" style="display: none;" onchange="handlePhoto(event)">
-    <input type="file" id="gallery-input" accept="image/*" style="display: none;" onchange="handlePhoto(event)">
-    <canvas id="resize-canvas" style="display: none;"></canvas>
-
-    <!-- Меню выбора действия для товара -->
-    <div id="item-menu-modal" class="modal-overlay" onclick="handleCancelModal()">
-        <div class="settings-box" onclick="event.stopPropagation()">
-            <div id="menu-item-name" class="r-title" style="font-size: 14px; margin-bottom: 20px;">Название товара</div>
-
-            <div id="photo-preview" style="text-align: center; margin: 10px 0; min-height: 20px;"></div>
-            
-            <button id="btn-add-cart" onclick="confirmAddFromMenu()" style="background: #1a3a20; color: #2ecc71; border-color: #2ecc71; margin-bottom: 12px; width: 100%; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 14px; text-transform: uppercase; border: 1px solid; cursor: pointer;">
-                🛒 <span data-i18n="btn_add_cart">В КОРЗИНУ</span>
-            </button>
-            
-            <button id="btn-save-db" onclick="confirmUpload()" style="display: none; background: #0f2c40; color: #3498db; border-color: #3498db; margin-bottom: 12px; width: 100%; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 14px; text-transform: uppercase; border: 1px solid; cursor: pointer;">
-                💾 <span data-i18n="btn_save_db">СОХРАНИТЬ В БАЗУ</span>
-            </button>
-
-            <!-- Блок кнопок добавления фото -->
-            <div id="btn-take-photo" style="margin-bottom: 12px; width: 100%;">
-                <div style="display: flex; gap: 10px;">
-                    <button onclick="triggerCamera()" style="flex: 1; background: #222; color: #eee; border-color: #555; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 13px; text-transform: uppercase; border: 1px solid; cursor: pointer;">
-                        📸 <span data-i18n="btn_camera">КАМЕРА</span>
-                    </button>
-                    <button onclick="triggerGallery()" style="flex: 1; background: #222; color: #eee; border-color: #555; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 13px; text-transform: uppercase; border: 1px solid; cursor: pointer;">
-                        📂 <span data-i18n="btn_gallery">ГАЛЕРЕЯ</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Блок кнопок замены фото (Переснять) -->
-            <div id="btn-retake-photo" style="display: none; margin-bottom: 12px; width: 100%;">
-                <div style="display: flex; gap: 10px;">
-                    <button onclick="triggerCamera()" style="flex: 1; background: #222; color: #eee; border-color: #555; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 13px; text-transform: uppercase; border: 1px solid; cursor: pointer;">
-                        🔄 <span data-i18n="btn_camera">КАМЕРА</span>
-                    </button>
-                    <button onclick="triggerGallery()" style="flex: 1; background: #222; color: #eee; border-color: #555; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 13px; text-transform: uppercase; border: 1px solid; cursor: pointer;">
-                        🔄 <span data-i18n="btn_gallery">ГАЛЕРЕЯ</span>
-                    </button>
-                </div>
-            </div>
-
-            <button id="btn-cancel-modal" class="cancel-btn" style="width: 100%; margin-top: 10px; background: #3a1a1a; color: #e74c3c; border-color: #e74c3c; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 14px; text-transform: uppercase; border: 1px solid; cursor: pointer;" onclick="handleCancelModal()">
-                ЗАКРЫТЬ
-            </button>
-        </div>
-    </div>
-
-<!-- Окно полноэкранного просмотра фото с поддержкой зума -->
-<div id="fullscreen-photo" class="modal-overlay" style="z-index: 2000; flex-direction: column;" onclick="closeFullscreen(event)">
-    <div style="position: absolute; top: 15px; right: 20px; background: rgba(0,0,0,0.6); color: #fff; width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 20px; font-weight: bold; cursor: pointer; z-index: 2001;" onclick="forceCloseFs()">✕</div>
-    <img id="fullscreen-img" style="max-width: 95%; max-height: 95%; object-fit: contain; border-radius: 8px; touch-action: none;">
-</div>
-
-
 </body>
 </html>
