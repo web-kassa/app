@@ -798,17 +798,17 @@
                         });
                     });
 
-                    // Сортируем товары по сумме выручки (от большего к меньшему)
+                    // Сортируем товары по сумме выручки
                     let salesItems = Object.values(aggregated).filter(i => !i.isRet).sort((a,b) => b.sum - a.sum);
                     let retItems = Object.values(aggregated).filter(i => i.isRet).sort((a,b) => b.sum - a.sum);
 
-                    // Формируем красивый HTML список
-                    let salesHtml = salesItems.map(i => `<div class="hb-item" style="padding: 4px 0; border-bottom: 1px dotted #222;"><span>${i.name} <b style="color:#888; font-size:10px;">x${i.qty}</b></span><span style="color:#fff; font-weight:bold;">${i.sum.toLocaleString()} ₸</span></div>`).join('');
-                    let retHtml = retItems.map(i => `<div class="hb-item hb-type-r" style="padding: 4px 0; border-bottom: 1px dotted #222;"><span>${i.name} <b style="color:#888; font-size:10px;">x${i.qty}</b></span><span style="color:#fff; font-weight:bold;">${i.sum.toLocaleString()} ₸</span></div>`).join('');
+                    // 100% совпадение с вашим макетом (без лишних точек и серых x)
+                    let salesHtml = salesItems.map(i => `<div class="hb-item" style="margin-bottom: 8px;"><span>${i.name} (${i.qty} шт)</span><span>${i.sum.toLocaleString()} ₸</span></div>`).join('');
+                    let retHtml = retItems.map(i => `<div class="hb-item" style="margin-bottom: 8px;"><span>${i.name} (${i.qty} шт)</span><span>${i.sum.toLocaleString()} ₸</span></div>`).join('');
 
                     repList.innerHTML = `
-                        ${salesHtml ? `<div class="hist-block" style="border-left-color: #2ecc71; padding-bottom: 5px;"><div class="hb-head" style="color: #2ecc71; border-bottom: 1px dashed #333; margin-bottom: 8px;"><span>ПРОДАНО ТОВАРОВ</span></div>${salesHtml}</div>` : ''}
-                        ${retHtml ? `<div class="hist-block" style="border-left-color: #e74c3c; padding-bottom: 5px;"><div class="hb-head" style="color: #e74c3c; border-bottom: 1px dashed #333; margin-bottom: 8px;"><span>ВОЗВРАЩЕНО ТОВАРОВ</span></div>${retHtml}</div>` : ''}
+                        ${salesHtml ? `<div class="hist-block" style="border-left-color: #2ecc71; padding: 15px 12px;"><div style="color: #2ecc71; font-size: 11px; font-weight: bold; text-transform: uppercase; margin-bottom: 16px;">ПРОДАНО ТОВАРОВ</div>${salesHtml}</div>` : ''}
+                        ${retHtml ? `<div class="hist-block" style="border-left-color: #e74c3c; padding: 15px 12px; margin-top: 10px;"><div style="color: #e74c3c; font-size: 11px; font-weight: bold; text-transform: uppercase; margin-bottom: 16px;">ВОЗВРАЩЕНО ТОВАРОВ</div>${retHtml}</div>` : ''}
                     `;
                 } else {
                     // --- РЕЖИМ ОДНОГО ДНЯ (Детальные чеки) ---
