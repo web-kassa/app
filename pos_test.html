@@ -4,21 +4,15 @@
     <link rel="manifest" href="manifest.json">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>POS Noir v5.4.0 (Staff Edition)</title>
+    <title>POS Noir v5.4.1 (Staff Edition)</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Courier New", Courier, monospace; }
-        
-        body { 
-            background: #0a0a0a; color: #fff; 
-            height: 100dvh; 
-            display: flex; flex-direction: column; overflow: hidden; transition: background-color 0.3s; 
-        }
-        
+        body { background: #0a0a0a; color: #fff; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; transition: background-color 0.3s; }
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
 
-        /* --- ЭКРАН ВХОДА (LOGIN SCREEN) --- */
+        /* --- ЭКРАН ВХОДА --- */
         #login-screen {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background-color: #050505; z-index: 9999;
@@ -32,34 +26,23 @@
         }
         #login-error { color: #e74c3c; font-size: 12px; visibility: hidden; font-weight: bold; }
 
-        /* --- ШАПКА И НАВИГАЦИЯ --- */
+        /* --- ШАПКА --- */
         .header-area { flex-shrink: 0; border-bottom: 1px solid #222; }
         .modes { display: flex; padding: 4px; gap: 4px; }
-        .m-btn { 
-            flex: 1; height: 35px; line-height: 1; padding: 0; border: 1px solid #333; 
-            background: #111; color: #444; font-weight: 900; border-radius: 4px; 
-            font-size: 13px; text-transform: uppercase; transition: 0.2s; 
-        }
+        .m-btn { flex: 1; height: 35px; line-height: 1; padding: 0; border: 1px solid #333; background: #111; color: #444; font-weight: 900; border-radius: 4px; font-size: 13px; text-transform: uppercase; transition: 0.2s; }
         .m-btn.active-s { background: #1a3a20; color: #2ecc71; border-color: #2ecc71; }
         .m-btn.active-r { background: #3a1a1a; color: #e74c3c; border-color: #e74c3c; }
 
-        /* КРЕСТ ВЫХОДА */
-        .btn-exit-top { 
-            flex: 0.25; background: #2c0b0b; color: #e74c3c; border: 1px solid #e74c3c; 
-            border-radius: 4px; font-size: 20px; font-weight: bold; cursor: pointer; 
-            display: flex; align-items: center; justify-content: center;
-        }
+        .btn-exit-top { flex: 0.25; background: #2c0b0b; color: #e74c3c; border: 1px solid #e74c3c; border-radius: 4px; font-size: 20px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
         .search-area { padding: 0 4px 4px; }
         .s-input { width: 100%; background: #141414; color: #fff; border: 1px solid #333; border-radius: 4px; padding: 10px; font-size: 14px; outline: none; }
 
         .list-header { display: flex; align-items: center; gap: 8px; padding: 4px 14px; font-size: 10px; color: #666; font-weight: bold; border-bottom: 1px solid #222; }
-        @media (pointer: fine) { .list-header { padding-right: 20px; } }
-
         .badge { font-size: 9px; color: #888; background: #1a1a1a; padding: 2px 6px; border-radius: 6px; border: 1px solid #333; text-transform: lowercase; }
         .cashier-badge { color: #2ecc71; border-color: #1a3a20; text-transform: uppercase; font-weight: 900; margin-left: 10px; }
 
-        /* --- КАССА И КОРЗИНА --- */
+        /* --- КАССА --- */
         #catalog { flex-grow: 1; min-height: 0; overflow-y: auto; padding: 4px; border-bottom: 1px solid #222; }
         .c-item { background: #141414; border: 1px solid #222; border-radius: 4px; padding: 8px 10px; margin-bottom: 3px; display: flex; align-items: center; gap: 8px; }
         .i-name { flex-grow: 1; font-size: 12px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -88,12 +71,7 @@
         .pay-title { font-weight: bold; font-size: 8px; text-transform: uppercase; margin-bottom: 2px; }
         .pay-sum { font-size: 9px; font-weight: 900; opacity: 0.9; white-space: nowrap; }
         
-        .p-cash { background: #27ae60; }
-        .p-qr { background: #c0392b; }
-        .p-red { background: #8e44ad; } 
-        .p-card { background: #2980b9; }
-        .p-trans { background: #f39c12; color: #000 !important; }
-        .p-trans .pay-sum { color: #000; }
+        .p-cash { background: #27ae60; } .p-qr { background: #c0392b; } .p-red { background: #8e44ad; } .p-card { background: #2980b9; } .p-trans { background: #f39c12; color: #000 !important; } .p-trans .pay-sum { color: #000; }
 
         /* --- МОДАЛЬНЫЕ ОКНА --- */
         .modal-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.95); z-index: 100; display: none; flex-direction: column; justify-content: center; align-items: center; padding: 20px; }
@@ -116,7 +94,6 @@
         .s-group { margin-bottom: 15px; border-bottom: 1px solid #222; padding-bottom: 15px; }
         .s-title { font-size: 11px; color: #888; margin-bottom: 10px; text-transform: uppercase; font-weight: bold; }
         .s-btn { width: 100%; padding: 12px; background: #222; color: #eee; border: 1px solid #444; border-radius: 4px; margin-bottom: 5px; cursor: pointer; text-align: left; display: flex; justify-content: space-between; font-size: 13px; align-items: center;}
-        .s-btn:active { background: #333; }
         .lang-row { display: flex; gap: 5px; }
         .lang-btn { flex: 1; padding: 12px; background: #222; color: #888; border: 1px solid #444; border-radius: 4px; cursor: pointer; text-align: center; font-weight: bold; transition: 0.2s;}
         .lang-btn.active { background: #1a3a20; color: #2ecc71; border-color: #2ecc71; }
@@ -128,12 +105,9 @@
         
         .item-wrapper { margin-bottom: 4px; }
         .item-card { display: grid; grid-template-columns: 1fr 40px 85px; gap: 8px; padding: 6px 8px; border: 1px solid #333; border-radius: 5px; background: #2d2d30; cursor: pointer; transition: background 0.2s; align-items: center; }
-        .item-card:hover { background: #38383b; }
-        .dropdown-icon { display: inline-block; font-size: 8px; color: #555; transition: transform 0.2s; }
         .item-wrapper.active .dropdown-icon { transform: rotate(180deg); color: #4ade80; }
-        .item-wrapper.active .item-card { border-bottom-left-radius: 0; border-bottom-right-radius: 0; border-color: #444; }
-        .item-details { background: #252526; border: 1px solid #333; border-top: none; border-bottom-left-radius: 5px; border-bottom-right-radius: 5px; max-height: 0; overflow: hidden; transition: max-height 0.2s ease-out; }
         .item-wrapper.active .item-details { max-height: 120px; }
+        .item-details { background: #252526; border: 1px solid #333; border-top: none; border-bottom-left-radius: 5px; border-bottom-right-radius: 5px; max-height: 0; overflow: hidden; transition: max-height 0.2s ease-out; }
     
         .rep-search-container { position: relative; width: 100%; }
         #rep-clear-search { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #666; font-size: 16px; cursor: pointer; display: none; padding: 5px; }
@@ -161,23 +135,14 @@
                 <span id="clear-search" onclick="clearSearch()" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #888; font-size: 16px; cursor: pointer; display: none; padding: 5px; height: 100%; align-items: center; justify-content: center;">✕</span>
             </div>
             
-            <button onclick="openReport()" style="padding: 0 15px; background: #111; color: #f1c40f; border: 1px solid #333; border-radius: 4px; font-size: 16px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
-                📊
-            </button>
-            
-            <button id="btn-install" style="display: none; padding: 0 15px; background: #1a3a20; color: #2ecc71; border: 1px solid #2ecc71; border-radius: 4px; cursor: pointer; white-space: nowrap; font-family: inherit;">
-                💾 На ПК
-            </button>
-            
-            <button id="btn-settings" onclick="openSettings()" style="padding: 0 15px; background: #222; color: #eee; border: 1px solid #555; border-radius: 4px; cursor: pointer; white-space: nowrap; font-family: inherit; display: flex; align-items: center; justify-content: center;">
-                ⚙️ <span id="queue-counter" class="queue-badge">0</span>
-            </button>
+            <button onclick="openReport()" style="padding: 0 15px; background: #111; color: #f1c40f; border: 1px solid #333; border-radius: 4px; font-size: 16px; cursor: pointer;">📊</button>
+            <button id="btn-settings" onclick="openSettings()" style="padding: 0 15px; background: #222; color: #eee; border: 1px solid #555; border-radius: 4px; cursor: pointer;">⚙️ <span id="queue-counter" class="queue-badge">0</span></button>
         </div>
         
         <div class="list-header">
             <div style="flex-grow: 1; display: flex; align-items: center; gap: 10px;">
                 <span data-i18n="header_name">НАИМЕНОВАНИЕ</span>
-                <span id="app-version" class="badge">v: 5.4.0</span>
+                <span id="app-version" class="badge">v: 5.4.1</span>
                 <span id="cashier-info" class="cashier-badge" style="display: none;">👤 ---</span>
             </div>
             <div style="width: 85px; text-align: right;" data-i18n="header_price">ЦЕНА</div>
@@ -190,10 +155,7 @@
     <div id="cs" class="cart-sec">
         <div id="cart-list"></div>
         <div class="footer">
-            <div class="total-box">
-                <span id="tl" data-i18n="total_label_sale">ИТОГО:</span>
-                <span id="ta">0 ₸</span>
-            </div>
+            <div class="total-box"><span id="tl" data-i18n="total_label_sale">ИТОГО:</span><span id="ta">0 ₸</span></div>
             <div class="btns">
                 <button class="pay p-cash" onclick="initPay('cash', 'Наличные')"><span class="pay-title" data-i18n="pay_cash">Нал</span><span class="pay-sum" id="sum-cash">0 ₸</span></button>
                 <button class="pay p-qr" onclick="initPay('qr_kaspi', 'Kaspi QR')"><span class="pay-title" data-i18n="pay_qr">QR</span><span class="pay-sum" id="sum-qr">0 ₸</span></button>
@@ -210,7 +172,6 @@
             <div id="r-method" class="r-method">Метод оплаты</div>
             <div id="r-items-list"></div>
             <div id="r-total" class="r-total">ИТОГО: 0 ₸</div>
-            
             <div class="modal-btns">
                 <button class="cancel-btn" onclick="cancelTx()" data-i18n="btn_cancel">ОТМЕНА</button>
                 <button id="btn-confirm" class="confirm-btn" onclick="confirmTx()" data-i18n="btn_confirm">ПОДТВЕРДИТЬ</button>
@@ -222,7 +183,6 @@
         <div class="receipt-box" style="max-height: 85vh; display: flex; flex-direction: column; width: 100%; max-width: 400px; padding: 15px; border-color: #555;">
             <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 10px;">
                 <div id="rep-header-title" style="font-size: 14px; font-weight: bold; color: #fff; text-align: center;">ОТЧЕТ</div>
-                
                 <div id="date-range-controls" style="display: none; flex-direction: column; gap: 10px; width: 100%; margin-top: 10px;">
                     <div style="display: flex; align-items: center; justify-content: center; gap: 5px;">
                         <input type="date" id="rep-date-start" style="background: #222; color: #fff; border: 1px solid #444; padding: 5px; border-radius: 4px; color-scheme: dark; font-size: 11px; width: 115px;" onchange="renderReport()">
@@ -248,7 +208,6 @@
     <div id="settings-modal" class="modal-overlay">
         <div class="settings-box">
             <div class="r-title" style="margin-bottom: 20px;" data-i18n="settings_title">НАСТРОЙКИ</div>
-            
             <div class="s-group">
                 <div class="s-title" data-i18n="settings_lang">Язык интерфейса</div>
                 <div class="lang-row">
@@ -256,23 +215,18 @@
                     <button id="lang-kz" class="lang-btn" onclick="applyLanguage('kz')">KZ</button>
                 </div>
             </div>
-
             <div class="s-group">
                 <div class="s-title" data-i18n="settings_sync">Синхронизация</div>
                 <button class="s-btn" onclick="manualSync()">
-                    <span data-i18n="btn_sync">Отправить чеки</span>
-                    <span id="sync-status">📡</span>
+                    <span data-i18n="btn_sync">Отправить чеки</span><span id="sync-status">📡</span>
                 </button>
             </div>
-
             <div class="s-group" style="border: none;">
                 <div class="s-title" data-i18n="settings_system">Система</div>
                 <button class="s-btn" onclick="forceAppUpdate()">
-                    <span data-i18n="btn_update">Обновить кэш</span>
-                    <span id="update-status">🔄</span>
+                    <span data-i18n="btn_update">Обновить кэш</span><span id="update-status">🔄</span>
                 </button>
             </div>
-
             <button class="cancel-btn" style="width: 100%; margin-top: 10px;" onclick="closeSettings()" data-i18n="btn_close">ЗАКРЫТЬ</button>
         </div>
     </div>
@@ -285,7 +239,6 @@
             <button id="btn-add-cart" onclick="confirmAddFromMenu()" style="background: #1a3a20; color: #2ecc71; border-color: #2ecc71; margin-bottom: 12px; width: 100%; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 14px; text-transform: uppercase; border: 1px solid; cursor: pointer;">
                 🛒 <span data-i18n="btn_add_cart">В КОРЗИНУ</span>
             </button>
-            
             <button id="btn-save-db" onclick="confirmUpload()" style="display: none; background: #0f2c40; color: #3498db; border-color: #3498db; margin-bottom: 12px; width: 100%; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 14px; text-transform: uppercase; border: 1px solid; cursor: pointer;">
                 💾 <span data-i18n="btn_save_db">СОХРАНИТЬ В БАЗУ</span>
             </button>
@@ -312,9 +265,7 @@
                 </div>
             </div>
 
-            <button id="btn-cancel-modal" class="cancel-btn" style="width: 100%; margin-top: 10px; background: #3a1a1a; color: #e74c3c; border-color: #e74c3c; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 14px; text-transform: uppercase; border: 1px solid; cursor: pointer;" onclick="handleCancelModal()">
-                ЗАКРЫТЬ
-            </button>
+            <button id="btn-cancel-modal" class="cancel-btn" style="width: 100%; margin-top: 10px; background: #3a1a1a; color: #e74c3c; border-color: #e74c3c; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 14px; text-transform: uppercase; border: 1px solid; cursor: pointer;" onclick="handleCancelModal()">ЗАКРЫТЬ</button>
         </div>
     </div>
 
@@ -327,7 +278,7 @@
     <input type="file" id="gallery-input" accept="image/*" style="display: none;" onchange="handlePhoto(event)">
     <canvas id="resize-canvas" style="display: none;"></canvas>
 
-    <script src="config.js?v=5.4.0"></script>
+    <script src="config.js?v=5.4.1"></script>
     <script>
         const translations = {
             ru: {
@@ -339,7 +290,7 @@
                 btn_close_report: "ЗАКРЫТЬ ОТЧЕТ", settings_title: "НАСТРОЙКИ",
                 settings_lang: "ЯЗЫК ИНТЕРФЕЙСА", settings_sync: "СИНХРОНИЗАЦИЯ", settings_system: "СИСТЕМА",
                 btn_sync: "Отправить чеки", btn_update: "Обновить кэш",
-                msg_sync_empty: "Все чеки уже отправлены!", msg_sync_success: "Синхронизация успешна!", msg_sync_error: "Ошибка сети. Проверьте интернет.",
+                msg_sync_empty: "Все чеки уже отправлены!", msg_sync_success: "Синхронизация успешна!", msg_sync_error: "Ошибка сети.",
                 txt_sale_confirm: "ПОДТВЕРДИТЬ ПРОДАЖУ", txt_return_confirm: "ПОДТВЕРДИТЬ ВОЗВРАТ",
                 txt_payment: "Оплата: ", txt_total: "ИТОГО: ",
                 btn_add_cart: "В КОРЗИНУ", btn_save_db: "СОХРАНИТЬ В БАЗУ", 
@@ -357,27 +308,24 @@
                 pay_cash: "Қолма", pay_qr: "QR", pay_red: "Red", pay_card: "Карта", pay_trans: "Аудр",
                 btn_cancel: "БАС ТАРТУ", btn_confirm: "РАСТАУ", btn_close: "ЖАБУ",
                 btn_close_report: "ЕСЕПТІ ЖАБУ", settings_title: "ПАРАМЕТРЛЕР",
-                settings_lang: "ИНТЕРФЕЙС ТІЛІ", settings_sync: "СЕРВЕРМЕН СИНХРОНДАУ", settings_system: "ЖҮЙЕ",
+                settings_lang: "ИНТЕРФЕЙС ТІЛІ", settings_sync: "СИНХРОНДАУ", settings_system: "ЖҮЙЕ",
                 btn_sync: "Чектерді жіберу", btn_update: "Кэшті жаңарту",
-                msg_sync_empty: "Жіберетін чектер жоқ!", msg_sync_success: "Синхрондау сәтті аяқталды!", msg_sync_error: "Желі қатесі. Интернетті тексеріңіз.",
+                msg_sync_empty: "Чектер жоқ!", msg_sync_success: "Сәтті аяқталды!", msg_sync_error: "Желі қатесі.",
                 txt_sale_confirm: "САТУДЫ РАСТАУ", txt_return_confirm: "ҚАЙТАРУДЫ РАСТАУ",
                 txt_payment: "Төлем: ", txt_total: "БАРЛЫҒЫ: ",
                 btn_add_cart: "СЕБЕТКЕ САЛУ", btn_save_db: "БАЗАҒА САҚТАУ", 
                 btn_camera: "КАМЕРА", btn_gallery: "ГАЛЕРЕЯ",
                 btn_saving: "САҚТАЛУДА...", btn_saved: "САҚТАЛДЫ!",
                 report_name: "АТАУЫ", report_qty: "САНЫ", report_sum: "СОМАСЫ",
-                report_sales: "Сатылымдар", report_returns: "Қайтарымдар", report_total_net: "Барлығы (таза):",
+                report_sales: "Сатылымдар", report_returns: "Қайтарымдар", report_total_net: "Таза табыс:",
                 report_in_register: "КАССАДА:", msg_loading: "ЖҮКТЕЛУДЕ...", msg_no_internet: "ИНТЕРНЕТ ЖОҚ", 
-                msg_no_data: "ОПЕРАЦИЯЛАР ТАБЫЛМАДЫ", msg_server_error: "СЕРВЕР ҚАТЕСІ"
+                msg_no_data: "ОПЕРАЦИЯЛАР ЖОҚ", msg_server_error: "СЕРВЕР ҚАТЕСІ"
             }
         };
 
         let currentLang = localStorage.getItem('pos_lang') || 'ru';
         let db = [], cart = [], mode = 'sale', pendingMethod = null;
-        
-        // --- ПЕРЕМЕННЫЕ ДЛЯ ПЕРСОНАЛА ---
-        let staffList = []; 
-        let currentUser = null;
+        let staffList = [], currentUser = null;
 
         function applyLanguage(lang) {
             currentLang = lang;
@@ -400,34 +348,24 @@
             document.getElementById('ms').classList.toggle('active-s', m==='sale');
             document.getElementById('mr').classList.toggle('active-r', m==='return');
             document.getElementById('cs').classList.toggle('r-theme', m==='return');
-            
-            const txtSale = translations[currentLang].total_label_sale;
-            const txtRet = translations[currentLang].total_label_return;
-            document.getElementById('tl').innerText = m === 'return' ? txtRet : txtSale;
+            document.getElementById('tl').innerText = m === 'return' ? translations[currentLang].total_label_return : translations[currentLang].total_label_sale;
             document.body.style.backgroundColor = m === 'return' ? '#2c0b0b' : '#0a0a0a';
         }
 
-        // --- ЛОГИКА АВТОРИЗАЦИИ (LOGIN / LOGOUT) ---
+        // --- ЛОГИН СЕССИИ ---
         function handleAutoLogin(val) {
             const err = document.getElementById('login-error');
             if (val.length === 4) {
                 if (staffList.length === 0) {
-                    err.innerText = "ЗАГРУЗКА БАЗЫ...";
-                    err.style.color = "#f1c40f";
+                    err.innerText = "ОШИБКА: БАЗА СОТРУДНИКОВ ПУСТА";
                     err.style.visibility = 'visible';
-                    setTimeout(() => { 
-                        err.style.visibility = 'hidden'; 
-                        err.innerText = "НЕВЕРНЫЙ ПИН-КОД"; 
-                        err.style.color = "#e74c3c";
-                    }, 2000);
+                    setTimeout(() => { err.style.visibility = 'hidden'; err.innerText = "НЕВЕРНЫЙ ПИН-КОД"; }, 2500);
                     document.getElementById('pin-field').value = '';
                     return;
                 }
-                
                 const user = staffList.find(u => u.pin === val);
-                if (user) {
-                    login(user);
-                } else {
+                if (user) login(user);
+                else {
                     err.style.visibility = 'visible';
                     document.getElementById('pin-field').value = '';
                     setTimeout(() => { err.style.visibility = 'hidden'; }, 2000);
@@ -437,17 +375,12 @@
 
         function login(user) {
             currentUser = user;
-            localStorage.setItem('user_role', user.role); // Для отчетов
-            
+            localStorage.setItem('user_role', user.role);
             document.getElementById('login-screen').style.display = 'none';
             const badge = document.getElementById('cashier-info');
             badge.innerText = `👤 ${user.name.toUpperCase()} (${user.uid})`;
             badge.style.display = 'inline-block';
-            
             document.getElementById('pin-field').value = '';
-            document.getElementById('login-error').style.visibility = 'hidden';
-            
-            // Если мы разблокируем приложение, фокус на поиск
             document.getElementById('sb').focus();
         }
 
@@ -460,16 +393,13 @@
             document.getElementById('pin-field').focus();
         }
 
-        // --- ОСНОВНАЯ ЗАГРУЗКА ДАННЫХ ---
         async function load() {
             try {
                 const cachedDb = localStorage.getItem('db_cache');
                 const cachedTotals = localStorage.getItem('totals_cache');
-                const cachedStaff = localStorage.getItem('staff_cache'); // Читаем персонал из кэша
-                
+                const cachedStaff = localStorage.getItem('staff_cache'); 
                 if (cachedDb) db = JSON.parse(cachedDb);
                 if (cachedStaff) staffList = JSON.parse(cachedStaff);
-                
                 if (cachedTotals) {
                     const t = JSON.parse(cachedTotals);
                     document.getElementById('sum-cash').innerText = (t.cash || 0).toLocaleString() + ' ₸';
@@ -478,148 +408,97 @@
                     document.getElementById('sum-card').innerText = (t.pos_terminal || t.card || 0).toLocaleString() + ' ₸';
                     document.getElementById('sum-trans').innerText = (t.transfer || 0).toLocaleString() + ' ₸';
                 }
-                if (db && db.length > 0) render();
-            } catch (e) { console.warn("Ошибка чтения кэша", e); }
+                if (db.length > 0) render();
+            } catch (e) {}
 
             if (!navigator.onLine) return; 
-
             try {
                 const res = await fetch(APPS_SCRIPT_URL + "?t=" + Date.now(), { redirect: 'follow' });
-                if (!res.ok) throw new Error("Ошибка сервера: " + res.status);
                 const data = await res.json();
-                
-                if (data && data.items) db = data.items;
-                else if (Array.isArray(data)) db = data;
-                else db = [];
-
-                // Загружаем актуальный список персонала
-                if (data && data.staff) {
+                if (data.items) db = data.items;
+                if (data.staff) {
                     staffList = data.staff;
                     localStorage.setItem('staff_cache', JSON.stringify(staffList));
                 }
-                
                 const t = data.totals || { cash: 0, qr_kaspi: 0, installment: 0, pos_terminal: 0, transfer: 0 };
                 document.getElementById('sum-cash').innerText = (t.cash || 0).toLocaleString() + ' ₸';
                 document.getElementById('sum-qr').innerText   = (t.qr_kaspi || t.qr || 0).toLocaleString() + ' ₸';
                 document.getElementById('sum-red').innerText  = (t.installment || t.red || 0).toLocaleString() + ' ₸';
                 document.getElementById('sum-card').innerText = (t.pos_terminal || t.pos || t.card || 0).toLocaleString() + ' ₸';
                 document.getElementById('sum-trans').innerText= (t.transfer || 0).toLocaleString() + ' ₸';
-                
                 render();
-
                 localStorage.setItem('db_cache', JSON.stringify(db));
                 localStorage.setItem('totals_cache', JSON.stringify(t));
-                
-            } catch (e) { 
-                console.error("Ошибка загрузки данных", e);
-            }
+            } catch (e) { console.error("Ошибка загрузки данных"); }
         }
 
         function render() {
             const catalog = document.getElementById('catalog');
-            if (!db || db.length === 0) {
-                catalog.innerHTML = '<div style="color:#aaa; padding:20px; text-align:center;">Загрузка товаров...</div>';
-                return;
-            }
-            try {
-                catalog.innerHTML = db.map(i => {
-                    const hasPhoto = i.img && i.img.toString().length > 10;
-                    const badgeBg = hasPhoto ? '#f1c40f' : '#333';
-                    const badgeColor = hasPhoto ? '#000' : '#888';
-                    const photoBadge = `<span onclick="openItemMenu('${i.id}'); event.stopPropagation();" style="background-color: ${badgeBg}; color: ${badgeColor}; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px; margin-right: 8px; vertical-align: middle; cursor: pointer; border: 1px solid #444;">ФОТО</span>`;
-                    const price = Number(i.price) || 0;
-                    const stock = Number(i.stock) || 0;
-
-                    return `
-                        <div class="c-item" onclick="add('${i.id}')">
-                            <div class="i-name" style="display: flex; align-items: center;">
-                                ${photoBadge}
-                                <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${i.name || 'Без названия'}</span>
-                            </div>
-                            <div class="i-price">${price.toLocaleString()} ₸</div>
-                            <div class="i-stock">${stock}</div>
-                        </div>`;
-                }).join('');
-            } catch (e) {
-                catalog.innerHTML = '<div style="color:red; padding:20px;">Ошибка вывода товаров. Обновите базу.</div>';
-            }
+            if (!db || db.length === 0) return catalog.innerHTML = '<div style="color:#aaa; padding:20px; text-align:center;">Загрузка товаров...</div>';
+            catalog.innerHTML = db.map(i => {
+                const hasPhoto = i.img && i.img.toString().length > 10;
+                const photoBadge = `<span onclick="openItemMenu('${i.id}'); event.stopPropagation();" style="background-color: ${hasPhoto?'#f1c40f':'#333'}; color: ${hasPhoto?'#000':'#888'}; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px; margin-right: 8px; border: 1px solid #444;">ФОТО</span>`;
+                return `<div class="c-item" onclick="add('${i.id}')">
+                    <div class="i-name" style="display:flex; align-items:center;">${photoBadge} <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${i.name || 'Без названия'}</span></div>
+                    <div class="i-price">${(Number(i.price)||0).toLocaleString()} ₸</div>
+                    <div class="i-stock">${Number(i.stock)||0}</div>
+                </div>`;
+            }).join('');
         }
 
         function filter() {
             let q = document.getElementById('sb').value.toLowerCase();
             document.querySelectorAll('.c-item').forEach(el => {
-                const name = el.querySelector('.i-name').innerText.toLowerCase();
-                el.style.display = name.includes(q) ? 'flex' : 'none';
+                el.style.display = el.querySelector('.i-name').innerText.toLowerCase().includes(q) ? 'flex' : 'none';
             });
         }
 
         function handleSearchInput() {
-            const val = document.getElementById('sb').value;
-            document.getElementById('clear-search').style.display = val.length > 0 ? 'flex' : 'none';
+            document.getElementById('clear-search').style.display = document.getElementById('sb').value.length > 0 ? 'flex' : 'none';
             filter(); 
         }
 
         function clearSearch() {
-            const sb = document.getElementById('sb');
-            sb.value = '';
+            document.getElementById('sb').value = '';
             document.getElementById('clear-search').style.display = 'none';
-            filter();
-            sb.focus(); 
+            filter(); document.getElementById('sb').focus(); 
         }
 
         function add(id) {
             const p = db.find(x => x.id === id);
             const inC = cart.find(x => x.id === id);
-            if (inC) inC.qty++;
-            else cart.push({id:p.id, name:p.name, qty:1, price:p.price, origPrice:p.price, cost:p.cost});
+            if (inC) inC.qty++; else cart.push({id:p.id, name:p.name, qty:1, price:p.price, origPrice:p.price, cost:p.cost});
             update();
         }
 
         function handleFocus(elem, rowId) {
             elem.select(); 
-            setTimeout(() => { 
-                const row = document.getElementById(rowId);
-                if (row) row.scrollIntoView({behavior: "smooth", block: "center"}); 
-            }, 350);
+            setTimeout(() => { const row = document.getElementById(rowId); if (row) row.scrollIntoView({behavior: "smooth", block: "center"}); }, 350);
         }
 
         function update() {
-            const list = document.getElementById('cart-list');
-            list.innerHTML = cart.map((item, idx) => `
+            document.getElementById('cart-list').innerHTML = cart.map((item, idx) => `
                 <div class="cart-row" id="r-${item.id}">
                     <div class="row-top" style="padding-right: 75px;">${item.name}</div>
                     <div class="row-ctrl">
                         <div class="qty-box">
                             <button class="q-btn" onclick="qty('${item.id}',-1)">-</button>
-                            <input type="text" inputmode="numeric" class="q-val" value="${item.qty}" 
-                                   onfocus="handleFocus(this, 'r-${item.id}')" oninput="cart[${idx}].qty=parseInt(this.value)||0; total()">
+                            <input type="text" inputmode="numeric" class="q-val" value="${item.qty}" onfocus="handleFocus(this, 'r-${item.id}')" oninput="cart[${idx}].qty=parseInt(this.value)||0; total()">
                             <button class="q-btn" onclick="qty('${item.id}',1)">+</button>
                         </div>
                         <div style="position: relative;">
-                            <span style="position: absolute; bottom: calc(100% + 4px); right: 0; color: #666; font-size: 10px; white-space: nowrap; pointer-events: none;">
-                                ${item.origPrice ? item.origPrice.toLocaleString() : item.price.toLocaleString()} ₸
-                            </span>
-                            <input type="text" inputmode="numeric" class="p-input" value="${item.price}" 
-                                   onfocus="handleFocus(this, 'r-${item.id}')" oninput="cart[${idx}].price=parseFloat(this.value)||0; total()">
+                            <span style="position: absolute; bottom: calc(100% + 4px); right: 0; color: #666; font-size: 10px; white-space: nowrap; pointer-events: none;">${item.origPrice ? item.origPrice.toLocaleString() : item.price.toLocaleString()} ₸</span>
+                            <input type="text" inputmode="numeric" class="p-input" value="${item.price}" onfocus="handleFocus(this, 'r-${item.id}')" oninput="cart[${idx}].price=parseFloat(this.value)||0; total()">
                         </div>
                         <div onclick="rm('${item.id}')" style="color:#e74c3c;padding:3px;font-size:18px; cursor: pointer;">✕</div>
                     </div>
-                </div>
-            `).join('');
+                </div>`).join('');
             total();
         }
 
-        function qty(id, d) {
-            const i = cart.find(x => x.id === id);
-            if(i) { i.qty += d; if(i.qty <= 0) rm(id); else update(); }
-        }
-
+        function qty(id, d) { const i = cart.find(x => x.id === id); if(i) { i.qty += d; if(i.qty <= 0) rm(id); else update(); } }
         function rm(id) { cart = cart.filter(x => x.id !== id); update(); }
-
-        function total() {
-            const s = cart.reduce((a, b) => a + (b.price * b.qty), 0);
-            document.getElementById('ta').innerText = s.toLocaleString() + ' ₸';
-        }
+        function total() { document.getElementById('ta').innerText = cart.reduce((a, b) => a + (b.price * b.qty), 0).toLocaleString() + ' ₸'; }
 
         function initPay(methodCode, methodName) {
             if (!cart.length) return;
@@ -647,14 +526,10 @@
             const now = new Date();
             const localTime = now.toLocaleDateString('ru-RU') + ' ' + now.toLocaleTimeString('ru-RU');
             
-            // ВАЖНО: Добавлена запись ID продавца
+            // Фиксируем UID
             const p = {
-                tx_id: tid, 
-                tx_type: mode, 
-                payment_method: pendingMethod, 
-                source: "pos_v5.4.0",
-                created_at: localTime,
-                seller_id: currentUser ? currentUser.uid : "S-XX", // Фиксируем UID
+                tx_id: tid, tx_type: mode, payment_method: pendingMethod, source: "pos_v5.4.1", created_at: localTime,
+                seller_id: currentUser ? currentUser.uid : "S-XX", 
                 cart: cart.map(c => ({item_id:c.id, item_name:c.name, qty:c.qty, price:c.price, cost_price:c.cost}))
             };
 
@@ -676,28 +551,11 @@
                         el.innerText = currentSum.toLocaleString('ru-RU') + ' ₸';
                     }
                 }
-
-                try {
-                    let t = JSON.parse(localStorage.getItem('totals_cache')) || { cash: 0, qr_kaspi: 0, pos_terminal: 0, transfer: 0, installment: 0 };
-                    let tKey = pendingMethod;
-                    if (tKey === 'qr') tKey = 'qr_kaspi';
-                    if (tKey === 'card') tKey = 'pos_terminal';
-                    if (t[tKey] !== undefined) {
-                        t[tKey] = (mode === 'sale') ? t[tKey] + cartTotal : t[tKey] - cartTotal;
-                    }
-                    localStorage.setItem('totals_cache', JSON.stringify(t));
-                } catch (e) {}
-
                 document.getElementById('receipt-modal').style.display = 'none';
-                cart = []; 
-                update(); 
-                sm('sale'); 
+                cart = []; update(); sm('sale'); 
                 const searchInput = document.getElementById('sb');
-                searchInput.value = ''; 
-                searchInput.blur(); 
-                filter(); 
-
-            } catch (e) { alert("ОШИБКА СОХРАНЕНИЯ: " + e.message); } 
+                searchInput.value = ''; searchInput.blur(); filter(); 
+            } catch (e) { alert("ОШИБКА: " + e.message); } 
             finally { btn.disabled = false; }
         }
 
@@ -705,18 +563,12 @@
             let queue = JSON.parse(localStorage.getItem('txQueue') || '[]');
             const badge = document.getElementById('queue-counter');
             const settingsBtn = document.getElementById('btn-settings');
-            
             if (queue.length > 0) {
-                badge.innerText = queue.length;
-                badge.style.display = 'inline-block';
-                settingsBtn.style.background = '#3a1a1a';
-                settingsBtn.style.borderColor = '#e74c3c';
-                settingsBtn.style.color = '#e74c3c';
+                badge.innerText = queue.length; badge.style.display = 'inline-block';
+                settingsBtn.style.background = '#3a1a1a'; settingsBtn.style.borderColor = '#e74c3c'; settingsBtn.style.color = '#e74c3c';
             } else {
                 badge.style.display = 'none';
-                settingsBtn.style.background = '#222';
-                settingsBtn.style.borderColor = '#555';
-                settingsBtn.style.color = '#eee';
+                settingsBtn.style.background = '#222'; settingsBtn.style.borderColor = '#555'; settingsBtn.style.color = '#eee';
             }
         }
 
@@ -725,152 +577,46 @@
             if (isSyncing || !navigator.onLine) return; 
             let queue = JSON.parse(localStorage.getItem('txQueue') || '[]');
             if (queue.length === 0) return; 
-
             isSyncing = true;
             try {
-                const response = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify(queue[0]) });
-                const result = await response.json();
-                if (result.success) {
-                    queue.shift(); 
-                    localStorage.setItem('txQueue', JSON.stringify(queue));
-                    updateQueueCounter(); 
-                }
-            } catch (e) { } 
-            finally { isSyncing = false; }
+                const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify(queue[0]) });
+                if ((await res.json()).success) { queue.shift(); localStorage.setItem('txQueue', JSON.stringify(queue)); updateQueueCounter(); }
+            } catch (e) {} finally { isSyncing = false; }
         }
         setInterval(syncQueue, 5000);
-        window.addEventListener('online', syncQueue);
 
         async function manualSync() {
-            if (!navigator.onLine) { alert(translations[currentLang].msg_sync_error); return; }
+            if (!navigator.onLine) return alert(translations[currentLang].msg_sync_error);
             let queue = JSON.parse(localStorage.getItem('txQueue') || '[]');
-            if (queue.length === 0) { alert(translations[currentLang].msg_sync_empty); return; }
-            const btnStatus = document.getElementById('sync-status');
-            btnStatus.innerText = '⏳';
+            if (queue.length === 0) return alert(translations[currentLang].msg_sync_empty);
+            document.getElementById('sync-status').innerText = '⏳';
             let hasError = false;
             while(queue.length > 0) {
                 try {
-                    const response = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify(queue[0]) });
-                    const result = await response.json();
-                    if (result.success) {
-                        queue.shift(); 
-                        localStorage.setItem('txQueue', JSON.stringify(queue));
-                        updateQueueCounter();
-                    } else { hasError = true; break; }
+                    const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify(queue[0]) });
+                    if ((await res.json()).success) { queue.shift(); localStorage.setItem('txQueue', JSON.stringify(queue)); updateQueueCounter(); }
+                    else { hasError = true; break; }
                 } catch (e) { hasError = true; break; }
             }
-            btnStatus.innerText = '📡';
-            if (hasError) alert(translations[currentLang].msg_sync_error);
-            else alert(translations[currentLang].msg_sync_success);
+            document.getElementById('sync-status').innerText = '📡';
+            alert(hasError ? translations[currentLang].msg_sync_error : translations[currentLang].msg_sync_success);
         }
 
         function openSettings() { document.getElementById('settings-modal').style.display = 'flex'; }
         function closeSettings() { document.getElementById('settings-modal').style.display = 'none'; }
 
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js'); });
-        }
-
-        function displayAppVersion() {
-            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-                const messageChannel = new MessageChannel();
-                messageChannel.port1.onmessage = function(event) {
-                    if (event.data && event.data.version) document.getElementById('app-version').innerText = "v: " + event.data.version;
-                };
-                navigator.serviceWorker.controller.postMessage({ type: 'GET_VERSION' }, [messageChannel.port2]);
-            } else {
-                document.getElementById('app-version').innerText = "v: 5.4.0";
-            }
-        }
-
         window.addEventListener('load', () => {
-            applyLanguage(currentLang);
-            updateQueueCounter();
-            displayAppVersion();
+            applyLanguage(currentLang); updateQueueCounter();
             document.getElementById('login-screen').style.display = 'flex';
             document.getElementById('pin-field').focus();
         });
 
-        let isUpdatePending = false;
-        setInterval(() => {
-            if (isUpdatePending && typeof cart !== 'undefined' && cart.length === 0) window.location.reload(true);
-        }, 2000);
-
-        setInterval(async () => {
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.getRegistrations().then(regs => { for(let reg of regs) reg.update(); });
-            }
-            if (navigator.onLine) {
-                try {
-                    const res = await fetch(APPS_SCRIPT_URL + "?t=" + Date.now());
-                    const data = await res.json();
-                    
-                    if (data && data.items) db = data.items;
-                    else if (Array.isArray(data)) db = data;
-                    else db = [];
-                    
-                    if (data && data.staff) {
-                        staffList = data.staff;
-                        localStorage.setItem('staff_cache', JSON.stringify(staffList));
-                    }
-                    
-                    const t = data.totals || { cash: 0, qr_kaspi: 0, pos_terminal: 0, transfer: 0, installment: 0 };
-                    localStorage.setItem('db_cache', JSON.stringify(db));
-                    localStorage.setItem('totals_cache', JSON.stringify(t));
-
-                    document.getElementById('sum-cash').innerText = (t.cash || 0).toLocaleString() + ' ₸';
-                    document.getElementById('sum-qr').innerText = (t.qr_kaspi || t.qr || 0).toLocaleString() + ' ₸';
-                    document.getElementById('sum-red').innerText = (t.installment || 0).toLocaleString() + ' ₸';
-                    document.getElementById('sum-card').innerText = (t.pos_terminal || t.pos || t.card || 0).toLocaleString() + ' ₸';
-                    document.getElementById('sum-trans').innerText = (t.transfer || 0).toLocaleString() + ' ₸';
-                    
-                    if (typeof cart !== 'undefined' && cart.length === 0) render(); 
-                    else isUpdatePending = true; 
-                } catch(e) { }
-            }
-        }, 15 * 60 * 1000);
-
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.addEventListener('controllerchange', () => {
-                displayAppVersion();
-                if (typeof cart !== 'undefined' && cart.length === 0) window.location.reload(true); 
-                else isUpdatePending = true; 
-            });
-        }
-
         async function forceAppUpdate() {
-            const btnIcon = document.getElementById('update-status');
-            if (btnIcon) btnIcon.innerText = '⏳'; 
+            document.getElementById('update-status').innerText = '⏳'; 
             try {
-                if ('serviceWorker' in navigator) {
-                    const regs = await navigator.serviceWorker.getRegistrations();
-                    for(let reg of regs) await reg.update();
-                }
-                if ('caches' in window) {
-                    const cacheKeys = await caches.keys();
-                    await Promise.all(cacheKeys.map(key => caches.delete(key)));
-                }
+                if ('caches' in window) await Promise.all((await caches.keys()).map(k => caches.delete(k)));
                 setTimeout(() => { window.location.reload(true); }, 1000);
-            } catch (error) { window.location.reload(true); }
-        }
-
-        let deferredPrompt;
-        const installBtn = document.getElementById('btn-install');
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            if (installBtn) installBtn.style.display = 'block'; 
-        });
-
-        if (installBtn) {
-            installBtn.addEventListener('click', async () => {
-                if (deferredPrompt) {
-                    deferredPrompt.prompt();
-                    const { outcome } = await deferredPrompt.userChoice;
-                    if (outcome === 'accepted') installBtn.style.display = 'none';
-                    deferredPrompt = null;
-                }
-            });
+            } catch (e) { window.location.reload(true); }
         }
 
         function openReport() {
@@ -879,40 +625,35 @@
             const controls = document.getElementById('date-range-controls');
             const titleEl = document.getElementById('rep-header-title');
             
+            // Фикс часового пояса для корректной даты "сегодня"
             const now = new Date();
-            const todayISO = now.toISOString().split('T')[0];
-            const todayFormatted = now.toLocaleDateString('ru-RU');
+            const offset = now.getTimezoneOffset() * 60000;
+            const localISO = (new Date(now - offset)).toISOString().split('T')[0];
             
-            document.getElementById('rep-date-start').value = todayISO;
-            document.getElementById('rep-date-end').value = todayISO;
+            document.getElementById('rep-date-start').value = localISO;
+            document.getElementById('rep-date-end').value = localISO;
 
             if (role === 'manager') {
                 controls.style.display = 'flex';
                 titleEl.innerText = currentLang === 'kz' ? "КЕЗЕҢДІК ЕСЕП" : "ОТЧЕТ ЗА ПЕРИОД";
             } else {
                 controls.style.display = 'none';
-                titleEl.innerText = (currentLang === 'kz' ? "БҮГІНГІ ЕСЕП: " : "ОТЧЕТ ЗА СЕГОДНЯ: ") + todayFormatted;
+                titleEl.innerText = (currentLang === 'kz' ? "БҮГІНГІ ЕСЕП: " : "ОТЧЕТ ЗА СЕГОДНЯ: ") + now.toLocaleDateString('ru-RU');
             }
-            
             renderReport();
         }
 
         function clearReportSearch() {
-            const input = document.getElementById('rep-search');
-            input.value = '';
+            document.getElementById('rep-search').value = '';
             document.getElementById('rep-clear-search').style.display = 'none';
-            filterReport();
-            input.focus();
+            filterReport(); document.getElementById('rep-search').focus();
         }
 
         function filterReport() {
-            const input = document.getElementById('rep-search');
-            const q = input.value.toLowerCase().trim();
+            const q = document.getElementById('rep-search').value.toLowerCase().trim();
             document.getElementById('rep-clear-search').style.display = q.length > 0 ? 'block' : 'none';
-            
             document.querySelectorAll('#rep-list .item-wrapper').forEach(el => {
-                const name = el.getAttribute('data-name');
-                if (name) el.style.display = name.includes(q) ? 'block' : 'none';
+                el.style.display = el.getAttribute('data-name').includes(q) ? 'block' : 'none';
             });
         }
 
@@ -927,32 +668,29 @@
             const serverStart = fmt(start);
             const serverEnd = fmt(end);
 
-            const tLoading = translations[currentLang].msg_loading || "ЗАГРУЗКА...";
-            const tNoNet = translations[currentLang].msg_no_internet || "НЕТ ИНТЕРНЕТА";
-            const tNoData = translations[currentLang].msg_no_data || "ОПЕРАЦИЙ НЕ НАЙДЕНО";
-            const tError = translations[currentLang].msg_server_error || "ОШИБКА СЕРВЕРА";
-
-            repList.innerHTML = `<div style="text-align:center; color:#f39c12; margin-top:30px; font-size: 12px; font-weight: bold;">⏳ ${tLoading}</div>`;
+            repList.innerHTML = `<div style="text-align:center; color:#f39c12; margin-top:30px; font-weight: bold;">⏳ ${translations[currentLang].msg_loading}</div>`;
 
             if (!navigator.onLine) {
-                repList.innerHTML = `<div style="text-align:center; color:#e74c3c; margin-top:30px; font-size: 12px;">${tNoNet}</div>`;
+                repList.innerHTML = `<div style="text-align:center; color:#e74c3c; margin-top:30px;">${translations[currentLang].msg_no_internet}</div>`;
                 return;
             }
 
             try {
-                // Если продавец, мы передаем его UID для фильтрации на сервере
                 let url = `${APPS_SCRIPT_URL}?action=report&date=${serverStart}&endDate=${serverEnd}&t=${Date.now()}`;
-                if (currentUser && currentUser.role !== 'manager') {
-                    url += `&seller_id=${currentUser.uid}`;
-                }
+                if (currentUser && currentUser.role !== 'manager') url += `&seller_id=${currentUser.uid}`;
 
                 const response = await fetch(url, { redirect: 'follow' });
                 const data = await response.json();
                 
-                if (data.report.length === 0) {
-                    repList.innerHTML = `<div style="text-align:center; color:#666; margin-top:30px; font-size: 12px;">${tNoData}</div>`;
+                // ВЫВОД РЕАЛЬНОЙ ОШИБКИ БЕКЭНДА
+                if (data.error) {
+                    throw new Error(data.error); 
+                }
+
+                if (!data.report || data.report.length === 0) {
+                    repList.innerHTML = `<div style="text-align:center; color:#666; margin-top:30px;">${translations[currentLang].msg_no_data}</div>`;
                     totalsBox.innerHTML = '';
-                    searchInput.style.display = 'none';
+                    searchInput.parentElement.style.display = 'none';
                     return;
                 }
 
@@ -961,368 +699,150 @@
                 let t = { sale: 0, return: 0 };
                 
                 if (start !== end && (!currentUser || currentUser.role === 'manager')) {
-                    searchInput.style.display = 'block'; 
-                    searchInput.value = ''; 
-                    searchInput.placeholder = translations[currentLang].search_placeholder;
+                    searchInput.parentElement.style.display = 'block'; 
+                    searchInput.value = ''; searchInput.placeholder = translations[currentLang].search_placeholder;
 
                     let aggregated = {};
                     let tSalesQty = 0, tSalesSum = 0, tReturnsQty = 0, tReturnsSum = 0;
-                    
-                    const ui = {
-                        name: translations[currentLang].report_name,
-                        qty: translations[currentLang].report_qty,
-                        sum: translations[currentLang].report_sum,
-                        sales: translations[currentLang].report_sales,
-                        returns: translations[currentLang].report_returns,
-                        net: translations[currentLang].report_total_net
-                    };
+                    const ui = { name: translations[currentLang].report_name, qty: translations[currentLang].report_qty, sum: translations[currentLang].report_sum, sales: translations[currentLang].report_sales, returns: translations[currentLang].report_returns, net: translations[currentLang].report_total_net };
 
                     data.report.forEach(h => {
                         let isRet = h.type === 'return';
                         h.cart.forEach(c => {
-                            let key = c.name;
-                            if (!aggregated[key]) aggregated[key] = { name: c.name, salesQty: 0, salesSum: 0, returnsQty: 0, returnsSum: 0 };
-                            
-                            if (isRet) {
-                                aggregated[key].returnsQty += c.qty;
-                                aggregated[key].returnsSum += (c.qty * c.price);
-                                tReturnsQty += c.qty;
-                                tReturnsSum += (c.qty * c.price);
-                                t.return += (c.qty * c.price);
-                            } else {
-                                aggregated[key].salesQty += c.qty;
-                                aggregated[key].salesSum += (c.qty * c.price);
-                                tSalesQty += c.qty;
-                                tSalesSum += (c.qty * c.price);
-                                t.sale += (c.qty * c.price);
-                            }
+                            if (!aggregated[c.name]) aggregated[c.name] = { name: c.name, salesQty: 0, salesSum: 0, returnsQty: 0, returnsSum: 0 };
+                            if (isRet) { aggregated[c.name].returnsQty += c.qty; aggregated[c.name].returnsSum += (c.qty * c.price); tReturnsQty += c.qty; tReturnsSum += (c.qty * c.price); } 
+                            else { aggregated[c.name].salesQty += c.qty; aggregated[c.name].salesSum += (c.qty * c.price); tSalesQty += c.qty; tSalesSum += (c.qty * c.price); }
                         });
                     });
 
-                    const formatMoney = new Intl.NumberFormat('ru-RU').format;
                     let sortedItems = Object.values(aggregated).sort((a, b) => (b.salesSum - b.returnsSum) - (a.salesSum - a.returnsSum));
-
-                    let htmlString = `<div class="rep-table-header">
-                        <div>${ui.name}</div><div style="text-align: right;">${ui.qty}</div><div style="text-align: right;">${ui.sum}</div>
-                    </div>`;
+                    let htmlString = `<div class="rep-table-header"><div>${ui.name}</div><div style="text-align: right;">${ui.qty}</div><div style="text-align: right;">${ui.sum}</div></div>`;
                     
-                    document.getElementById('rep-search-wrap').style.display = 'block';
-
                     sortedItems.forEach(item => {
-                        const netItemQty = item.salesQty - item.returnsQty;
-                        const netItemSum = item.salesSum - item.returnsSum;
-                        const avgSale = item.salesQty > 0 ? Math.round(item.salesSum / item.salesQty) : 0;
-                        const avgReturn = item.returnsQty > 0 ? Math.round(item.returnsSum / item.returnsQty) : 0;
-                        const sumColor = netItemSum < 0 ? '#f87171' : '#4ade80';
-
+                        const netQty = item.salesQty - item.returnsQty, netSum = item.salesSum - item.returnsSum;
                         let detailsHtml = '';
-                        if (item.salesQty > 0) {
-                            detailsHtml += `<div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px;">
-                                <span style="color: #888;">${ui.sales} (${item.salesQty}) <span style="color: #666; font-style: italic; margin-left: 4px;">~ ${formatMoney(avgSale)}</span></span>
-                                <span style="color: #4ade80;">${formatMoney(item.salesSum)}</span>
-                            </div>`;
-                        }
-                        if (item.returnsQty > 0) {
-                            detailsHtml += `<div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px;">
-                                <span style="color: #888;">${ui.returns} (${item.returnsQty}) <span style="color: #666; font-style: italic; margin-left: 4px;">~ ${formatMoney(avgReturn)}</span></span>
-                                <span style="color: #f87171;">-${formatMoney(item.returnsSum)}</span>
-                            </div>`;
-                        }
+                        if (item.salesQty > 0) detailsHtml += `<div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px;"><span style="color: #888;">${ui.sales} (${item.salesQty})</span><span style="color: #4ade80;">${item.salesSum.toLocaleString()}</span></div>`;
+                        if (item.returnsQty > 0) detailsHtml += `<div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px;"><span style="color: #888;">${ui.returns} (${item.returnsQty})</span><span style="color: #f87171;">-${item.returnsSum.toLocaleString()}</span></div>`;
 
-                        htmlString += `
-                            <div class="item-wrapper" data-name="${item.name.toLowerCase()}">
-                                <div class="item-card" onclick="this.parentElement.classList.toggle('active')">
-                                    <div style="font-size: 12px; color: #e0e0e0; line-height: 1.2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${item.name}</div>
-                                    <div style="text-align: right; color: #888; font-size: 12px;">${netItemQty}</div>
-                                    <div style="text-align: right; font-weight: 700; font-size: 13px; color: ${sumColor}; display: flex; justify-content: flex-end; align-items: center; gap: 4px;">
-                                        ${formatMoney(netItemSum)} <span class="dropdown-icon">▼</span>
-                                    </div>
-                                </div>
-                                <div class="item-details"><div style="padding: 6px 8px;">${detailsHtml}</div></div>
-                            </div>`;
+                        htmlString += `<div class="item-wrapper" data-name="${item.name.toLowerCase()}">
+                            <div class="item-card" onclick="this.parentElement.classList.toggle('active')">
+                                <div style="font-size: 12px; color: #e0e0e0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${item.name}</div>
+                                <div style="text-align: right; color: #888; font-size: 12px;">${netQty}</div>
+                                <div style="text-align: right; font-weight: 700; font-size: 13px; color: ${netSum < 0 ? '#f87171' : '#4ade80'}; display: flex; justify-content: flex-end; align-items: center; gap: 4px;">${netSum.toLocaleString()} <span class="dropdown-icon">▼</span></div>
+                            </div>
+                            <div class="item-details"><div style="padding: 6px 8px;">${detailsHtml}</div></div>
+                        </div>`;
                     });
 
                     repList.innerHTML = htmlString;
-
                     totalsBox.innerHTML = `
-                        <div style="display: grid; grid-template-columns: 1fr 40px 85px; gap: 8px; font-size: 12px; color: #888; margin-bottom: 4px;">
-                            <div>${ui.sales}:</div><div style="text-align: right;">${tSalesQty}</div><div style="text-align: right;">${formatMoney(tSalesSum)}</div>
-                        </div>
-                        <div style="display: grid; grid-template-columns: 1fr 40px 85px; gap: 8px; font-size: 12px; color: #f87171; margin-bottom: 4px;">
-                            <div>${ui.returns}:</div><div style="text-align: right;">${tReturnsQty > 0 ? '-' + tReturnsQty : '0'}</div><div style="text-align: right;">${tReturnsSum > 0 ? '-' + formatMoney(tReturnsSum) : '0'}</div>
-                        </div>
-                        <div style="display: grid; grid-template-columns: 1fr 40px 85px; gap: 8px; margin-top: 8px; padding-top: 8px; border-top: 1px dashed #444; align-items: center;">
-                            <div style="font-size: 14px; font-weight: 700; color: #fff;">${ui.net}</div>
-                            <div style="text-align: right; font-size: 12px; font-weight: bold; color: #777;">${tSalesQty - tReturnsQty}</div>
-                            <div style="text-align: right; font-size: 15px; font-weight: 900; color: #fff;">${formatMoney(tSalesSum - tReturnsSum)} ₸</div>
-                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 40px 85px; gap: 8px; font-size: 12px; color: #888; margin-bottom: 4px;"><div>${ui.sales}:</div><div style="text-align: right;">${tSalesQty}</div><div style="text-align: right;">${tSalesSum.toLocaleString()}</div></div>
+                        <div style="display: grid; grid-template-columns: 1fr 40px 85px; gap: 8px; font-size: 12px; color: #f87171; margin-bottom: 4px;"><div>${ui.returns}:</div><div style="text-align: right;">${tReturnsQty > 0 ? '-' + tReturnsQty : '0'}</div><div style="text-align: right;">${tReturnsSum > 0 ? '-' + tReturnsSum.toLocaleString() : '0'}</div></div>
+                        <div style="display: grid; grid-template-columns: 1fr 40px 85px; gap: 8px; margin-top: 8px; padding-top: 8px; border-top: 1px dashed #444; align-items: center;"><div style="font-size: 14px; font-weight: 700; color: #fff;">${ui.net}</div><div style="text-align: right; font-size: 12px; font-weight: bold; color: #777;">${tSalesQty - tReturnsQty}</div><div style="text-align: right; font-size: 15px; font-weight: 900; color: #fff;">${(tSalesSum - tReturnsSum).toLocaleString()} ₸</div></div>
                     `;
                 } else {
-                    searchInput.style.display = 'none'; 
-                    document.getElementById('rep-search-wrap').style.display = 'none';
-                    
-                    const uiSaleType = translations[currentLang].btn_sale; 
-                    const uiReturnType = translations[currentLang].btn_return; 
-                    const uiSalesStr = translations[currentLang].report_sales.toUpperCase() + ":";
-                    const uiReturnsStr = translations[currentLang].report_returns.toUpperCase() + ":";
-                    const uiInRegister = translations[currentLang].report_in_register || "В КАССЕ:";
-
+                    searchInput.parentElement.style.display = 'none'; 
                     repList.innerHTML = data.report.map(h => {
                         let isRet = h.type === 'return';
                         if (isRet) t.return += h.total; else t.sale += h.total;
                         let itemsHtml = h.cart.map(c => `<div class="hb-item"><span>${c.name} (${c.qty})</span><span>${(c.qty*c.price).toLocaleString()} ₸</span></div>`).join('');
-                        
                         return `<div class="hist-block" style="border-left-color: ${colors[h.methodCode] || '#2ecc71'};">
-                            <div class="hb-head" style="color: ${colors[h.methodCode] || '#2ecc71'};">
-                                <span>${h.time} | ${isRet ? uiReturnType : uiSaleType} | ${names[h.methodCode]||h.methodCode}</span>
-                                <span>${isRet?'-':''}${h.total.toLocaleString()} ₸</span>
-                            </div>
+                            <div class="hb-head" style="color: ${colors[h.methodCode] || '#2ecc71'};"><span>${h.time} | ${isRet ? translations[currentLang].btn_return : translations[currentLang].btn_sale} | ${names[h.methodCode]||h.methodCode}</span><span>${isRet?'-':''}${h.total.toLocaleString()} ₸</span></div>
                             <div class="${isRet?'hb-type-r':''}">${itemsHtml}</div>
                         </div>`;
                     }).join('');
                     
-                    totalsBox.innerHTML = `
-                        <div style="display:flex; justify-content:space-between; color:#2ecc71; font-size:12px; margin-bottom:4px;"><span>${uiSalesStr}</span><span>${t.sale.toLocaleString()} ₸</span></div>
-                        <div style="display:flex; justify-content:space-between; color:#e74c3c; font-size:12px; margin-bottom:4px;"><span>${uiReturnsStr}</span><span>${t.return.toLocaleString()} ₸</span></div>
-                        <div style="display:flex; justify-content:space-between; color:#fff; font-weight:bold; font-size:16px; margin-top:8px; border-top:1px dashed #555; padding-top:8px;"><span>${uiInRegister}</span><span>${(t.sale - t.return).toLocaleString()} ₸</span></div>
-                    `;
+                    totalsBox.innerHTML = `<div style="display:flex; justify-content:space-between; color:#2ecc71; font-size:12px; margin-bottom:4px;"><span>${translations[currentLang].report_sales.toUpperCase()}:</span><span>${t.sale.toLocaleString()} ₸</span></div>
+                        <div style="display:flex; justify-content:space-between; color:#e74c3c; font-size:12px; margin-bottom:4px;"><span>${translations[currentLang].report_returns.toUpperCase()}:</span><span>${t.return.toLocaleString()} ₸</span></div>
+                        <div style="display:flex; justify-content:space-between; color:#fff; font-weight:bold; font-size:16px; margin-top:8px; border-top:1px dashed #555; padding-top:8px;"><span>${translations[currentLang].report_in_register}</span><span>${(t.sale - t.return).toLocaleString()} ₸</span></div>`;
                 }
             } catch (error) {
-                repList.innerHTML = `<div style="text-align:center; color:#e74c3c; margin-top:30px;">${tError}</div>`;
+                repList.innerHTML = `<div style="text-align:center; color:#e74c3c; margin-top:30px;">${translations[currentLang].msg_server_error}<br><small style="color:#888;">${error.message}</small></div>`;
             }
         }
 
         function closeReport() { document.getElementById('report-modal').style.display = 'none'; }
-
         load();
 
-        let selectedItemId = null;
-        let tempBase64 = null; 
-
+        let selectedItemId = null, tempBase64 = null; 
         function openItemMenu(id) {
-            selectedItemId = id;
-            tempBase64 = null; 
+            selectedItemId = id; tempBase64 = null; 
             const item = db.find(x => x.id === id);
-
             document.getElementById('menu-item-name').innerText = item.name;
-            
             const preview = document.getElementById('photo-preview');
-            const btnAddCart = document.getElementById('btn-add-cart');
-            const btnSaveDb = document.getElementById('btn-save-db');
-            const btnTakePhoto = document.getElementById('btn-take-photo');
-            const btnRetakePhoto = document.getElementById('btn-retake-photo');
-            const btnCancel = document.getElementById('btn-cancel-modal');
-
-            btnAddCart.style.display = 'block';
-            btnSaveDb.style.display = 'none';
-            btnSaveDb.innerHTML = '💾 <span data-i18n="btn_save_db">' + translations[currentLang].btn_save_db + '</span>';
-            btnSaveDb.disabled = false;
+            document.getElementById('btn-add-cart').style.display = 'block';
+            document.getElementById('btn-save-db').style.display = 'none';
 
             if (item.img && item.img.length > 10) {
-                let fileId = "";
-                const match = item.img.match(/[-\w]{25,}/);
-                if (match) fileId = match[0];
-                
+                let fileId = ""; const match = item.img.match(/[-\w]{25,}/); if (match) fileId = match[0];
                 if (fileId) {
-                    const safeUrl = `https://lh3.googleusercontent.com/d/$${fileId}`;
+                    // ФИКС ФОТО: ИСПОЛЬЗУЕМ ПРОВЕРЕННУЮ ССЫЛКУ С БЕЗОПАСНЫМ ШАБЛОНОМ
+                    const safeUrl = `https://lh3.googleusercontent.com/d/${fileId}`;
                     preview.innerHTML = `<img src="${safeUrl}" onclick="openFullscreen('${safeUrl}')" onerror="this.onerror=null; this.parentNode.innerHTML='<div style=\\'color:#f1c40f; padding: 15px; border: 1px dashed #f1c40f; border-radius: 8px; font-size: 11px; font-weight: bold;\\'>⚠️ ФОТО НЕДОСТУПНО<br><br>Откройте доступ к папке с фото на Гугл Диске</div>';" style="max-width: 100%; max-height: 250px; border-radius: 8px; border: 1px solid #444; margin-top: 10px; cursor: zoom-in;">`;
-                } else {
-                    preview.innerHTML = '<div style="color:red;">Не удалось прочитать ссылку на фото</div>';
-                }
-                btnTakePhoto.style.display = 'none';
-                btnRetakePhoto.style.display = 'block';
+                } else preview.innerHTML = '<div style="color:red;">Не удалось прочитать ссылку на фото</div>';
+                document.getElementById('btn-take-photo').style.display = 'none'; document.getElementById('btn-retake-photo').style.display = 'block';
             } else {
-                preview.innerHTML = ''; 
-                btnTakePhoto.style.display = 'block';
-                btnRetakePhoto.style.display = 'none';
+                preview.innerHTML = ''; document.getElementById('btn-take-photo').style.display = 'block'; document.getElementById('btn-retake-photo').style.display = 'none';
             }
-            
-            btnCancel.innerText = translations[currentLang].btn_close;
+            document.getElementById('btn-cancel-modal').innerText = translations[currentLang].btn_close;
             document.getElementById('item-menu-modal').style.display = 'flex';
         }
 
-        function handleCancelModal() {
-            if (tempBase64) openItemMenu(selectedItemId);
-            else closeItemMenu();
-        }
-
-        function closeItemMenu() { document.getElementById('item-menu-modal').style.display = 'none'; }
-
-        function confirmAddFromMenu() { add(selectedItemId); closeItemMenu(); }
-
+        function handleCancelModal() { if (tempBase64) openItemMenu(selectedItemId); else document.getElementById('item-menu-modal').style.display = 'none'; }
+        function confirmAddFromMenu() { add(selectedItemId); document.getElementById('item-menu-modal').style.display = 'none'; }
         function triggerCamera() { document.getElementById('camera-input').click(); }
         function triggerGallery() { document.getElementById('gallery-input').click(); }
 
         async function handlePhoto(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
+            const file = event.target.files[0]; if (!file) return;
             const reader = new FileReader();
             reader.onload = function(e) {
                 const img = new Image();
                 img.onload = function() {
                     const canvas = document.getElementById('resize-canvas');
-                    const MAX_WIDTH = 800;
                     let width = img.width, height = img.height;
-
-                    if (width > MAX_WIDTH) {
-                        height *= MAX_WIDTH / width;
-                        width = MAX_WIDTH;
-                    }
-
-                    canvas.width = width;
-                    canvas.height = height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, width, height);
-
+                    if (width > 800) { height *= 800 / width; width = 800; }
+                    canvas.width = width; canvas.height = height;
+                    canvas.getContext('2d').drawImage(img, 0, 0, width, height);
                     tempBase64 = canvas.toDataURL('image/jpeg', 0.7);
-                    
                     document.getElementById('photo-preview').innerHTML = `<img src="${tempBase64}" onclick="openFullscreen('${tempBase64}')" style="max-width: 100%; max-height: 250px; border-radius: 8px; border: 1px solid #444; margin-top: 10px; cursor: zoom-in;">`;
-                    
-                    document.getElementById('btn-add-cart').style.display = 'none';
-                    document.getElementById('btn-save-db').style.display = 'block';
-                    document.getElementById('btn-take-photo').style.display = 'none';
-                    document.getElementById('btn-retake-photo').style.display = 'block';
-                    
+                    document.getElementById('btn-add-cart').style.display = 'none'; document.getElementById('btn-save-db').style.display = 'block';
+                    document.getElementById('btn-take-photo').style.display = 'none'; document.getElementById('btn-retake-photo').style.display = 'block';
                     document.getElementById('btn-cancel-modal').innerText = translations[currentLang].btn_cancel;
-                };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
-
-        let fsScale = 1, fsX = 0, fsY = 0, fsStartX = 0, fsStartY = 0, fsInitDist = 0, fsInitScale = 1, isDragging = false;
-
-        function openFullscreen(src) {
-            const img = document.getElementById('fullscreen-img');
-            img.src = src;
-            fsScale = 1; fsX = 0; fsY = 0;
-            img.style.transform = `translate(0px, 0px) scale(1)`;
-            document.getElementById('fullscreen-photo').style.display = 'flex';
-
-            if (!img.dataset.gestures) {
-                img.dataset.gestures = "true";
-                img.addEventListener('touchstart', (e) => {
-                    if (e.touches.length === 2) {
-                        fsInitDist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
-                        fsInitScale = fsScale;
-                    } else if (e.touches.length === 1) {
-                        fsStartX = e.touches[0].pageX - fsX;
-                        fsStartY = e.touches[0].pageY - fsY;
-                    }
-                }, { passive: false });
-
-                img.addEventListener('touchmove', (e) => {
-                    if (e.cancelable) e.preventDefault();
-                    if (e.touches.length === 2) {
-                        const currentDist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
-                        fsScale = Math.min(Math.max(1, fsInitScale * (currentDist / fsInitDist)), 5);
-                        img.style.transform = `translate(${fsX}px, ${fsY}px) scale(${fsScale})`;
-                    } else if (e.touches.length === 1 && fsScale > 1) {
-                        fsX = e.touches[0].pageX - fsStartX;
-                        fsY = e.touches[0].pageY - fsStartY;
-                        img.style.transform = `translate(${fsX}px, ${fsY}px) scale(${fsScale})`;
-                    }
-                }, { passive: false });
-
-                img.addEventListener('wheel', (e) => {
-                    e.preventDefault();
-                    const zoomAmount = e.deltaY > 0 ? 0.9 : 1.1; 
-                    fsScale = Math.min(Math.max(1, fsScale * zoomAmount), 5);
-                    if (fsScale === 1) { fsX = 0; fsY = 0; } 
-                    img.style.transform = `translate(${fsX}px, ${fsY}px) scale(${fsScale})`;
-                }, { passive: false });
-
-                img.addEventListener('mousedown', (e) => {
-                    if (fsScale > 1) {
-                        isDragging = true;
-                        fsStartX = e.pageX - fsX;
-                        fsStartY = e.pageY - fsY;
-                    }
-                });
-                
-                window.addEventListener('mousemove', (e) => {
-                    if (isDragging && fsScale > 1) {
-                        fsX = e.pageX - fsStartX;
-                        fsY = e.pageY - fsStartY;
-                        img.style.transform = `translate(${fsX}px, ${fsY}px) scale(${fsScale})`;
-                    }
-                });
-                
-                window.addEventListener('mouseup', () => { isDragging = false; });
-            }
-        }
-
-        function closeFullscreen(e) {
-            if (e && e.target.id === 'fullscreen-img' && fsScale > 1) return; 
-            forceCloseFs();
-        }
-
-        function forceCloseFs() {
-            document.getElementById('fullscreen-photo').style.display = 'none';
-            fsScale = 1; fsX = 0; fsY = 0; isDragging = false;
+                }; img.src = e.target.result;
+            }; reader.readAsDataURL(file);
         }
 
         async function confirmUpload() {
-            if (!navigator.onLine) {
-                alert(translations[currentLang].msg_sync_error);
-                return;
-            }
-
+            if (!navigator.onLine) return alert(translations[currentLang].msg_sync_error);
             const btnSaveDb = document.getElementById('btn-save-db');
-            btnSaveDb.innerText = "⏳ " + translations[currentLang].btn_saving;
-            btnSaveDb.disabled = true;
-
+            btnSaveDb.innerText = "⏳ " + translations[currentLang].btn_saving; btnSaveDb.disabled = true;
             try {
-                const res = await fetch(APPS_SCRIPT_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({ action: 'upload_photo', item_id: selectedItemId, base64: tempBase64 })
-                });
-                
-                const result = await res.json();
-                
-                if (result.success) {
-                    btnSaveDb.innerText = "✅ " + translations[currentLang].btn_saved;
-                    setTimeout(() => { location.reload(); }, 800);
-                } else {
-                    alert("Ошибка на сервере: " + result.error);
-                    btnSaveDb.innerHTML = '💾 <span data-i18n="btn_save_db">' + translations[currentLang].btn_save_db + '</span>';
-                    btnSaveDb.disabled = false;
-                }
-            } catch (e) {
-                alert("Ошибка сети: " + e.message);
-                btnSaveDb.innerHTML = '💾 <span data-i18n="btn_save_db">' + translations[currentLang].btn_save_db + '</span>';
-                btnSaveDb.disabled = false;
-            }
+                const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'upload_photo', item_id: selectedItemId, base64: tempBase64 }) });
+                if ((await res.json()).success) { btnSaveDb.innerText = "✅ " + translations[currentLang].btn_saved; setTimeout(() => { location.reload(); }, 800); }
+                else { alert("Ошибка сервера"); btnSaveDb.innerHTML = '💾 ' + translations[currentLang].btn_save_db; btnSaveDb.disabled = false; }
+            } catch (e) { alert("Ошибка сети"); btnSaveDb.innerHTML = '💾 ' + translations[currentLang].btn_save_db; btnSaveDb.disabled = false; }
         }
 
-        let barcodeBuffer = '';
-        let lastKeyTime = Date.now();
-
-        function processBarcode(code) {
-            const item = db.find(i => String(i.barcode) === String(code));
-            if (item) {
-                add(item.id); 
-                if (navigator.vibrate) navigator.vibrate(50); 
-            } else {
-                alert("Товар с кодом " + code + " не найден в базе");
+        let fsScale = 1, fsX = 0, fsY = 0, fsStartX = 0, fsStartY = 0, fsInitDist = 0, fsInitScale = 1, isDragging = false;
+        function openFullscreen(src) {
+            const img = document.getElementById('fullscreen-img'); img.src = src; fsScale = 1; fsX = 0; fsY = 0;
+            img.style.transform = `translate(0px, 0px) scale(1)`; document.getElementById('fullscreen-photo').style.display = 'flex';
+            if (!img.dataset.gestures) {
+                img.dataset.gestures = "true";
+                img.addEventListener('touchstart', (e) => { if (e.touches.length === 2) { fsInitDist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY); fsInitScale = fsScale; } else if (e.touches.length === 1) { fsStartX = e.touches[0].pageX - fsX; fsStartY = e.touches[0].pageY - fsY; } }, { passive: false });
+                img.addEventListener('touchmove', (e) => { if (e.cancelable) e.preventDefault(); if (e.touches.length === 2) { fsScale = Math.min(Math.max(1, fsInitScale * (Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY) / fsInitDist)), 5); img.style.transform = `translate(${fsX}px, ${fsY}px) scale(${fsScale})`; } else if (e.touches.length === 1 && fsScale > 1) { fsX = e.touches[0].pageX - fsStartX; fsY = e.touches[0].pageY - fsStartY; img.style.transform = `translate(${fsX}px, ${fsY}px) scale(${fsScale})`; } }, { passive: false });
             }
         }
+        function closeFullscreen(e) { if (e && e.target.id === 'fullscreen-img' && fsScale > 1) return; forceCloseFs(); }
+        function forceCloseFs() { document.getElementById('fullscreen-photo').style.display = 'none'; fsScale = 1; fsX = 0; fsY = 0; isDragging = false; }
 
+        let barcodeBuffer = ''; let lastKeyTime = Date.now();
         document.addEventListener('keypress', function(e) {
             if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-
             const currentTime = Date.now();
-            if (currentTime - lastKeyTime > 50) { barcodeBuffer = ''; }
-
-            if (e.key === 'Enter') {
-                if (barcodeBuffer.length > 2) {
-                    e.preventDefault();
-                    processBarcode(barcodeBuffer);
-                    barcodeBuffer = '';
-                }
-            } else { barcodeBuffer += e.key; }
-
+            if (currentTime - lastKeyTime > 50) barcodeBuffer = '';
+            if (e.key === 'Enter') { if (barcodeBuffer.length > 2) { e.preventDefault(); const item = db.find(i => String(i.barcode) === String(barcodeBuffer)); if (item) { add(item.id); if (navigator.vibrate) navigator.vibrate(50); } barcodeBuffer = ''; } } else barcodeBuffer += e.key;
             lastKeyTime = currentTime;
         });
     </script>
