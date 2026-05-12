@@ -931,15 +931,24 @@
             document.getElementById('btn-add-cart').style.display = 'block';
             document.getElementById('btn-save-db').style.display = 'none';
 
-            if (item.img && item.img.length > 10) {
-                let fileId = ""; const match = item.img.match(/[-\w]{25,}/); if (match) fileId = match[0];
-                if (fileId) {
-                    const safeUrl = `https://lh3.googleusercontent.com/d/$${fileId}`;
-                    preview.innerHTML = `<img src="${safeUrl}" onclick="openFullscreen('${safeUrl}')" onerror="this.onerror=null; this.parentNode.innerHTML='<div style=\\'color:#f1c40f; padding: 15px; border: 1px dashed #f1c40f; border-radius: 8px; font-size: 11px; font-weight: bold;\\'>⚠️ ФОТО НЕДОСТУПНО<br><br>Откройте доступ к папке с фото на Гугл Диске</div>';" style="max-width: 100%; max-height: 250px; border-radius: 8px; border: 1px solid #444; margin-top: 10px; cursor: zoom-in;">`;
-                } else preview.innerHTML = '<div style="color:red;">Не удалось прочитать ссылку на фото</div>';
-                document.getElementById('btn-take-photo').style.display = 'none'; document.getElementById('btn-retake-photo').style.display = 'block';
+            if (item.img && item.img.length > 5) {
+                let safeUrl = item.img; 
+                // Вытягиваем ID файла
+                const match = item.img.match(/[-\w]{25,}/); 
+                if (match) {
+                    // Используем скрытый thumbnail API от Google. 
+                    // sz=w800 означает ширину 800px. Гугл отдаст чистую картинку без редиректов!
+                    safeUrl = 'https://drive.google.com/thumbnail?id=' + match[0] + '&sz=w800';
+                }
+                
+                preview.innerHTML = `<img src="${safeUrl}" onclick="openFullscreen('${safeUrl}')" onerror="this.onerror=null; this.parentNode.innerHTML='<div style=\\'color:#f1c40f; padding: 15px; border: 1px dashed #f1c40f; border-radius: 8px; font-size: 11px; font-weight: bold;\\'>⚠️ ФОТО НЕДОСТУПНО<br><br>Google отклонил запрос или файл удален</div>';" style="max-width: 100%; max-height: 250px; border-radius: 8px; border: 1px solid #444; margin-top: 10px; cursor: zoom-in;">`;
+                
+                document.getElementById('btn-take-photo').style.display = 'none'; 
+                document.getElementById('btn-retake-photo').style.display = 'block';
             } else {
-                preview.innerHTML = ''; document.getElementById('btn-take-photo').style.display = 'block'; document.getElementById('btn-retake-photo').style.display = 'none';
+                preview.innerHTML = ''; 
+                document.getElementById('btn-take-photo').style.display = 'block'; 
+                document.getElementById('btn-retake-photo').style.display = 'none';
             }
             document.getElementById('btn-cancel-modal').innerText = translations[currentLang].btn_close;
             document.getElementById('item-menu-modal').style.display = 'flex';
