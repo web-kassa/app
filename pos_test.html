@@ -991,13 +991,21 @@
         }
 
         let fsScale = 1, fsX = 0, fsY = 0, fsStartX = 0, fsStartY = 0, fsInitDist = 0, fsInitScale = 1, isDragging = false;
+        
         function openFullscreen(src) {
             const img = document.getElementById('fullscreen-img'); img.src = src; fsScale = 1; fsX = 0; fsY = 0;
             img.style.transform = `translate(0px, 0px) scale(1)`; document.getElementById('fullscreen-photo').style.display = 'flex';
             if (!img.dataset.gestures) {
                 img.dataset.gestures = "true";
+                // --- Для телефонов (пальцы) ---
                 img.addEventListener('touchstart', (e) => { if (e.touches.length === 2) { fsInitDist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY); fsInitScale = fsScale; } else if (e.touches.length === 1) { fsStartX = e.touches[0].pageX - fsX; fsStartY = e.touches[0].pageY - fsY; } }, { passive: false });
                 img.addEventListener('touchmove', (e) => { if (e.cancelable) e.preventDefault(); if (e.touches.length === 2) { fsScale = Math.min(Math.max(1, fsInitScale * (Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY) / fsInitDist)), 5); img.style.transform = `translate(${fsX}px, ${fsY}px) scale(${fsScale})`; } else if (e.touches.length === 1 && fsScale > 1) { fsX = e.touches[0].pageX - fsStartX; fsY = e.touches[0].pageY - fsStartY; img.style.transform = `translate(${fsX}px, ${fsY}px) scale(${fsScale})`; } }, { passive: false });
+                
+                // --- ВЕРНУЛ: Для ПК (мышка) ---
+                img.addEventListener('wheel', (e) => { e.preventDefault(); const zoomAmount = e.deltaY > 0 ? 0.9 : 1.1; fsScale = Math.min(Math.max(1, fsScale * zoomAmount), 5); if (fsScale === 1) { fsX = 0; fsY = 0; } img.style.transform = `translate(${fsX}px, ${fsY}px) scale(${fsScale})`; }, { passive: false });
+                img.addEventListener('mousedown', (e) => { if (fsScale > 1) { isDragging = true; fsStartX = e.pageX - fsX; fsStartY = e.pageY - fsY; } });
+                window.addEventListener('mousemove', (e) => { if (isDragging && fsScale > 1) { fsX = e.pageX - fsStartX; fsY = e.pageY - fsStartY; img.style.transform = `translate(${fsX}px, ${fsY}px) scale(${fsScale})`; } });
+                window.addEventListener('mouseup', () => { isDragging = false; });
             }
         }
         function closeFullscreen(e) { if (e && e.target.id === 'fullscreen-img' && fsScale > 1) return; forceCloseFs(); }
