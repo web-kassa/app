@@ -515,8 +515,20 @@
         }
 
         function handleFocus(elem, rowId) {
+            // Выделяем текст, чтобы при вводе старые цифры стирались
             elem.select(); 
-            setTimeout(() => { const row = document.getElementById(rowId); if (row) row.scrollIntoView({behavior: "smooth", block: "center"}); }, 350);
+            
+            // Функция плавной прокрутки к центру экрана
+            const alignRow = () => {
+                const row = document.getElementById(rowId);
+                if (row) row.scrollIntoView({behavior: "smooth", block: "center"});
+            };
+
+            // Страховка от перекрытия при первом запуске:
+            // 350мс - сработает, если клавиатура уже "разогрета" и открылась быстро
+            // 750мс - сработает, если телефон "задумался" при первом открытии клавиатуры
+            setTimeout(alignRow, 350); 
+            setTimeout(alignRow, 750); 
         }
 
         function update() {
