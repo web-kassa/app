@@ -1081,7 +1081,6 @@ function handleInvoiceSelected(event) {
                 const base64Data = e.target.result.split(',')[1];
                 
                 try {
-                    // Отправляем файл на наш сервер
                     const response = await fetch(APPS_SCRIPT_URL, {
                         method: 'POST',
                         body: JSON.stringify({
@@ -1092,12 +1091,7 @@ function handleInvoiceSelected(event) {
                         })
                     });
                     
-                    // СЕКРЕТНЫЙ ДЕБАГ: Читаем ответ как сырой текст
-                    const rawText = await response.text();
-                    alert("СЕРВЕР ПРИСЛАЛ ЭТО:\n\n" + rawText);
-                    
-                    // Пытаемся превратить текст в JSON
-                    const result = JSON.parse(rawText);
+                    const result = await response.json();
                     
                     if (result.success) {
                         alert(`Успешно! Найдено товаров: ${result.itemsFound}.`);
@@ -1107,7 +1101,7 @@ function handleInvoiceSelected(event) {
                         alert("Сервер вернул ошибку логики: " + JSON.stringify(result));
                     }
                 } catch (error) {
-                    alert("Ошибка связи/парсинга JSON: " + error);
+                    alert("Ошибка связи с сервером: " + error);
                 }
             };
             reader.readAsDataURL(file);
