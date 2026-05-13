@@ -1082,8 +1082,11 @@ function handleInvoiceSelected(event) {
                 
                 try {
                     // Отправляем файл на наш сервер
-                    const response = await fetch(scriptURL, {
+                    const response = await fetch(APPS_SCRIPT_URL, {
                         method: 'POST',
+                        headers: {
+                            'Content-Type': 'text/plain;charset=utf-8'
+                        },
                         body: JSON.stringify({
                             action: 'upload_invoice',
                             fileName: file.name,
