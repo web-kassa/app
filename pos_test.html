@@ -169,9 +169,9 @@
                 <span id="clear-search" onclick="clearSearch()" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #888; font-size: 16px; cursor: pointer; display: none; padding: 5px; height: 100%; align-items: center; justify-content: center;">✕</span>
             </div>
             
-            <button onclick="openReport()" style="padding: 0 15px; background: #111; color: #f1c40f; border: 1px solid #333; border-radius: 4px; font-size: 16px; cursor: pointer;">📊</button>
-            <button id="btn-settings" onclick="openSettings()" style="padding: 0 15px; background: #222; color: #eee; border: 1px solid #555; border-radius: 4px; cursor: pointer;">⚙️ <span id="queue-counter" class="queue-badge">0</span></button>
-        </div>
+<button onclick="openReport()" style="padding: 0 15px; background: #111; color: #f1c40f; border: 1px solid #333; border-radius: 4px; font-size: 16px; cursor: pointer;">📊</button>
+<button onclick="openImport()" style="padding: 0 15px; background: #111; color: #3498db; border: 1px solid #333; border-radius: 4px; font-size: 16px; cursor: pointer;" title="Приемка товара">📥</button>
+<button id="btn-settings" onclick="openSettings()" style="padding: 0 15px; background: #222; color: #eee; border: 1px solid #555; border-radius: 4px; cursor: pointer;">⚙️ <span id="queue-counter" class="queue-badge">0</span></button>        </div>
         
         <div class="list-header">
             <div style="flex-grow: 1; display: flex; align-items: center; gap: 10px;">
@@ -260,6 +260,26 @@
                 </button>
             </div>
             <button class="cancel-btn" style="width: 100%; margin-top: 10px;" onclick="closeSettings()" data-i18n="btn_close">ЗАКРЫТЬ</button>
+        </div>
+    </div>
+
+<div id="import-modal" class="modal-overlay">
+        <div class="settings-box">
+            <div class="r-title" style="margin-bottom: 10px;">ПРИЕМКА ТОВАРА</div>
+            <div style="text-align: center; margin-bottom: 20px; color: #888; font-size: 11px; line-height: 1.4;">
+                Загрузите файл накладной (.xls, .xlsx, .csv). Система сама распознает колонки и обновит остатки.
+            </div>
+
+            <input type="file" id="invoice-file" accept=".xls,.xlsx,.csv" style="display: none;" onchange="handleInvoiceSelected(event)">
+
+            <button id="btn-select-invoice" onclick="document.getElementById('invoice-file').click()" style="width: 100%; padding: 15px; background: #0f2c40; color: #3498db; border: 1px solid #3498db; border-radius: 8px; font-weight: bold; font-size: 14px; text-transform: uppercase; cursor: pointer; margin-bottom: 15px;">
+                📄 ВЫБРАТЬ ФАЙЛ
+            </button>
+
+            <div id="import-status-area" style="display: none; padding: 15px; background: #1a1a1a; border: 1px dashed #555; border-radius: 8px; font-size: 12px; margin-bottom: 15px; color: #fff;">
+                </div>
+
+            <button class="cancel-btn" style="width: 100%;" onclick="closeImport()">ЗАКРЫТЬ</button>
         </div>
     </div>
 
@@ -1035,6 +1055,47 @@
             if (e.key === 'Enter') { if (barcodeBuffer.length > 2) { e.preventDefault(); const item = db.find(i => String(i.barcode) === String(barcodeBuffer)); if (item) { add(item.id); if (navigator.vibrate) navigator.vibrate(50); } barcodeBuffer = ''; } } else barcodeBuffer += e.key;
             lastKeyTime = currentTime;
         });
+        // --- ЛОГИКА ПРИЕМКИ (ИНВОЙСЫ) ---
+        function openImport() {
+            // Очищаем предыдущие состояния при открытии
+            document.getElementById('invoice-file').value = ''; 
+            document.getElementById('import-status-area').style.display = 'none';
+            document.getElementById('btn-select-invoice').style.display = 'block';
+            document.getElementById('import-modal').style.display = 'flex';
+        }
+
+        function closeImport() {
+            document.getElementById('import-modal').style.display = 'none';
+        }
+
+        function handleInvoiceSelected(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const btn = document.getElementById('btn-select-invoice');
+            btn.innerHTML = "⏳ ЗАГРУЗКА...";
+            btn.disabled = true;
+
+            // Читаем файл как Base64 для отправки на сервер
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const base64Data = e.target.result.split(',')[1];
+                const fileName = file.name;
+                const mimeType = file.type || "application/octet-stream";
+                
+                // Здесь мы будем отправлять base64Data в наш code.gs
+                console.log("Файл готов к отправке:", fileName);
+                
+                // Временная заглушка, пока не напишем серверную часть
+                setTimeout(() => {
+                    btn.innerHTML = "📄 ВЫБРАТЬ ФАЙЛ";
+                    btn.disabled = false;
+                    alert("Интерфейс готов! Ждем серверный скрипт.");
+                }, 1000);
+            };
+            reader.readAsDataURL(file);
+        }
+
     </script>
 </body>
 </html>
