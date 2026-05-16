@@ -1,7 +1,7 @@
 {
   "name": "Касса POS Noir",
   "short_name": "Касса",
-  "start_url": "./pos2.html",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#121212",
   "theme_color": "#121212",
