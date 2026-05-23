@@ -1,10 +1,8 @@
-const CACHE_NAME = 'pos-v65'; // <--- ВОТ ТУТ ПИШЕТСЯ ВЕРСИЯ, КОТОРУЮ ПОКАЖЕТ КАССА
+const CACHE_NAME = '062'; // <--- ВОТ ТУТ ПИШЕТСЯ ВЕРСИЯ, КОТОРУЮ ПОКАЖЕТ КАССА
 
 const ASSETS = [
   './',
   './index.html',
-  './pos2.html',
-  './pos_test.html',
   './config.js',
   './manifest.json',
   './icon.png' // <--- Вот она, разгадка! Мы указали правильное имя.
