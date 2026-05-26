@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>POS Noir v5.4.3</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         /* =========================================
            ЕДИНЫЙ ЦЕНТР УПРАВЛЕНИЯ ЦВЕТАМИ И ТЕМАМИ
@@ -83,9 +86,30 @@
 
         /* ========================================= */
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Courier New", Courier, monospace; }
+        * { 
+    /* ваши старые параметры (margin, padding и т.д.) остаются */
+    font-family: 'Roboto Condensed', sans-serif !important; 
+}
         
-        body { background: var(--bg-body); color: var(--text-main); font-weight: var(--font-weight-main); height: 100dvh; display: flex; flex-direction: column; overflow: hidden; transition: background-color 0.3s; }
+        html {
+            overscroll-behavior: none; /* Запрещаем эффект оттяжки на уровне документа */
+            background: var(--bg-body); /* Чтобы за краями не мелькал белый фон */
+        }
+
+        body { 
+            position: fixed; /* Намертво прибиваем приложение к экрану */
+            top: 0; left: 0; right: 0; bottom: 0;
+            width: 100%;
+            height: 100dvh; 
+            background: var(--bg-body); 
+            color: var(--text-main); 
+            font-weight: var(--font-weight-main); 
+            display: flex; 
+            flex-direction: column; 
+            overflow: hidden; 
+            overscroll-behavior: none; /* Дублируем запрет оттяжки для body */
+            transition: background-color 0.3s; 
+        }
         
         /* ЗАПРЕТ ВЫДЕЛЕНИЯ ТЕКСТА КАК В НАСТОЯЩЕМ ПРИЛОЖЕНИИ */
         body {
@@ -108,9 +132,28 @@
         ::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 3px; }
 
         /* КАТЕГОРИИ ТОВАРОВ */
-        .cat-bar { display: flex; overflow-x: auto; gap: 8px; padding: 10px 15px; border-bottom: 1px solid var(--border-main); flex-shrink: 0; min-height: 52px; background: var(--bg-body); }
-        .cat-btn { background: var(--bg-panel); color: var(--text-muted); border: 1px solid var(--border-light); font-weight: var(--font-weight-main); padding: 6px 14px; border-radius: 15px; font-size: 12px; cursor: pointer; white-space: nowrap; transition: 0.2s; text-transform: uppercase; }
-        .cat-btn.active { background: var(--accent-yellow); color: var(--text-dark); font-weight: bold; border-color: var(--accent-yellow); }
+        .cat-bar { 
+    display: flex; 
+    align-items: center; 
+    overflow-x: auto; 
+    gap: 8px; 
+    padding: 6px 15px; /* Уменьшили верхний и нижний отступы (было 10px) */
+    border-bottom: 1px solid var(--border-main); 
+    flex-shrink: 0; 
+    min-height: 0; /* Полностью убрали жесткую высоту (было 52px) */
+    background: var(--bg-body); 
+}
+        .cat-btn { 
+            background: var(--bg-panel); color: var(--text-muted); border: 1px solid var(--border-light); 
+            font-weight: var(--font-weight-main); font-size: 12px; cursor: pointer; white-space: nowrap; 
+            transition: 0.2s; text-transform: uppercase; 
+            padding: 0 16px; height: 32px; border-radius: 16px;
+            display: inline-flex; align-items: center; justify-content: center;
+        }
+        .cat-btn.active { 
+            background: var(--accent-yellow); color: var(--text-dark); 
+            font-weight: bold; border-color: var(--accent-yellow); 
+        }
         .cat-bar::-webkit-scrollbar { height: 4px; }
         .cat-bar::-webkit-scrollbar-track { background: transparent; }
         .cat-bar::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 4px; }
@@ -213,21 +256,22 @@
         .row-top { font-size: 11px; font-weight: bold; color: var(--text-muted); margin-bottom: 4px; display: flex; justify-content: space-between; gap: 10px; }
         .row-ctrl { display: flex; justify-content: space-between; align-items: center; }
         
-        .qty-box { display: flex; align-items: center; background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 4px; height: 38px; overflow: hidden; }
-        .q-btn { background: var(--bg-hover); color: var(--accent-yellow); width: 38px; height: 100%; border: none; font-size: 20px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .cart-row { background: var(--bg-panel); border: 1px solid var(--border-main); border-radius: 4px; padding: 6px 10px; display: flex; flex-direction: column; gap: 6px; }
+        
+        .qty-box { display: flex; align-items: center; background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 4px; height: 34px; width: 150px; flex-shrink: 0; overflow: hidden; }
+        .q-btn { background: var(--bg-hover); color: var(--accent-yellow); width: 40px; flex-shrink: 0; height: 100%; border: none; font-size: 20px; font-weight: bold; cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center; }
         .q-btn:hover { background: var(--border-light); }
-        .q-val { width: 80px; height: 100%; text-align: center; font-size: 16px; font-weight: bold; background: transparent; border: none; color: var(--text-main); outline: none; border-left: 1px solid var(--border-light); border-right: 1px solid var(--border-light); }
-        .p-input { width: 85px; height: 38px; background: var(--bg-card); color: var(--accent-yellow); border: 1px solid var(--border-light); text-align: right; padding: 8px; border-radius: 4px; font-size: 15px; font-weight: bold; outline: none; }
+        .q-val { flex: 1; min-width: 0; height: 100%; text-align: center; font-size: 16px; font-weight: bold; background: transparent; border: none; color: var(--text-main); outline: none; border-left: 1px solid var(--border-light); border-right: 1px solid var(--border-light); font-family: 'Roboto', sans-serif; padding: 0; box-sizing: border-box; }
+        
+        .p-input { width: 100%; min-width: 0; height: 34px; background: var(--bg-card); color: var(--accent-yellow); border: 1px solid var(--border-light); text-align: right; padding: 0 24px 0 10px; border-radius: 4px; font-size: 16px; font-weight: bold; outline: none; font-family: 'Roboto', sans-serif; box-sizing: border-box; }
         
         .footer { flex-shrink: 0; padding: 6px 4px; border-top: 1px solid var(--border-main); background: var(--bg-panel); }
         .total-box { display: flex; justify-content: space-between; font-size: 18px; font-weight: 900; margin-bottom: 6px; padding: 0 4px; color: var(--text-main); }
         
-        .btns { display: grid; grid-template-columns: repeat(5, 1fr); gap: 2px; }
-        .pay { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 50px; border: none; border-radius: 4px; color: #ffffff; cursor: pointer; padding: 2px; }
-        .pay-title { font-weight: bold; font-size: 8px; text-transform: uppercase; margin-bottom: 2px; }
-        .pay-sum { font-size: 9px; font-weight: 900; opacity: 0.9; white-space: nowrap; }
-        
-        .p-cash { background: #27ae60; } .p-qr { background: #c0392b; } .p-red { background: #8e44ad; } .p-card { background: #2980b9; } .p-trans { background: #f39c12; color: #000000; } .p-trans .pay-sum { color: #000000; }
+        .pay-row-5 { display: flex; gap: 4px; width: 100%; }
+        .pay-row-5 .pay-btn { flex: 1; border-radius: 4px; border: none; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 50px; padding: 6px 0; color: #ffffff; cursor: pointer; min-width: 0; overflow: hidden; }
+        .pay-row-5 .pay-title { font-size: 9px; font-weight: bold; letter-spacing: -0.3px; white-space: nowrap; text-transform: uppercase; }
+        .pay-row-5 .pay-sum { font-size: 11px; font-family: 'Roboto', sans-serif; font-weight: bold; margin-top: 2px; white-space: nowrap; }
 
         /* --- МОДАЛЬНЫЕ ОКНА --- */
         .modal-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg-overlay); z-index: 100; display: none; flex-direction: column; justify-content: center; align-items: center; padding: 20px; }
@@ -285,6 +329,14 @@
         .swipeable-text::-webkit-scrollbar {
             display: none;
         }
+    /* Широкий шрифт для всех цен, сумм и итогов */
+.i-price, 
+.total, 
+.total-sum, 
+.pay-btn,
+.hb-item span:last-child {
+    font-family: 'Roboto', sans-serif !important;
+}
     </style>
 </head>
 <body>
@@ -355,12 +407,27 @@
         <div id="cart-list"></div>
         <div class="footer">
             <div class="total-box"><span id="tl" data-i18n="total_label_sale">ИТОГО:</span><span id="ta">0 ₸</span></div>
-            <div class="btns">
-                <button class="pay p-cash" onclick="initPay('cash', 'Наличные')"><span class="pay-title" data-i18n="pay_cash">Нал</span><span class="pay-sum" id="sum-cash">0 ₸</span></button>
-                <button class="pay p-qr" onclick="initPay('qr_kaspi', 'Kaspi QR')"><span class="pay-title" data-i18n="pay_qr">QR</span><span class="pay-sum" id="sum-qr">0 ₸</span></button>
-                <button class="pay p-red" onclick="initPay('installment', 'Kaspi Red')"><span class="pay-title" data-i18n="pay_red">Red</span><span class="pay-sum" id="sum-red">0 ₸</span></button>
-                <button class="pay p-card" onclick="initPay('pos_terminal', 'Карта')"><span class="pay-title" data-i18n="pay_card">Карт</span><span class="pay-sum" id="sum-card">0 ₸</span></button>
-                <button class="pay p-trans" onclick="initPay('transfer', 'Перевод')"><span class="pay-title" data-i18n="pay_trans">Пер</span><span class="pay-sum" id="sum-trans">0 ₸</span></button>
+            <div class="pay-row-5">
+                <button class="pay-btn" style="background-color: #2ecc71;" onclick="initPay('cash', 'Наличные')">
+                    <span class="pay-title" data-i18n="pay_cash_full">НАЛИЧНЫЕ</span>
+                    <span class="pay-sum" id="sum-cash">0 ₸</span>
+                </button>
+                <button class="pay-btn" style="background-color: #e74c3c;" onclick="initPay('qr_kaspi', 'Kaspi QR')">
+                    <span class="pay-title" data-i18n="pay_qr_full">QR</span>
+                    <span class="pay-sum" id="sum-qr">0 ₸</span>
+                </button>
+                <button class="pay-btn" style="background-color: #9b59b6;" onclick="initPay('installment', 'Рассрочка')">
+                    <span class="pay-title" data-i18n="pay_red_full">РАССРОЧКА</span>
+                    <span class="pay-sum" id="sum-red">0 ₸</span>
+                </button>
+                <button class="pay-btn" style="background-color: #2980b9;" onclick="initPay('pos_terminal', 'Терминал')">
+                    <span class="pay-title" data-i18n="pay_card_full">ТЕРМИНАЛ</span>
+                    <span class="pay-sum" id="sum-card">0 ₸</span>
+                </button>
+                <button class="pay-btn" style="background-color: #f39c12;" onclick="initPay('transfer', 'Перевод')">
+                    <span class="pay-title" data-i18n="pay_trans_full">ПЕРЕВОД</span>
+                    <span class="pay-sum" id="sum-trans">0 ₸</span>
+                </button>
             </div>
         </div>
     </div>
@@ -495,7 +562,7 @@
                 income_title: "📦 ИМПОРТ НАКЛАДНОЙ",
                 income_rate: "Курс USD/KZT:",
                 income_file: "Выберите файл:",
-                income_parse: "РАСПОЗНАТЬ ФАЙЛ",
+                income_parse: "ОБРАБОТАТЬ ФАЙЛ",
                 income_code: "Код",
                 income_name: "Наименование",
                 income_qty: "Кол-во",
@@ -519,7 +586,12 @@
                 inc_err_sheet_no_table: "[Лист {0}]: нет таблицы с цифрами", cat_all: "Все",
                 server_dup: "Накладная с номером {0} уже была проведена ранее.",
                 server_no_db: "База не привязана. Нажмите POS Setup -> Привязать базу.",
-                theme_toggle: "СМЕНА ТЕМЫ (ДЕНЬ/НОЧЬ)", settings_theme: "ОФОРМЛЕНИЕ"
+                theme_toggle: "СМЕНА ТЕМЫ (ДЕНЬ/НОЧЬ)", settings_theme: "ОФОРМЛЕНИЕ",
+                pay_cash_full: "НАЛИЧНЫЕ",
+                pay_qr_full: "QR",
+                pay_red_full: "РАССРОЧКА",
+                pay_card_full: "ТЕРМИНАЛ",
+                pay_trans_full: "ПЕРЕВОД"
             },
             kz: {
                 btn_sale: "САТУ", btn_return: "ҚАЙТАРУ", search_placeholder: "ІЗДЕУ...",
@@ -544,7 +616,7 @@
                 income_title: "📦 ЖҮКҚҰЖАТТЫ ИМПОРТТАУ",
                 income_rate: "USD/KZT бағамы:",
                 income_file: "Файлды таңдаңыз:",
-                income_parse: "ФАЙЛДЫ ОҚУ",
+                income_parse: "ФАЙЛДЫ ӨҢДЕУ",
                 income_code: "Коды",
                 income_name: "Атауы",
                 income_qty: "Саны",
@@ -568,7 +640,12 @@
                 inc_err_sheet_no_table: "[{0} парағы]: цифрлары бар кесте жоқ", cat_all: "Барлығы",
                 server_dup: "{0} нөмірлі жүкқұжат бұрын қабылданған.",
                 server_no_db: "Дерекқор байланыспаған. POS Setup -> Привязать базу түймесін басыңыз.",
-                theme_toggle: "ТАҚЫРЫПТЫ АУЫСТЫРУ (КҮН/ТҮН)", settings_theme: "КӨРІНІС"
+                theme_toggle: "ТАҚЫРЫПТЫ АУЫСТЫРУ (КҮН/ТҮН)", settings_theme: "КӨРІНІС",
+                pay_cash_full: "ҚОЛМА ҚОЛ",
+                pay_qr_full: "QR",
+                pay_red_full: "БӨЛІП ТӨЛЕУ",
+                pay_card_full: "ТЕРМИНАЛ",
+                pay_trans_full: "АУДАРЫМ"
             }
         };
 
@@ -892,14 +969,25 @@
             if (!db || db.length === 0) return catalog.innerHTML = '<div style="color:var(--text-muted); padding:20px; text-align:center;">Загрузка товаров...</div>';
             catalog.innerHTML = db.map(i => {
                 const hasPhoto = i.img && i.img.toString().length > 10;
-                const photoBadge = `<span onclick="openItemMenu('${i.id}'); event.stopPropagation();" style="background-color: ${hasPhoto?'var(--accent-yellow)':'var(--border-light)'}; color: ${hasPhoto?'var(--text-dark)':'var(--text-muted)'}; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px; margin-right: 8px; border: 1px solid var(--border-focus);">ФОТО</span>`;
+                // Компактная иконка вместо слова ФОТО с правильным курсором
+                const photoBadge = `<span onclick="openItemMenu('${i.id}'); event.stopPropagation();" style="display:flex; align-items:center; justify-content:center; width: 28px; height: 28px; background-color: ${hasPhoto?'var(--accent-yellow)':'var(--bg-hover)'}; color: ${hasPhoto?'#000':'var(--text-muted)'}; font-size: 15px; border-radius: 4px; margin-right: 8px; border: 1px solid ${hasPhoto?'var(--accent-yellow)':'var(--border-focus)'}; flex-shrink: 0; cursor: pointer; user-select: none;">📷</span>`;
                 
                 const roundedPrice = Math.round(Number(i.price) || 0);
                 
                 return `<div class="c-item" onclick="add('${i.id}')" data-cat="${i.category || ''}">
-                    <div class="i-name" style="display:flex; align-items:center;">${photoBadge} <span class="swipeable-text">${i.name || 'Без названия'}</span></div>
-                    <div class="i-price">${roundedPrice.toLocaleString()} ₸</div>
-                    <div class="i-stock">${Number(i.stock)||0}</div>
+                    <div class="i-name" style="display:flex; align-items:center; flex: 1; min-width: 0;">
+                        ${photoBadge} 
+                        
+                        <div style="display: flex; align-items: center; gap: 6px; flex: 1; overflow-x: auto; white-space: nowrap; scrollbar-width: none;">
+                            <span style="color: var(--text-main); font-size: 13px;">${i.name || 'Без названия'}</span>
+                            <span style="color: var(--text-muted); font-size: 11px; font-family: 'Roboto', sans-serif; font-weight: normal;">#${i.id}</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="i-price" style="width: auto; min-width: 60px; white-space: nowrap; flex-shrink: 0; margin-left: 6px;">${roundedPrice.toLocaleString('ru-RU')} ₸</div>
+                    
+                    <div class="i-stock" style="flex-shrink: 0; margin-left: 6px;">${Number(i.stock)||0}</div>
                 </div>`;
             }).join('');
             
@@ -980,19 +1068,34 @@
         function update() {
             document.getElementById('cart-list').innerHTML = cart.map((item, idx) => `
                 <div class="cart-row" id="r-${item.id}">
-                    <div class="row-top" style="padding-right: 75px;">${item.name}</div>
-                    <div class="row-ctrl">
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        
+                        <div style="display: flex; align-items: center; gap: 6px; flex: 1; overflow-x: auto; white-space: nowrap; scrollbar-width: none;">
+                            <span style="color: var(--text-main); font-size: 13px; font-weight: bold;">${item.name}</span>
+                            <span style="color: var(--text-muted); font-size: 11px; font-family: 'Roboto', sans-serif; font-weight: normal;">#${item.id}</span>
+                        </div>
+                        
+                        <div style="display: flex; justify-content: flex-end; align-items: center; width: 110px; flex-shrink: 0;">
+                            <span style="color: var(--text-muted); font-size: 12px; font-family: 'Roboto', sans-serif; text-decoration: ${item.origPrice && item.origPrice !== item.price ? 'line-through' : 'none'};">${item.origPrice ? item.origPrice.toLocaleString('ru-RU') : item.price.toLocaleString('ru-RU')} ₸</span>
+                            <div onclick="rm('${item.id}')" style="color:var(--accent-red); font-size:18px; font-weight:bold; cursor:pointer; margin-left: 10px; line-height: 1; user-select: none;">✕</div>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        
                         <div class="qty-box">
                             <button class="q-btn" onclick="qty('${item.id}',-1)">-</button>
-                            <input type="text" inputmode="numeric" class="q-val" value="${item.qty}" onfocus="handleFocus(this, 'r-${item.id}')" oninput="cart[${idx}].qty=parseInt(this.value)||0; total()">
+                            <input type="text" inputmode="numeric" class="q-val" value="${item.qty.toLocaleString('ru-RU')}" onfocus="handleFocus(this, 'r-${item.id}')" oninput="cart[${idx}].qty=parseInt(this.value.replace(/\\s/g, ''))||0; total()" onchange="update()">
                             <button class="q-btn" onclick="qty('${item.id}',1)">+</button>
                         </div>
-                        <div style="position: relative;">
-                            <span style="position: absolute; bottom: calc(100% + 4px); right: 0; color: var(--text-muted); font-size: 10px; white-space: nowrap; pointer-events: none;">${item.origPrice ? item.origPrice.toLocaleString() : item.price.toLocaleString()} ₸</span>
-                            <input type="text" inputmode="numeric" class="p-input" value="${item.price}" onfocus="handleFocus(this, 'r-${item.id}')" oninput="cart[${idx}].price=parseFloat(this.value)||0; total()">
+                        
+                        <div style="position: relative; width: 110px; flex-shrink: 0;">
+                            <input type="text" inputmode="numeric" class="p-input" value="${item.price.toLocaleString('ru-RU')}" onfocus="handleFocus(this, 'r-${item.id}')" oninput="cart[${idx}].price=parseFloat(this.value.replace(/\\s/g, '').replace(',', '.'))||0; total()" onchange="update()">
+                            <span style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); color: var(--accent-yellow); font-size: 14px; pointer-events: none; font-family: 'Roboto', sans-serif; font-weight: bold;">₸</span>
                         </div>
-                        <div onclick="rm('${item.id}')" style="color:var(--accent-red);padding:3px;font-size:18px; cursor: pointer;">✕</div>
                     </div>
+
                 </div>`).join('');
             total();
         }
@@ -1302,7 +1405,8 @@
             const names = { 'cash': translations[currentLang].pay_cash, 'qr_kaspi': 'Kaspi QR', 'installment': 'Kaspi Red', 'pos_terminal': translations[currentLang].pay_card, 'transfer': translations[currentLang].pay_trans };
             let t = { sale: 0, return: 0 };
             
-            if (start !== end && (!currentUser || currentUser.role === 'manager')) {
+            // Теперь красивый отчет с поиском, группировкой и средней ценой работает ВСЕГДА (даже за 1 день)
+            if (true) {
                 searchInput.parentElement.style.display = 'block'; 
                 searchInput.value = ''; searchInput.placeholder = translations[currentLang].search_placeholder;
 
@@ -1312,7 +1416,7 @@
 
                 reportDataToRender.forEach(h => {
                     let isRet = h.type === 'return';
-                    let sellerId = h.seller || 'Анон'; // Берем ID продавца
+                    let sellerId = h.seller || 'Анон'; 
                     h.cart.forEach(c => {
                         if (!aggregated[c.name]) aggregated[c.name] = { name: c.name, salesQty: 0, salesSum: 0, returnsQty: 0, returnsSum: 0, sellers: {} };
                         if (!aggregated[c.name].sellers[sellerId]) aggregated[c.name].sellers[sellerId] = { salesQty: 0, salesSum: 0, returnsQty: 0, returnsSum: 0 };
@@ -1337,7 +1441,6 @@
                     const netSum = item.salesSum - item.returnsSum;
                     let detailsHtml = '';
 
-                    // Перебираем всех продавцов, кто продавал этот товар
                     for (let seller in item.sellers) {
                         let s = item.sellers[seller];
                         
@@ -1365,7 +1468,7 @@
                             <div class="item-card" onclick="this.parentElement.classList.toggle('active')">
                                 <div class="swipeable-text" style="font-size: 12px; color: var(--text-main);">${item.name}</div>
                                 <div style="text-align: right; color: var(--text-muted); font-size: 12px;">${netQty}</div>
-                                <div style="text-align: right; font-weight: 700; font-size: 13px; color: ${netSum < 0 ? 'var(--accent-red)' : 'var(--accent-green)'}; gap: 4px;">${netSum.toLocaleString()} <span class="dropdown-icon" style="font-size:8px">▼</span></div>
+                                <div style="text-align: right; font-weight: 700; font-size: 13px; color: ${netSum < 0 ? 'var(--accent-red)' : 'var(--accent-green)'}; display: flex; align-items: center; justify-content: flex-end; gap: 4px;">${netSum.toLocaleString()} <span class="dropdown-icon" style="font-size:8px">▼</span></div>
                             </div>
                             <div class="item-details"><div style="padding: 6px 8px;">${detailsHtml}</div></div>
                         </div>`;
@@ -1384,33 +1487,8 @@
                         <div style="text-align: right; font-size: 12px; font-weight: bold; color: var(--text-muted);">${tSalesQty - tReturnsQty}</div>
                         <div style="text-align: right; font-size: 15px; font-weight: 900; color: var(--text-main); white-space: nowrap;">${(tSalesSum - tReturnsSum).toLocaleString()} ₸</div>
                     </div>`;
-            } else {
-                searchInput.parentElement.style.display = 'none'; 
-                
-                reportDataToRender.sort((a, b) => {
-                    if (a.time > b.time) return -1;
-                    if (a.time < b.time) return 1;
-                    return 0;
-                });
-
-                repList.innerHTML = reportDataToRender.map(h => {
-                    let isRet = h.type === 'return';
-                    if (isRet) t.return += h.total; else t.sale += h.total;
-                    let itemsHtml = h.cart.map(c => `<div class="hb-item" style="gap: 10px;"><span class="swipeable-text">${c.name} (${c.qty})</span><span style="white-space: nowrap; flex-shrink: 0;">${(c.qty*c.price).toLocaleString()} ₸</span></div>`).join('');
-                    let timeHtml = h.time.includes('⏳') ? `<span style="color:var(--accent-yellow)">${h.time}</span>` : h.time;
-                    return `<div class="hist-block" style="border-left-color: ${colors[h.methodCode] || 'var(--accent-green)'};">
-                        <div class="hb-head" style="color: ${colors[h.methodCode] || 'var(--accent-green)'}; gap: 10px;">
-                            <span class="swipeable-text">${timeHtml} | ${isRet ? translations[currentLang].btn_return : translations[currentLang].btn_sale} | ${names[h.methodCode]||h.methodCode} | 👤 ${h.seller || 'Анон'}</span>
-                            <span style="white-space: nowrap; flex-shrink: 0;">${isRet?'-':''}${h.total.toLocaleString()} ₸</span>
-                        </div>
-                        <div class="${isRet?'hb-type-r':''}">${itemsHtml}</div>
-                    </div>`;
-                }).join('');
-                
-                totalsBox.innerHTML = `<div style="display:flex; justify-content:space-between; color:var(--accent-green); font-size:12px; margin-bottom:4px;"><span>${translations[currentLang].report_sales.toUpperCase()}:</span><span>${t.sale.toLocaleString()} ₸</span></div>
-                    <div style="display:flex; justify-content:space-between; color:var(--accent-red); font-size:12px; margin-bottom:4px;"><span>${translations[currentLang].report_returns.toUpperCase()}:</span><span>${t.return.toLocaleString()} ₸</span></div>
-                    <div style="display:flex; justify-content:space-between; color:var(--text-main); font-weight:bold; font-size:16px; margin-top:8px; border-top:1px dashed var(--border-focus); padding-top:8px;"><span>${translations[currentLang].report_in_register}</span><span>${(t.sale - t.return).toLocaleString()} ₸</span></div>`;
             }
+            total();
         }
 
         function closeReport() { document.getElementById('report-modal').style.display = 'none'; }
@@ -1981,7 +2059,7 @@
                 </div>
             </div>
             
-            <button id="parseInvoiceBtn" onclick="processInvoiceFile()" style="background: var(--bg-success-dim); color: var(--accent-green); border: 1px solid var(--accent-green); padding: 12px 15px; border-radius: 4px; cursor: pointer; width: 100%; font-weight: bold; font-size: 14px;" data-i18n="income_parse">РАСПОЗНАТЬ ФАЙЛ</button>            
+<button id="parseInvoiceBtn" onclick="processInvoiceFile()" style="background: var(--bg-success-dim); color: var(--accent-green); border: 1px solid var(--accent-green); padding: 12px 15px; border-radius: 4px; cursor: pointer; width: 100%; font-weight: bold; font-size: 14px;" data-i18n="income_parse">ОБРАБОТАТЬ ФАЙЛ</button>
             
             <div id="debug-container" style="display: none; margin-top: 15px; flex-direction: column; overflow-y: auto; max-height: 50vh;"></div>
 
