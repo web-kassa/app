@@ -1,0 +1,2410 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <link rel="manifest" href="manifest.json">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Trade Control v5.5.0</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* =========================================
+           ЕДИНЫЙ ЦЕНТР УПРАВЛЕНИЯ ЦВЕТАМИ И ТЕМАМИ
+           ========================================= */
+        
+        /* 1. ТЕМНАЯ ТЕМА (ПО УМОЛЧАНИЮ) */
+        :root {
+            color-scheme: dark;
+            --bg-body: #0a0a0a;
+            --bg-panel: #111111;
+            --bg-card: #141414;
+            --bg-hover: #1a1a1a;
+            --bg-modal: #111111;
+            --bg-overlay: rgba(0,0,0,0.85);
+
+            --border-main: #222222;
+            --border-light: #333333;
+            --border-focus: #444444;
+
+            --text-main: #ffffff;
+            --text-muted: #888888;
+            --text-placeholder: #555555;
+            --text-dark: #000000;
+
+            --accent-yellow: #f1c40f;
+            --accent-green: #2ecc71;
+            --accent-red: #e74c3c;
+            --accent-blue: #3498db;
+
+            --bg-success-dim: #1a3a20;
+            --bg-danger-dim: #3a1a1a;
+            --bg-return: #2c0b0b;
+
+            --stock-bg: #003333;
+            --stock-text: #00ffff;
+            --stock-border: #008888;
+
+            --font-weight-main: normal;
+        }
+
+        /* 2. СВЕТЛАЯ ТЕМА (IOS CLASSIC) */
+        body.light-theme {
+            color-scheme: light;
+            --bg-body: #f2f2f7;
+            --bg-panel: #ffffff;
+            --bg-card: #ffffff;
+            --bg-hover: #e5e5ea;
+            --bg-modal: #ffffff;
+            --bg-overlay: rgba(0,0,0,0.5);
+
+            --border-main: #c6c6c8;
+            --border-light: #d1d1d6;
+            --border-focus: #a1a1a6;
+
+            --text-main: #000000;
+            --text-muted: #666666;
+            --text-placeholder: #888888;
+            --text-dark: #000000; 
+
+            --accent-yellow: #d4ac0d;
+            --accent-green: #27ae60;
+            --accent-red: #c0392b;
+            --accent-blue: #007bff;
+
+            --bg-success-dim: #e8f5e9;
+            --bg-danger-dim: #ffebee;
+            --bg-return: #ffebee; /* Сигнальный светло-красный фон для возврата */
+
+            --stock-bg: #e0f7fa;
+            --stock-text: #006064;
+            --stock-border: #00bcd4;
+
+            --font-weight-main: bold;
+        }
+
+        /* ========================================= */
+
+        * { 
+    /* ваши старые параметры (margin, padding и т.д.) остаются */
+    font-family: 'Roboto Condensed', sans-serif !important; 
+}
+        
+        html {
+            overscroll-behavior: none; /* Запрещаем эффект оттяжки на уровне документа */
+            background: var(--bg-body); /* Чтобы за краями не мелькал белый фон */
+        }
+
+        body { 
+            position: fixed; /* Намертво прибиваем приложение к экрану */
+            top: 0; left: 0; right: 0; bottom: 0;
+            width: 100%;
+            height: 100dvh; 
+            background: var(--bg-body); 
+            color: var(--text-main); 
+            font-weight: var(--font-weight-main); 
+            display: flex; 
+            flex-direction: column; 
+            overflow: hidden; 
+            overscroll-behavior: none; /* Дублируем запрет оттяжки для body */
+            transition: background-color 0.3s; 
+        }
+        
+        /* ЗАПРЕТ ВЫДЕЛЕНИЯ ТЕКСТА КАК В НАСТОЯЩЕМ ПРИЛОЖЕНИИ */
+        body {
+            -webkit-user-select: none; /* Для Safari и старых браузеров */
+            -moz-user-select: none;    /* Для Firefox */
+            -ms-user-select: none;     /* Для Edge */
+            user-select: none;         /* Стандартный синтаксис */
+        }
+
+        /* ИСКЛЮЧЕНИЕ: РАЗРЕШАЕМ ВЫДЕЛЕНИЕ ТОЛЬКО В ПОЛЯХ ВВОДА */
+        input, textarea {
+            -webkit-user-select: auto;
+            -moz-user-select: auto;
+            -ms-user-select: auto;
+            user-select: auto;
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 3px; }
+
+        /* КАТЕГОРИИ ТОВАРОВ */
+        .cat-bar { 
+    display: flex; 
+    align-items: center; 
+    overflow-x: auto; 
+    gap: 8px; 
+    padding: 6px 15px; /* Уменьшили верхний и нижний отступы (было 10px) */
+    border-bottom: 1px solid var(--border-main); 
+    flex-shrink: 0; 
+    min-height: 0; /* Полностью убрали жесткую высоту (было 52px) */
+    background: var(--bg-body); 
+}
+        .cat-btn { 
+            background: var(--bg-panel); color: var(--text-muted); border: 1px solid var(--border-light); 
+            font-weight: var(--font-weight-main); font-size: 12px; cursor: pointer; white-space: nowrap; 
+            transition: 0.2s; text-transform: uppercase; 
+            padding: 0 16px; height: 32px; border-radius: 16px;
+            display: inline-flex; align-items: center; justify-content: center;
+        }
+        .cat-btn.active { 
+            background: var(--accent-yellow); color: var(--text-dark); 
+            font-weight: bold; border-color: var(--accent-yellow); 
+        }
+        .cat-bar::-webkit-scrollbar { height: 4px; }
+        .cat-bar::-webkit-scrollbar-track { background: transparent; }
+        .cat-bar::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 4px; }
+        .cat-bar::-webkit-scrollbar-thumb:hover { background: var(--accent-yellow); }
+
+        /* КОНТЕЙНЕР УЛЬТРА-МИНИМАЛИЗМА (ПРИЕМКА) */
+        .minimal-input-container { display: flex; gap: 10px; align-items: center; width: 100%; margin-bottom: 15px; }
+        .currency-minimal-container { flex: 0 0 70px; position: relative; }
+        .currency-minimal-header { width: 100%; background: var(--bg-body); border: 1px solid var(--border-light); padding: 12px 10px; border-radius: 4px; font-size: 14px; font-weight: bold; color: var(--accent-yellow); cursor: pointer; box-sizing: border-box; transition: 0.2s; display: flex; justify-content: space-between; align-items: center; user-select: none; }
+        .currency-minimal-header:hover, .currency-minimal-header.active { border-color: var(--accent-yellow); background: var(--bg-card); }
+        .curr-arrow-mini { color: var(--text-placeholder); font-size: 8px; margin-left: 3px; }
+        .currency-minimal-list { position: absolute; top: 100%; left: 0; width: 80px; background: var(--bg-panel); border: 1px solid var(--border-light); border-top: none; border-radius: 0 0 4px 4px; z-index: 10; display: none; flex-direction: column; margin-top: 1px; }
+        .currency-minimal-list.show { display: flex; }
+        .currency-minimal-item { padding: 10px; cursor: pointer; border-bottom: 1px solid var(--bg-hover); transition: background 0.2s; font-size: 13px; font-weight: bold; color: var(--text-main); text-align: center; }
+        .currency-minimal-item:last-child { border-bottom: none; }
+        .currency-minimal-item:hover { background: var(--bg-hover); color: var(--text-main); }
+        .currency-minimal-item.selected { color: var(--text-dark); background: var(--accent-yellow); }
+        
+        .file-input-wrapper { flex: 1; position: relative; }
+        .file-upload-label { display: flex; align-items: center; justify-content: space-between; width: 100%; background: var(--bg-body); color: var(--text-main); border: 1px dashed var(--border-focus); padding: 12px; border-radius: 4px; font-size: 13px; cursor: pointer; box-sizing: border-box; transition: all 0.2s ease-in-out; overflow: hidden; white-space: nowrap; }
+        .file-upload-label:hover { background: var(--bg-card); border-color: var(--accent-yellow); color: var(--text-main); }
+        .file-placeholder-text { color: var(--text-placeholder); transition: 0.2s; }
+        .file-upload-label:hover .file-placeholder-text { color: var(--text-main); }
+        .file-content { display: flex; align-items: center; gap: 8px; overflow: hidden; text-overflow: ellipsis; }
+
+        /* --- ЭКРАН ВХОДА И КЛАВИАТУРА --- */
+        #pin-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: var(--bg-body); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .login-label { color: var(--accent-green); font-size: 24px; margin-bottom: 25px; font-weight: bold; letter-spacing: 5px; }
+        
+        .pin-input { background: var(--bg-card); border: 1px solid var(--border-light); color: var(--accent-yellow); padding: 15px; font-size: 32px; width: 220px; text-align: center; margin-bottom: 10px; outline: none; letter-spacing: 12px; border-radius: 8px; }
+        
+        #login-error { color: var(--accent-red); font-size: 12px; visibility: hidden; font-weight: bold; min-height: 15px; margin-bottom: 15px; }
+
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-10px); } 40%, 80% { transform: translateX(10px); } }
+        .error-shake { animation: shake 0.4s; border-color: var(--accent-red) !important; color: var(--accent-red) !important; }
+
+        .numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+        .num-btn { background: var(--bg-hover); border: 1px solid var(--border-light); color: var(--text-main); font-size: 28px; width: 70px; height: 70px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; user-select: none; transition: 0.1s; font-weight: bold; }
+        .num-btn:active { background: var(--border-light); border-color: var(--accent-green); transform: scale(0.95); }
+        .num-btn.btn-clear { color: var(--accent-red); font-size: 22px; }
+
+        /* --- ШАПКА --- */
+        .header-area { flex-shrink: 0; border-bottom: 1px solid var(--border-main); background: var(--bg-panel); }
+        .modes { display: flex; padding: 4px; gap: 4px; }
+        .m-btn { flex: 1; height: 35px; line-height: 1; padding: 0; border: 1px solid var(--border-light); background: var(--bg-panel); color: var(--text-muted); font-weight: 900; border-radius: 4px; font-size: 13px; text-transform: uppercase; transition: 0.2s; }
+        .m-btn.active-s { background: var(--bg-success-dim); color: var(--accent-green); border-color: var(--accent-green); }
+        .m-btn.active-r { background: var(--bg-danger-dim); color: var(--accent-red); border-color: var(--accent-red); }
+
+        .btn-exit-top { flex: 0.25; background: var(--bg-danger-dim); color: var(--accent-red); border: 1px solid var(--accent-red); border-radius: 4px; font-size: 20px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+        /* Сжатая структура кнопок для увеличения поиска */
+        .search-area { padding: 0 4px 4px; display: flex; gap: 4px; align-items: stretch; }
+        .s-input-container { position: relative; flex-grow: 1; flex-shrink: 1; min-width: 0; }
+        .s-input { width: 100%; height: 100%; background: var(--bg-card); color: var(--text-main); font-weight: var(--font-weight-main); border: 1px solid var(--border-light); border-radius: 4px; padding: 8px 30px 8px 10px; font-size: 14px; outline: none; box-sizing: border-box; }
+        
+        .header-action-btn { padding: 0 8px; background: var(--bg-panel); border: 1px solid var(--border-light); border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+        .header-btn-sync { color: var(--accent-blue); font-size: 18px; font-weight: bold; }
+        .header-btn-report { color: var(--accent-yellow); font-size: 16px; }
+        .header-btn-income { background: var(--bg-success-dim); color: var(--accent-green); border-color: var(--accent-green); font-size: 11px; font-weight: bold; gap: 3px; padding: 0 6px; }
+        .header-btn-settings { background: var(--border-main); color: var(--text-main); font-size: 16px; border-color: var(--text-muted); }
+
+        .list-header { display: flex; align-items: center; gap: 8px; padding: 4px 14px; font-size: 10px; color: var(--text-muted); font-weight: bold; border-bottom: 1px solid var(--border-main); background: var(--bg-body); }
+.badge { 
+            font-size: 9px; 
+            color: var(--text-muted); 
+            background: var(--bg-hover); 
+            padding: 2px 6px; 
+            border-radius: 6px; 
+            border: 1px solid var(--border-light); 
+            text-transform: lowercase; 
+            white-space: nowrap; 
+        }
+        
+        .cashier-badge { 
+            color: var(--accent-green); 
+            border-color: var(--bg-success-dim); 
+            text-transform: uppercase; 
+            font-weight: 900; 
+            margin-left: 10px; 
+            white-space: nowrap; 
+            overflow: hidden;    
+            text-overflow: ellipsis; 
+            max-width: 110px;    
+        }
+        /* --- КАССА --- */
+        #catalog { flex-grow: 1; min-height: 0; overflow-y: auto; padding: 4px; border-bottom: 1px solid var(--border-main); background: var(--bg-body); }
+        .c-item { background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 4px; padding: 8px 10px; margin-bottom: 3px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: 0.2s; }
+        .c-item:hover { background: var(--bg-hover); }
+        .i-name { flex-grow: 1; font-size: 12px; font-weight: bold; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .i-price { width: 85px; font-size: 13px; font-weight: bold; text-align: right; color: var(--accent-green); }
+        /* ВЫРАВНИВАНИЕ ОСТАТКОВ ПО ПРАВОМУ КРАЮ */
+        .i-stock { width: 50px; font-size: 14px; font-weight: bold; text-align: right; padding-right: 4px; color: var(--stock-text); background: var(--stock-bg); border: 1px solid var(--stock-border); border-radius: 3px; }
+
+        .cart-sec { flex-shrink: 0; background: var(--bg-panel); border-top: 2px solid var(--accent-green); display: flex; flex-direction: column; max-height: 40dvh; }
+        .cart-sec.r-theme { border-top-color: var(--accent-red); }
+        #cart-list { overflow-y: auto; padding: 4px; padding-bottom: 15px; background: var(--bg-body); }
+        #cart-list:empty { padding: 0; }
+        
+        .cart-row { background: var(--bg-panel); padding: 6px; border-radius: 4px; margin-bottom: 3px; border: 1px solid var(--border-main); color: var(--text-main); }
+        .row-top { font-size: 11px; font-weight: bold; color: var(--text-muted); margin-bottom: 4px; display: flex; justify-content: space-between; gap: 10px; }
+        .row-ctrl { display: flex; justify-content: space-between; align-items: center; }
+        
+        .cart-row { background: var(--bg-panel); border: 1px solid var(--border-main); border-radius: 4px; padding: 6px 10px; display: flex; flex-direction: column; gap: 6px; }
+        
+        .qty-box { display: flex; align-items: center; background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 4px; height: 34px; width: 150px; flex-shrink: 0; overflow: hidden; }
+        .q-btn { background: var(--bg-hover); color: var(--accent-yellow); width: 40px; flex-shrink: 0; height: 100%; border: none; font-size: 20px; font-weight: bold; cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center; }
+        .q-btn:hover { background: var(--border-light); }
+        .q-val { flex: 1; min-width: 0; height: 100%; text-align: center; font-size: 16px; font-weight: bold; background: transparent; border: none; color: var(--text-main); outline: none; border-left: 1px solid var(--border-light); border-right: 1px solid var(--border-light); font-family: 'Roboto', sans-serif; padding: 0; box-sizing: border-box; }
+        
+        .p-input { width: 100%; min-width: 0; height: 34px; background: var(--bg-card); color: var(--accent-yellow); border: 1px solid var(--border-light); text-align: right; padding: 0 24px 0 10px; border-radius: 4px; font-size: 16px; font-weight: bold; outline: none; font-family: 'Roboto', sans-serif; box-sizing: border-box; }
+        
+        .footer { flex-shrink: 0; padding: 6px 4px; border-top: 1px solid var(--border-main); background: var(--bg-panel); }
+        .total-box { display: flex; justify-content: space-between; font-size: 18px; font-weight: 900; margin-bottom: 6px; padding: 0 4px; color: var(--text-main); }
+        
+        .pay-row-5 { display: flex; gap: 4px; width: 100%; }
+        .pay-row-5 .pay-btn { flex: 1; border-radius: 4px; border: none; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 50px; padding: 6px 0; color: #ffffff; cursor: pointer; min-width: 0; overflow: hidden; }
+        .pay-row-5 .pay-title { font-size: 9px; font-weight: bold; letter-spacing: -0.3px; white-space: nowrap; text-transform: uppercase; }
+        .pay-row-5 .pay-sum { font-size: 11px; font-family: 'Roboto', sans-serif; font-weight: bold; margin-top: 2px; white-space: nowrap; }
+
+        /* --- МОДАЛЬНЫЕ ОКНА --- */
+        .modal-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg-overlay); z-index: 100; display: none; flex-direction: column; justify-content: center; align-items: center; padding: 20px; }
+        .receipt-box { width: 100%; max-width: 400px; border: 2px dashed var(--border-focus); background: var(--bg-modal); padding: 20px; border-radius: 8px; color: var(--text-main); }
+        .r-title { text-align: center; font-size: 18px; font-weight: bold; margin-bottom: 5px; color: var(--text-main); }
+        .r-method { text-align: center; font-size: 12px; color: var(--accent-yellow); margin-bottom: 15px; text-transform: uppercase; }
+        .r-item { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px; border-bottom: 1px dotted var(--border-light); padding-bottom: 2px; color: var(--text-main); }
+        .r-total { text-align: right; font-size: 18px; font-weight: bold; margin-top: 15px; border-top: 1px solid var(--border-focus); padding-top: 10px; color: var(--text-main); }
+        
+        .modal-btns { display: flex; gap: 10px; margin-top: 25px; }
+        .cancel-btn { flex: 1; padding: 15px; background: var(--bg-hover); color: var(--text-main); border: 1px solid var(--border-focus); border-radius: 4px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 12px; }
+        .confirm-btn { flex: 2; padding: 15px; background: var(--accent-green); color: var(--text-dark); border: none; border-radius: 4px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 14px; }
+
+        .hist-block { background: var(--bg-card); border: 1px solid var(--border-light); border-left-width: 4px; border-radius: 4px; padding: 10px; margin-bottom: 8px; }
+        .hb-head { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 6px; font-weight: bold; border-bottom: 1px dashed var(--border-light); padding-bottom: 6px; text-transform: uppercase; }
+        .hb-item { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
+        .hb-type-r { text-decoration: line-through; opacity: 0.6; }
+
+        .settings-box { width: 100%; max-width: 350px; background: var(--bg-modal); border: 1px solid var(--border-focus); padding: 20px; border-radius: 8px; color: var(--text-main); box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .s-group { margin-bottom: 15px; border-bottom: 1px solid var(--border-main); padding-bottom: 15px; }
+        .s-title { font-size: 11px; color: var(--text-muted); margin-bottom: 10px; text-transform: uppercase; font-weight: bold; }
+        .s-btn { width: 100%; padding: 12px; background: var(--bg-hover); color: var(--text-main); border: 1px solid var(--border-focus); border-radius: 4px; margin-bottom: 5px; cursor: pointer; text-align: left; display: flex; justify-content: space-between; font-size: 13px; align-items: center; font-weight: var(--font-weight-main); }
+        .lang-row { display: flex; gap: 5px; }
+        .lang-btn { flex: 1; padding: 12px; background: var(--bg-hover); color: var(--text-muted); border: 1px solid var(--border-focus); border-radius: 4px; cursor: pointer; text-align: center; font-weight: bold; transition: 0.2s;}
+        .lang-btn.active { background: var(--bg-success-dim); color: var(--accent-green); border-color: var(--accent-green); }
+        
+        .queue-badge { background: var(--accent-red); color: #fff; padding: 2px 6px; border-radius: 10px; font-size: 10px; font-weight: bold; display: none; margin-left: 5px; }
+
+        input[type="date"] { position: relative; }
+        input[type="date"]::-webkit-calendar-picker-indicator { position: absolute; top: 0; left: 0; right: 0; bottom: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+        
+        .item-wrapper { margin-bottom: 4px; }
+        .item-card { display: grid; grid-template-columns: 1fr 45px minmax(90px, auto); gap: 8px; padding: 6px 8px; border: 1px solid var(--border-light); border-radius: 5px; background: var(--bg-card); cursor: pointer; transition: background 0.2s; align-items: center; }        
+        .item-wrapper.active .dropdown-icon { transform: rotate(180deg); color: var(--accent-green); }
+        .item-wrapper.active .item-details { max-height: 120px; }
+        .item-details { background: var(--bg-body); border: 1px solid var(--border-light); border-top: none; border-bottom-left-radius: 5px; border-bottom-right-radius: 5px; max-height: 0; overflow: hidden; transition: max-height 0.2s ease-out; }
+    
+        .rep-search-container { position: relative; width: 100%; }
+        #rep-clear-search { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 16px; cursor: pointer; display: none; padding: 5px; }
+        .rep-table-header { position: sticky; top: 0; z-index: 10; background: var(--bg-panel); display: grid; grid-template-columns: 1fr 40px 85px; gap: 8px; font-size: 10px; color: var(--text-muted); font-weight: bold; padding: 8px 8px; border-bottom: 1px solid var(--border-light); text-transform: uppercase; }
+    
+        /* --- КНОПКА SOFT SYNC --- */
+        @keyframes spin-sync { 100% { transform: rotate(360deg); } }
+        .sync-spin { animation: spin-sync 1s linear infinite; color: var(--accent-green) !important; border-color: var(--accent-green) !important; pointer-events: none; }
+    
+    /* Стили для свайпа текста в отчете */
+        .swipeable-text {
+            flex: 1; 
+            min-width: 0; 
+            white-space: nowrap; 
+            overflow-x: auto; 
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .swipeable-text::-webkit-scrollbar {
+            display: none;
+        }
+    /* Широкий шрифт для всех цен, сумм и итогов */
+.i-price, 
+.total, 
+.total-sum, 
+.pay-btn,
+.hb-item span:last-child {
+    font-family: 'Roboto', sans-serif !important;
+}
+    </style>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+
+    <h1>Trade Control POS</h1>
+<p>Trade Control is a web-based Point of Sale (POS) application designed for internal inventory management and daily sales tracking.</p>
+<p><strong>How it works:</strong> The application requires access to your Google Sheets. It reads product data (names, prices, barcodes) from your personal spreadsheet to display them in the POS interface, and writes completed sales transactions directly back into your spreadsheet.</p>
+<p><a href="privacy.html">Privacy Policy</a></p>
+
+    <!-- НОВЫЙ БЛОК: Это экран входа, он виден сразу -->
+    <div id="google-screen" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: #1e1e1e; color: white;">
+        <h1 style="margin-bottom: 20px;">Вход в Trade Control</h1>
+        <button onclick="loginWithGoogle()" style="padding: 15px 30px; font-size: 16px; background-color: #4285F4; color: white; border: none; border-radius: 5px; cursor: pointer;">
+            Войти через Google
+        </button>
+    </div>
+
+    <div id="pin-screen" style="display: none;">
+        <div class="login-label" data-i18n="login_title">ВХОД</div>
+        <input type="password" id="pin-field" class="pin-input" placeholder="****" readonly>
+        <div id="login-error">НЕВЕРНЫЙ ПИН-КОД</div>
+        
+        <div class="numpad">
+            <div class="num-btn" onclick="addPin('1')">1</div>
+            <div class="num-btn" onclick="addPin('2')">2</div>
+            <div class="num-btn" onclick="addPin('3')">3</div>
+            <div class="num-btn" onclick="addPin('4')">4</div>
+            <div class="num-btn" onclick="addPin('5')">5</div>
+            <div class="num-btn" onclick="addPin('6')">6</div>
+            <div class="num-btn" onclick="addPin('7')">7</div>
+            <div class="num-btn" onclick="addPin('8')">8</div>
+            <div class="num-btn" onclick="addPin('9')">9</div>
+            <div class="num-btn btn-clear" onclick="clearPin()">C</div>
+            <div class="num-btn" onclick="addPin('0')">0</div>
+            <div class="num-btn btn-clear" onclick="delPin()">⌫</div>
+        </div>
+    </div>
+
+    <div class="header-area">
+        <div class="modes">
+            <button id="ms" class="m-btn active-s" onclick="sm('sale')" data-i18n="btn_sale">ПРОДАЖА</button>
+            <button id="mr" class="m-btn" onclick="sm('return')" data-i18n="btn_return">ВОЗВРАТ</button>
+            <button class="btn-exit-top" onclick="logout()">✖</button>
+        </div>
+        
+        <div class="search-area">
+            <div class="s-input-container">
+                <input type="text" id="sb" class="s-input" data-i18n-placeholder="search_placeholder" placeholder="ПОИСК..." oninput="handleSearchInput()">
+                <span id="clear-search" onclick="clearSearch()" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 16px; cursor: pointer; display: none; padding: 5px; height: 100%; align-items: center; justify-content: center;">✕</span>
+            </div>
+            
+            <button id="btn-sync-data" class="header-action-btn header-btn-sync" onclick="refreshPosData()" title="Обновить остатки и цены">↻</button>
+            
+            <button class="header-action-btn header-btn-report" onclick="openReport()">📊</button>
+            
+            <button class="header-action-btn header-btn-income" onclick="toggleIncomeModule()">
+                📦 <span data-i18n="receive_btn" style="max-width: 60px; overflow: hidden; text-overflow: ellipsis;">ПРИЕМКА</span>
+            </button>
+            
+            <button id="btn-settings" class="header-action-btn header-btn-settings" onclick="openSettings()">
+                ⚙️ <span id="queue-counter" class="queue-badge">0</span>
+            </button>
+        </div>
+        
+        <div class="list-header">
+            <div style="flex-grow: 1; display: flex; align-items: center; gap: 10px;">
+                <span data-i18n="header_name">НАИМЕНОВАНИЕ</span>
+                <span id="app-version" class="badge">v: ---</span>
+                <span id="cashier-info" class="cashier-badge" style="display: none;">👤 ---</span>
+            </div>
+            <div style="width: 85px; text-align: right;" data-i18n="header_price">ЦЕНА</div>
+            <div style="width: 50px; text-align: right; padding-right: 4px;" data-i18n="header_stock">ОСТ</div>
+        </div>
+    </div>
+
+    <div class="cat-bar" id="categoryBar"></div>
+
+    <div id="catalog"></div>
+
+    <div id="cs" class="cart-sec">
+        <div id="cart-list"></div>
+        <div class="footer">
+            <div class="total-box"><span id="tl" data-i18n="total_label_sale">ИТОГО:</span><span id="ta">0 ₸</span></div>
+            <div class="pay-row-5">
+                <button class="pay-btn" style="background-color: #2ecc71;" onclick="initPay('cash', 'Наличные')">
+                    <span class="pay-title" data-i18n="pay_cash_full">НАЛИЧНЫЕ</span>
+                    <span class="pay-sum" id="sum-cash">0 ₸</span>
+                </button>
+                <button class="pay-btn" style="background-color: #e74c3c;" onclick="initPay('qr_kaspi', 'Kaspi QR')">
+                    <span class="pay-title" data-i18n="pay_qr_full">QR</span>
+                    <span class="pay-sum" id="sum-qr">0 ₸</span>
+                </button>
+                <button class="pay-btn" style="background-color: #9b59b6;" onclick="initPay('installment', 'Рассрочка')">
+                    <span class="pay-title" data-i18n="pay_red_full">РАССРОЧКА</span>
+                    <span class="pay-sum" id="sum-red">0 ₸</span>
+                </button>
+                <button class="pay-btn" style="background-color: #2980b9;" onclick="initPay('pos_terminal', 'Терминал')">
+                    <span class="pay-title" data-i18n="pay_card_full">ТЕРМИНАЛ</span>
+                    <span class="pay-sum" id="sum-card">0 ₸</span>
+                </button>
+                <button class="pay-btn" style="background-color: #f39c12;" onclick="initPay('transfer', 'Перевод')">
+                    <span class="pay-title" data-i18n="pay_trans_full">ПЕРЕВОД</span>
+                    <span class="pay-sum" id="sum-trans">0 ₸</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="receipt-modal" class="modal-overlay">
+        <div class="receipt-box">
+            <div id="r-title" class="r-title">ПОДТВЕРЖДЕНИЕ</div>
+            <div id="r-method" class="r-method">Метод оплаты</div>
+            <div id="r-items-list"></div>
+            <div id="r-total" class="r-total">ИТОГО: 0 ₸</div>
+            <div class="modal-btns">
+                <button class="cancel-btn" onclick="cancelTx()" data-i18n="btn_cancel">ОТМЕНА</button>
+                <button id="btn-confirm" class="confirm-btn" onclick="confirmTx()" data-i18n="btn_confirm">ПОДТВЕРДИТЬ</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="report-modal" class="modal-overlay">
+        <div class="receipt-box" style="max-height: 85vh; display: flex; flex-direction: column; width: 100%; max-width: 400px; padding: 15px; border-color: var(--border-focus);">
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; border-bottom: 1px solid var(--border-light); padding-bottom: 10px;">
+                <div id="rep-header-title" style="font-size: 14px; font-weight: bold; color: var(--text-main); text-align: center;">ОТЧЕТ</div>
+                <div id="date-range-controls" style="display: none; flex-direction: column; gap: 10px; width: 100%; margin-top: 10px;">
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 5px;">
+                        <input type="date" id="rep-date-start" style="background: var(--border-main); color: var(--text-main); border: 1px solid var(--border-focus); padding: 5px; border-radius: 4px; font-size: 11px; width: 115px;" onchange="renderReport()">
+                        <span style="color: var(--text-muted);">—</span>
+                        <input type="date" id="rep-date-end" style="background: var(--border-main); color: var(--text-main); border: 1px solid var(--border-focus); padding: 5px; border-radius: 4px; font-size: 11px; width: 115px;" onchange="renderReport()">
+                    </div>
+                    <div class="rep-search-container" id="rep-search-wrap" style="display: none;">
+                        <input type="text" id="rep-search" data-i18n-placeholder="search_placeholder" placeholder="ПОИСК..." oninput="filterReport()" style="-webkit-appearance: none; background: var(--bg-hover); color: var(--text-main); border: 1px solid var(--border-focus); padding: 8px 35px 8px 10px; border-radius: 4px; font-size: 12px; outline: none; width: 100%; box-sizing: border-box; font-weight: var(--font-weight-main);">
+                        <span id="rep-clear-search" onclick="clearReportSearch()">✕</span>
+                    </div>
+                </div>
+            </div>
+            <div id="rep-list" style="flex-grow: 1; overflow-y: auto; padding-right: 5px;"></div>
+            <div id="rep-totals" style="margin-top: 15px; border-top: 2px solid var(--border-focus); padding-top: 10px;"></div>
+            <div class="modal-btns" style="margin-top: 15px;">
+                <button class="cancel-btn" style="width: 100%;" onclick="closeReport()" data-i18n="btn_close_report">ЗАКРЫТЬ ОТЧЕТ</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="settings-modal" class="modal-overlay">
+        <div class="settings-box">
+            <div class="r-title" style="margin-bottom: 20px;" data-i18n="settings_title">НАСТРОЙКИ</div>
+            <div class="s-group">
+                <div class="s-title" data-i18n="settings_lang">Язык интерфейса</div>
+                <div class="lang-row">
+                    <button id="lang-ru" class="lang-btn active" onclick="applyLanguage('ru')">RU</button>
+                    <button id="lang-kz" class="lang-btn" onclick="applyLanguage('kz')">KZ</button>
+                </div>
+            </div>
+            <div class="s-group">
+                <div class="s-title" data-i18n="settings_sync">Синхронизация</div>
+                <button class="s-btn" onclick="manualSync()">
+                    <span data-i18n="btn_sync">Отправить чеки</span><span id="sync-status">📡</span>
+                </button>
+            </div>
+            <div class="s-group">
+                <div class="s-title" data-i18n="settings_system">Система</div>
+                <button class="s-btn" onclick="forceAppUpdate()">
+                    <span data-i18n="btn_update">Обновить кэш</span><span id="update-status">🔄</span>
+                </button>
+            </div>
+            
+            <div class="s-group" style="border: none; padding-bottom: 0;">
+                <div class="s-title" data-i18n="settings_theme">Оформление</div>
+                <button class="s-btn" onclick="toggleTheme()">
+                    <span data-i18n="theme_toggle">СМЕНА ТЕМЫ</span><span>🌓</span>
+                </button>
+            </div>
+
+            <button class="cancel-btn" style="width: 100%; margin-top: 10px;" onclick="closeSettings()" data-i18n="btn_close">ЗАКРЫТЬ</button>
+        </div>
+    </div>
+
+    <div id="item-menu-modal" class="modal-overlay" onclick="handleCancelModal()">
+        <div class="settings-box" onclick="event.stopPropagation()">
+            <div id="menu-item-name" class="r-title" style="font-size: 14px; margin-bottom: 20px;">Название товара</div>
+            <div id="photo-preview" style="text-align: center; margin: 10px 0; min-height: 20px;"></div>
+            
+            <button id="btn-add-cart" onclick="confirmAddFromMenu()" style="background: var(--bg-success-dim); color: var(--accent-green); border-color: var(--accent-green); margin-bottom: 12px; width: 100%; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 14px; text-transform: uppercase; border: 1px solid; cursor: pointer;">🛒 <span data-i18n="btn_add_cart">В КОРЗИНУ</span></button>
+            <button id="btn-save-db" onclick="confirmUpload()" style="display: none; background: var(--bg-panel); color: var(--accent-blue); border-color: var(--accent-blue); margin-bottom: 12px; width: 100%; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 14px; text-transform: uppercase; border: 1px solid; cursor: pointer;">💾 <span data-i18n="btn_save_db">СОХРАНИТЬ В БАЗУ</span></button>
+
+            <div id="btn-take-photo" style="margin-bottom: 12px; width: 100%;">
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="triggerCamera()" style="flex: 1; background: var(--bg-hover); color: var(--text-main); border-color: var(--border-focus); padding: 15px; border-radius: 8px; font-weight: bold; font-size: 13px; text-transform: uppercase; border: 1px solid; cursor: pointer;">📸 <span data-i18n="btn_camera">КАМЕРА</span></button>
+                    <button onclick="triggerGallery()" style="flex: 1; background: var(--bg-hover); color: var(--text-main); border-color: var(--border-focus); padding: 15px; border-radius: 8px; font-weight: bold; font-size: 13px; text-transform: uppercase; border: 1px solid; cursor: pointer;">📂 <span data-i18n="btn_gallery">ГАЛЕРЕЯ</span></button>
+                </div>
+            </div>
+            <div id="btn-retake-photo" style="display: none; margin-bottom: 12px; width: 100%;">
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="triggerCamera()" style="flex: 1; background: var(--bg-hover); color: var(--text-main); border-color: var(--border-focus); padding: 15px; border-radius: 8px; font-weight: bold; font-size: 13px; text-transform: uppercase; border: 1px solid; cursor: pointer;">🔄 <span data-i18n="btn_camera">КАМЕРА</span></button>
+                    <button onclick="triggerGallery()" style="flex: 1; background: var(--bg-hover); color: var(--text-main); border-color: var(--border-focus); padding: 15px; border-radius: 8px; font-weight: bold; font-size: 13px; text-transform: uppercase; border: 1px solid; cursor: pointer;">🔄 <span data-i18n="btn_gallery">ГАЛЕРЕЯ</span></button>
+                </div>
+            </div>
+            <button id="btn-cancel-modal" class="cancel-btn" style="width: 100%; margin-top: 10px; background: var(--bg-danger-dim); color: var(--accent-red); border-color: var(--accent-red); padding: 15px; border-radius: 8px; font-weight: bold; font-size: 14px; text-transform: uppercase; border: 1px solid; cursor: pointer;" onclick="handleCancelModal()">ЗАКРЬІТЬ</button>
+        </div>
+    </div>
+
+    <div id="fullscreen-photo" class="modal-overlay" style="z-index: 2000; flex-direction: column;" onclick="closeFullscreen(event)">
+        <div style="position: absolute; top: 15px; right: 20px; background: rgba(0,0,0,0.6); color: #fff; width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 20px; font-weight: bold; cursor: pointer; z-index: 2001;" onclick="forceCloseFs()">✕</div>
+        <img id="fullscreen-img" style="max-width: 95%; max-height: 95%; object-fit: contain; border-radius: 8px; touch-action: none;">
+    </div>
+
+    <input type="file" id="camera-input" accept="image/*" capture="environment" style="display: none;" onchange="handlePhoto(event)">
+    <input type="file" id="gallery-input" accept="image/*" style="display: none;" onchange="handlePhoto(event)">
+    <canvas id="resize-canvas" style="display: none;"></canvas>
+
+    <script src="config.js?v=5.4.3"></script>
+    <script>
+        const translations = {
+            ru: {
+                btn_sale: "ПРОДАЖА", btn_return: "ВОЗВРАТ", search_placeholder: "ПОИСК...",
+                header_name: "НАИМЕНОВАНИЕ", header_price: "ЦЕНА", header_stock: "ОСТ",
+                total_label_sale: "ИТОГО:", total_label_return: "К ВОЗВРАТУ:",
+                pay_cash: "Нал", pay_qr: "QR", pay_red: "Red", pay_card: "Карт", pay_trans: "Пер",
+                btn_cancel: "ОТМЕНА", btn_confirm: "ПОДТВЕРДИТЬ", btn_close: "ЗАКРЫТЬ",
+                btn_close_report: "ЗАКРЫТЬ ОТЧЕТ", settings_title: "НАСТРОЙКИ",
+                settings_lang: "ЯЗЫК ИНТЕРФЕЙСА", settings_sync: "СИНХРОНИЗАЦИЯ", settings_system: "СИСТЕМА",
+                btn_sync: "Отправить чеки", btn_update: "Обновить кэш",
+                msg_sync_empty: "Все чеки уже отправлены!", msg_sync_success: "Синхронизация успешна!", msg_sync_error: "Ошибка сети.",
+                txt_sale_confirm: "ПОДТВЕРДИТЬ ПРОДАЖУ", txt_return_confirm: "ПОДТВЕРДИТЬ ВОЗВРАТ",
+                txt_payment: "Оплата: ", txt_total: "ИТОГО: ",
+                btn_add_cart: "В КОРЗИНУ", btn_save_db: "СОХРАНИТЬ В БАЗУ", 
+                btn_camera: "КАМЕРА", btn_gallery: "ГАЛЕРЕЯ",
+                btn_saving: "СОХРАНЕНИЕ...", btn_saved: "СОХРАНЕНО!",
+                report_name: "НАИМЕНОВАНИЕ", report_qty: "КОЛ.", report_sum: "СУММА",
+                report_sales: "Продажи", report_returns: "Возвраты", report_total_net: "Итого (чис.):",
+                report_in_register: "В КАССЕ:", msg_loading: "ЗАГРУЗКА...", msg_no_internet: "НЕТ ИНТЕРНЕТА", 
+                msg_no_data: "ОПЕРАЦИЙ НЕ НАЙДЕНО", msg_server_error: "ОШИБКА СЕРВЕРА",
+                report_avg: "ср:",
+                income_title: "📦 ИМПОРТ НАКЛАДНОЙ",
+                income_rate: "Курс USD/KZT:",
+                income_file: "Выберите файл:",
+                income_parse: "ОБРАБОТАТЬ ФАЙЛ",
+                income_code: "Код",
+                income_name: "Наименование",
+                income_qty: "Кол-во",
+                income_price: "Цена",
+                income_confirm: "✅ ОПРИХОДОВАТЬ НА СКЛАД",
+                income_meta_supplier: "Поставщик",
+                income_meta_doc: "Документ",
+                income_meta_items: "Позиций",
+                receive_btn: "ПРИЕМКА",
+                pin_no_internet: "НЕТ ИНТЕРНЕТА", pin_checking: "ПРОВЕРКА...", pin_granted: "ДОСТУП РАЗРЕШЕН",
+                pin_wrong: "НЕВЕРНЫЙ ПИН-КОД", pin_wrong_left: "НЕВЕРНЫЙ ПИН. ОСТАЛОСЬ: ", pin_conn_error: "СБОЙ ПОДКЛЮЧЕНИЯ",
+                inc_file_selected: "Выбрано файлов: ", inc_file_placeholder: "Нажмите для выбора Excel",
+                inc_err_no_doc: "нет номера инвойса", inc_err_no_sup: "нет поставщика", inc_err_no_table: "таблица с товарами не найдена",
+                inc_err_missing: "в шапке (строка {0}) не найдено: ", inc_err_no_items: "из таблицы не удалось извлечь товары",
+                inc_success: "{0} поз. распознано", inc_err_doc_format: "ОШИБКА НОМЕРА",
+                inc_lbl_sup: "Поставщик:", inc_lbl_doc: "Документ:", inc_lbl_items: "Позиций:",
+                inc_empty_cart: "Корзина пуста!", inc_doc_empty: "Номер документа не может быть пустым!",
+                inc_sending: "Отправка {0}...", inc_server_err: "Ошибка сервера", inc_send_err: "❌ Ошибка при отправке инвойса: ",
+                inc_archive_created: "Архив создан! Склад обновлен.", inc_all_done: "✅ Все накладные успешно проведены!",
+                word_code: "«Код»", word_qty: "«Кол-во»", word_price: "«Цена»", login_title: "ВХОД", inc_err_sheet_missing: "[Лист {0}] стр. {1}: нет ",
+                inc_err_sheet_no_table: "[Лист {0}]: нет таблицы с цифрами", cat_all: "Все",
+                server_dup: "Накладная с номером {0} уже была проведена ранее.",
+                server_no_db: "База не привязана. Нажмите POS Setup -> Привязать базу.",
+                theme_toggle: "СМЕНА ТЕМЫ (ДЕНЬ/НОЧЬ)", settings_theme: "ОФОРМЛЕНИЕ",
+                pay_cash_full: "НАЛИЧНЫЕ",
+                pay_qr_full: "QR",
+                pay_red_full: "РАССРОЧКА",
+                pay_card_full: "ТЕРМИНАЛ",
+                pay_trans_full: "ПЕРЕВОД",
+                income_cbm: "Объем (CBM)",
+                income_weight: "Вес (кг)",
+                inc_file_selected: "Выбрано файлов: ",
+                inc_file_placeholder: "Нажмите для выбора Excel",
+                inc_no_file: "Пожалуйста, выберите файл!",
+                inc_file_corrupted: "Файл поврежден или не является таблицей",
+                inc_empty_cart: "Корзина пуста!",
+                inc_doc_empty: "Номер документа не может быть пустым!",
+                inc_all_done: "✅ Все накладные успешно проведены, оригиналы сохранены в папки!",
+                err_server: "Ошибка сервера",
+                err_network: "Ошибка сети",
+                pin_block: "БЛОКИРОВКА. ОЖИДАНИЕ: ",
+                pin_wrong: "НЕВЕРНЫЙ ПИН-КОД",
+                loading_items: "Загрузка товаров...",
+                status_offline: " (OFFLINE)",
+                status_net_err: " (ОШИБКА СЕТИ - КЭШ)",
+                photo_err: "⚠️ ФОТО НЕДОСТУПНО<br><br>Google отклонил запрос или файл удален",
+                inc_status_db: "Связь с базой данных... ⏳",
+                inc_status_write: "Запись товаров в таблицу... 📝",
+                inc_status_drive: "Создаем архив на Google Drive... 📂",
+                inc_status_almost: "Завершаем обработку... Осталось чуть-чуть ⏳",
+                inc_status_done: "✅ Архив создан! Склад обновлен.",
+                server_dup_fp: "Файл с точно таким же составом товаров уже был загружен ранее! Проверьте базу."
+            },
+            kz: {
+                btn_sale: "САТУ", btn_return: "ҚАЙТАРУ", search_placeholder: "ІЗДЕУ...",
+                header_name: "АТАУЫ", header_price: "БАҒА", header_stock: "ҚАЛД",
+                total_label_sale: "БАРЛЫҒЫ:", total_label_return: "ҚАЙТАРЫЛАТЫН:",
+                pay_cash: "Қолма", pay_qr: "QR", pay_red: "Red", pay_card: "Карта", pay_trans: "Аудр",
+                btn_cancel: "БАС ТАРТУ", btn_confirm: "РАСТАУ", btn_close: "ЖАБУ",
+                btn_close_report: "ЕСЕПТІ ЖАБУ", settings_title: "ПАРАМЕТРЛЕР",
+                settings_lang: "ИНТЕРФЕЙС ТІЛІ", settings_sync: "СИНХРОНДАУ", settings_system: "ЖҮЙЕ",
+                btn_sync: "Чектерді жіберу", btn_update: "Кэшті жаңарту",
+                msg_sync_empty: "Чектер жоқ!", msg_sync_success: "Сәтті аяқталды!", msg_sync_error: "Желі қатесі.",
+                txt_sale_confirm: "САТУДЫ РАСТАУ", txt_return_confirm: "ҚАЙТАРУДЫ РАСТАУ",
+                txt_payment: "Төлем: ", txt_total: "БАРЛЫҒЫ: ",
+                btn_add_cart: "СЕБЕТКЕ САЛУ", btn_save_db: "БАЗАҒА САҚТАУ", 
+                btn_camera: "КАМЕРА", btn_gallery: "ГАЛЕРЕЯ",
+                btn_saving: "САҚТАЛУДА...", btn_saved: "САҚТАЛДЫ!",
+                report_name: "АТАУЫ", report_qty: "САНЫ", report_sum: "СОМАСЫ",
+                report_sales: "Сатылымдар", report_returns: "Қайтарымдар", report_total_net: "Таза табыс:",
+                report_in_register: "КАССАДА:", msg_loading: "ЖҮКТЕЛУДЕ...", msg_no_internet: "ИНТЕРНЕТ ЖОҚ", 
+                msg_no_data: "ОПЕРАЦИЯЛАР ЖОҚ", msg_server_error: "СЕРВЕР ҚАТЕСІ",
+                report_avg: "орт:",
+                income_title: "📦 ЖҮКҚҰЖАТТЫ ИМПОРТТАУ",
+                income_rate: "USD/KZT бағамы:",
+                income_file: "Файлды таңдаңыз:",
+                income_parse: "ФАЙЛДЫ ӨҢДЕУ",
+                income_code: "Коды",
+                income_name: "Атауы",
+                income_qty: "Саны",
+                income_price: "Бағасы",
+                income_confirm: "✅ ҚОЙМАҒА КІРІСТЕУ",
+                income_meta_supplier: "Жеткізуші",
+                income_meta_doc: "Құжат",
+                income_meta_items: "Позициялар",
+                receive_btn: "ҚАБЫЛДАУ",
+                pin_no_internet: "ИНТЕРНЕТ ЖОҚ", pin_checking: "БАЗАДАН ТЕКСЕРІЛУДЕ...", pin_granted: "РУҚСАТ БЕРІЛДІ",
+                pin_wrong: "ҚАТЕ ПИН-КОД", pin_wrong_left: "ҚАТЕ ПИН. ҚАЛДЫ: ", pin_conn_error: "ҚОСЫЛУ ҚАТЕСІ",
+                inc_file_selected: "Таңдалған файлдар: ", inc_file_placeholder: "Excel файлын таңдау үшін басыңыз",
+                inc_err_no_doc: "инвойс нөмірі жоқ", inc_err_no_sup: "жеткізуші жоқ", inc_err_no_table: "тауарлар кестесі табылмады",
+                inc_err_missing: "бас жағында ({0}-жол) табылмады: ", inc_err_no_items: "кестеден тауарларды оқу мүмкін болмады",
+                inc_success: "{0} поз. анықталды", inc_err_doc_format: "НӨМІР ҚАТЕСІ",
+                inc_lbl_sup: "Жеткізуші:", inc_lbl_doc: "Құжат:", inc_lbl_items: "Позициялар:",
+                inc_empty_cart: "Себет бос!", inc_doc_empty: "Құжат нөмірі бос болмауы керек!",
+                inc_sending: "{0} жіберілуде...", inc_server_err: "Сервер қатесі", inc_send_err: "❌ Инвойсты жіберу қатесі: ",
+                inc_archive_created: "Мұрағат құрылды! Қойма жаңартылды.", inc_all_done: "✅ Барлық жүкқұжаттар сәтті өтті!",
+                word_code: "«Код»", word_qty: "«Саны»", word_price: "«Бағасы»", login_title: "КІРУ", inc_err_sheet_missing: "[{0} парағы] {1}-жол: табылмады ",
+                inc_err_sheet_no_table: "[{0} парағы]: цифрлары бар кесте жоқ", cat_all: "Барлығы",
+                server_dup: "{0} нөмірлі жүкқұжат бұрын қабылданған.",
+                server_no_db: "Дерекқор байланыспаған. POS Setup -> Привязать базу түймесін басыңыз.",
+                theme_toggle: "ТАҚЫРЫПТЫ АУЫСТЫРУ (КҮН/ТҮН)", settings_theme: "КӨРІНІС",
+                pay_cash_full: "ҚОЛМА ҚОЛ",
+                pay_qr_full: "QR",
+                pay_red_full: "БӨЛІП ТӨЛЕУ",
+                pay_card_full: "ТЕРМИНАЛ",
+                pay_trans_full: "АУДАРЫМ",
+                income_cbm: "Көлемі (CBM)",
+                income_weight: "Салмағы (кг)",
+                inc_file_selected: "Таңдалған файлдар: ",
+                inc_file_placeholder: "Excel файлын таңдау үшін басыңыз",
+                inc_no_file: "Файлды таңдаңыз!",
+                inc_file_corrupted: "Файл зақымдалған немесе кесте емес",
+                inc_empty_cart: "Себет бос!",
+                inc_doc_empty: "Құжат нөмірі бос болмауы керек!",
+                inc_all_done: "✅ Барлық жүкқұжаттар сәтті өтті, түпнұсқалар папкаларға сақталды!",
+                err_server: "Сервер қатесі",
+                err_network: "Желі қатесі",
+                pin_block: "БҰҒАТТАУ. КҮТУ: ",
+                pin_wrong: "ҚАТЕ ПИН-КОД",
+                loading_items: "Тауарларды жүктеу...",
+                status_offline: " (ОФФЛАЙН)",
+                status_net_err: " (ЖЕЛІ ҚАТЕСІ - КЭШ)",
+                photo_err: "⚠️ ФОТО ҚОЛЖЕТІМСІЗ<br><br>Google сұрауды қабылдамады немесе файл жойылды",
+                inc_status_db: "Дерекқормен байланыс... ⏳",
+                inc_status_write: "Тауарларды кестеге жазу... 📝",
+                inc_status_drive: "Google Drive-та архив жасау... 📂",
+                inc_status_almost: "Өңдеуді аяқтау... Сәл қалды ⏳",
+                inc_status_done: "✅ Архив жасалды! Қойма жаңартылды.",
+                server_dup_fp: "Құрамы дәл осындай файл бұрын жүктелген! Базаны тексеріңіз."
+            }
+        };
+
+        // Загружаем сохраненную тему
+        let currentTheme = localStorage.getItem('pos_theme') || 'dark';
+        if (currentTheme === 'light') { document.body.classList.add('light-theme'); }
+
+        function toggleTheme() {
+            const isLight = document.body.classList.toggle('light-theme');
+            localStorage.setItem('pos_theme', isLight ? 'light' : 'dark');
+        }
+
+        let currentLang = localStorage.getItem('pos_lang') || 'ru';
+        let db = [], cart = [], mode = 'sale', pendingMethod = null;
+        let staffList = [], currentUser = null;
+        let currentPinInput = '';
+
+        let failedAttempts = parseInt(localStorage.getItem('pos_fails')) || 0;
+        let blockUntil = parseInt(localStorage.getItem('pos_block')) || 0;
+        
+        let invoiceSynonyms = {};
+        let currentCategory = 'all';
+
+        function renderCategories() {
+            const categories = new Set();
+            document.querySelectorAll('.c-item').forEach(el => {
+                const cat = el.getAttribute('data-cat');
+                if (cat) categories.add(cat);
+            });
+
+            const bar = document.getElementById('categoryBar');
+            if (!bar) return;
+
+            let html = `<div class="cat-btn ${currentCategory === 'all' ? 'active' : ''}" onclick="setCategory('all')" data-i18n="cat_all">${translations[currentLang].cat_all}</div>`;
+
+            categories.forEach(c => {
+                html += `<div class="cat-btn ${currentCategory === c ? 'active' : ''}" onclick="setCategory('${c}')">${c}</div>`;
+            });
+
+            bar.innerHTML = html;
+        }
+
+        function setCategory(cat) {
+            currentCategory = cat;
+            renderCategories();
+            filter();
+        }
+
+        function checkBlockTimer() {
+            if (blockUntil > Date.now()) {
+                const err = document.getElementById('login-error');
+                const field = document.getElementById('pin-field');
+                
+                field.style.color = 'var(--accent-red)';
+                err.style.color = 'var(--accent-red)';
+                err.style.visibility = 'visible';
+                
+                const interval = setInterval(() => {
+                    const remaining = Math.ceil((blockUntil - Date.now()) / 1000);
+                    
+                    if (remaining <= 0) {
+                        clearInterval(interval);
+                        failedAttempts = 0;
+                        localStorage.removeItem('pos_fails');
+                        localStorage.removeItem('pos_block');
+                        
+                        err.style.visibility = 'hidden';
+                        field.style.color = 'var(--accent-yellow)'; 
+                        err.innerText = translations[currentLang].pin_wrong;
+                    } else {
+                        const mins = Math.floor(remaining / 60);
+                        const secs = remaining % 60;
+                        err.innerText = translations[currentLang].pin_block + `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+                    }
+                }, 1000);
+                return true;
+            }
+            return false;
+        }
+
+        function applyLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('pos_lang', lang);
+            document.getElementById('lang-ru').classList.toggle('active', lang === 'ru');
+            document.getElementById('lang-kz').classList.toggle('active', lang === 'kz');
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang][key]) el.innerText = translations[lang][key];
+            });
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                if (translations[lang][key]) el.placeholder = translations[lang][key];
+            });
+            sm(mode);
+        }
+
+        function sm(m) {
+            mode = m;
+            document.getElementById('ms').classList.toggle('active-s', m==='sale');
+            document.getElementById('mr').classList.toggle('active-r', m==='return');
+            document.getElementById('cs').classList.toggle('r-theme', m==='return');
+            document.getElementById('tl').innerText = m === 'return' ? translations[currentLang].total_label_return : translations[currentLang].total_label_sale;
+            
+            // МАГИЯ ПЕРЕМЕННЫХ: Принудительно меняем базовый цвет ВСЕЙ программы
+            if (m === 'return') {
+                document.body.style.setProperty('--bg-body', 'var(--bg-return)');
+            } else {
+                document.body.style.removeProperty('--bg-body');
+            }
+        }
+
+        function addPin(digit) {
+            if (currentPinInput.length < 4) {
+                currentPinInput += digit;
+                document.getElementById('pin-field').value = currentPinInput;
+                if (currentPinInput.length === 4) {
+                    handleAutoLogin(currentPinInput);
+                }
+            }
+        }
+
+        function clearPin() {
+            currentPinInput = '';
+            document.getElementById('pin-field').value = '';
+        }
+
+        function delPin() {
+            currentPinInput = currentPinInput.slice(0, -1);
+            document.getElementById('pin-field').value = currentPinInput;
+        }
+
+        async function handleAutoLogin(val) {
+            if (blockUntil > Date.now()) {
+                clearPin();
+                return; 
+            }
+
+            const err = document.getElementById('login-error');
+            const field = document.getElementById('pin-field');
+            
+            if (!navigator.onLine) {
+                field.style.color = 'var(--accent-red)'; 
+                field.classList.add('error-shake');
+                err.innerText = translations[currentLang].pin_no_internet; 
+                err.style.color = 'var(--accent-red)'; 
+                err.style.visibility = 'visible';
+                setTimeout(() => { field.classList.remove('error-shake'); err.style.visibility = 'hidden'; field.style.color = 'var(--accent-yellow)'; clearPin(); }, 1200);
+                return;
+            }
+
+            field.style.color = 'var(--accent-blue)'; 
+            err.innerText = translations[currentLang].pin_checking;
+            err.style.color = 'var(--accent-blue)';
+            err.style.visibility = 'visible';
+
+            try {
+                const response = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'verifyPin', pin: parseInt(val, 10) })
+                });
+
+                const textRes = await response.text(); 
+                let res;
+                try {
+                    res = JSON.parse(textRes);
+                } catch (e) {
+                    throw new Error("SERVER_ERROR");
+                }
+
+                if (res.success) {
+                    failedAttempts = 0;
+                    localStorage.removeItem('pos_fails');
+                    localStorage.removeItem('pos_block');
+
+                    field.style.color = 'var(--accent-green)'; 
+                    err.innerText = translations[currentLang].pin_granted;
+                    err.style.color = 'var(--accent-green)';
+                    
+                    setTimeout(() => {
+                        login(res.user); 
+                        field.style.color = 'var(--accent-yellow)';
+                        err.style.color = 'var(--accent-red)';
+                        err.style.visibility = 'hidden';
+                        err.innerText = translations[currentLang].pin_wrong;
+                    }, 400);
+
+                } else {
+                    throw new Error("WRONG_PIN");
+                }
+
+            } catch (error) {
+                console.error("Ошибка авторизации:", error);
+                
+                let isWrongPin = error.message === "WRONG_PIN";
+                
+                if (isWrongPin) {
+                    failedAttempts++;
+                    localStorage.setItem('pos_fails', failedAttempts);
+                }
+
+                if (failedAttempts >= 3) {
+                    blockUntil = Date.now() + 5 * 60 * 1000;
+                    localStorage.setItem('pos_block', blockUntil);
+                    field.classList.add('error-shake');
+                    setTimeout(() => { field.classList.remove('error-shake'); clearPin(); }, 800);
+                    checkBlockTimer(); 
+                    return;
+                }
+
+                field.style.color = 'var(--accent-red)'; 
+                field.classList.add('error-shake');
+                
+                const attemptsLeft = Math.max(0, 3 - failedAttempts);
+                err.innerText = isWrongPin ? `${translations[currentLang].pin_wrong_left}${attemptsLeft}` : translations[currentLang].pin_conn_error;
+                err.style.color = 'var(--accent-red)';
+                err.style.visibility = 'visible';
+
+                setTimeout(() => { 
+                    field.classList.remove('error-shake');
+                    err.style.visibility = 'hidden'; 
+                    field.style.color = 'var(--accent-yellow)'; 
+                    clearPin();
+                }, 1200);
+            }
+        }
+
+        function login(user) {
+            currentUser = user;
+            localStorage.setItem('user_role', user.role);
+            localStorage.setItem('user_uid', user.uid); // Запоминаем кто именно вошел
+            document.getElementById('pin-screen').style.display = 'none';
+            const badge = document.getElementById('cashier-info');
+            badge.innerText = `👤 ${user.name.toUpperCase()} (${user.uid})`;
+            badge.style.display = 'inline-block';
+            clearPin();
+            document.getElementById('sb').blur(); 
+            
+            // Мгновенно запрашиваем персональную кассу сразу после успешного входа
+            refreshPosData(); 
+        }
+
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('user_role');
+            localStorage.removeItem('user_uid'); // Стираем данные сессии
+            document.getElementById('cashier-info').style.display = 'none';
+            document.getElementById('pin-screen').style.display = 'flex';
+            clearPin();
+            
+            // Визуально обнуляем суммы при выходе, чтобы сменщик их не увидел
+            ['sum-cash','sum-qr','sum-red','sum-card','sum-trans'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.innerText = '0 ₸';
+            });
+        }
+
+        async function load() {
+            // Читаем, кто сейчас работает, чтобы запросить правильные суммы
+            const savedUid = localStorage.getItem('user_uid') || (currentUser ? currentUser.uid : '');
+            const savedRole = localStorage.getItem('user_role') || '';
+            // Делаем персональный кэш, чтобы продавцы не видели суммы друг друга при перезагрузке
+            const cacheKey = 'totals_cache_' + (savedUid || 'anon');
+
+            try {
+                const cachedDb = localStorage.getItem('db_cache');
+                const cachedTotals = localStorage.getItem(cacheKey);
+                const cachedStaff = localStorage.getItem('staff_cache'); 
+                if (cachedDb) db = JSON.parse(cachedDb);
+                if (cachedStaff) staffList = JSON.parse(cachedStaff);
+                if (cachedTotals) {
+                    const t = JSON.parse(cachedTotals);
+                    document.getElementById('sum-cash').innerText = (t.cash || 0).toLocaleString() + ' ₸';
+                    document.getElementById('sum-qr').innerText = (t.qr_kaspi || t.qr || 0).toLocaleString() + ' ₸';
+                    document.getElementById('sum-red').innerText = (t.installment || 0).toLocaleString() + ' ₸';
+                    document.getElementById('sum-card').innerText = (t.pos_terminal || t.card || 0).toLocaleString() + ' ₸';
+                    document.getElementById('sum-trans').innerText = (t.transfer || 0).toLocaleString() + ' ₸';
+                }
+                if (db.length > 0) render();
+            } catch (e) {}
+
+            if (!navigator.onLine) return; 
+            try {
+                // Передаем серверу данные авторизованного пользователя
+                const fetchUrl = `${APPS_SCRIPT_URL}?t=${Date.now()}&uid=${savedUid}&role=${savedRole}`;
+                const res = await fetch(fetchUrl, { redirect: 'follow' });
+                const data = await res.json();
+                if (data.items) db = data.items;
+                if (data.staff) {
+                    staffList = data.staff;
+                    localStorage.setItem('staff_cache', JSON.stringify(staffList));
+                }
+                
+                if (data.synonyms && Object.keys(data.synonyms).length > 0) {
+                    invoiceSynonyms = data.synonyms;
+                }
+                
+                const t = data.totals || { cash: 0, qr_kaspi: 0, installment: 0, pos_terminal: 0, transfer: 0 };
+                document.getElementById('sum-cash').innerText = (t.cash || 0).toLocaleString() + ' ₸';
+                document.getElementById('sum-qr').innerText   = (t.qr_kaspi || t.qr || 0).toLocaleString() + ' ₸';
+                document.getElementById('sum-red').innerText  = (t.installment || t.red || 0).toLocaleString() + ' ₸';
+                document.getElementById('sum-card').innerText = (t.pos_terminal || t.pos || t.card || 0).toLocaleString() + ' ₸';
+                document.getElementById('sum-trans').innerText= (t.transfer || 0).toLocaleString() + ' ₸';
+                render();
+                localStorage.setItem('db_cache', JSON.stringify(db));
+                localStorage.setItem(cacheKey, JSON.stringify(t)); // Сохраняем в персональный кэш
+            } catch (e) { console.error("Ошибка загрузки данных"); }
+        }
+
+        async function refreshPosData() {
+            if (!navigator.onLine) {
+                alert(translations[currentLang].msg_no_internet);
+                return;
+            }
+            const btn = document.getElementById('btn-sync-data');
+            btn.classList.add('sync-spin'); 
+            try { await load(); } finally { setTimeout(() => { btn.classList.remove('sync-spin'); }, 600); }
+        }
+
+        function render() {
+            const catalog = document.getElementById('catalog');
+            if (!db || db.length === 0) return catalog.innerHTML = '<div style="color:var(--text-muted); padding:20px; text-align:center;">' + translations[currentLang].loading_items + '</div>';
+            catalog.innerHTML = db.map(i => {
+                const hasPhoto = i.img && i.img.toString().length > 10;
+                // Компактная иконка вместо слова ФОТО с правильным курсором
+                const photoBadge = `<span onclick="openItemMenu('${i.id}'); event.stopPropagation();" style="display:flex; align-items:center; justify-content:center; width: 28px; height: 28px; background-color: ${hasPhoto?'var(--accent-yellow)':'var(--bg-hover)'}; color: ${hasPhoto?'#000':'var(--text-muted)'}; font-size: 15px; border-radius: 4px; margin-right: 8px; border: 1px solid ${hasPhoto?'var(--accent-yellow)':'var(--border-focus)'}; flex-shrink: 0; cursor: pointer; user-select: none;">📷</span>`;
+                
+                const roundedPrice = Math.round(Number(i.price) || 0);
+                
+                return `<div class="c-item" onclick="add('${i.id}')" data-cat="${i.category || ''}">
+                    <div class="i-name" style="display:flex; align-items:center; flex: 1; min-width: 0;">
+                        ${photoBadge} 
+                        
+                        <div style="display: flex; align-items: center; gap: 6px; flex: 1; overflow-x: auto; white-space: nowrap; scrollbar-width: none;">
+                            <span style="color: var(--text-main); font-size: 13px;">${i.name || 'Без названия'}</span>
+                            <span style="color: var(--text-muted); font-size: 11px; font-family: 'Roboto', sans-serif; font-weight: normal;">#${i.id}</span>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="i-price" style="width: auto; min-width: 60px; white-space: nowrap; flex-shrink: 0; margin-left: 6px;">${roundedPrice.toLocaleString('ru-RU')} ₸</div>
+                    
+                    <div class="i-stock" style="flex-shrink: 0; margin-left: 6px;">${Number(i.stock)||0}</div>
+                </div>`;
+            }).join('');
+            
+            renderCategories();
+            filter(); 
+        }
+
+        function filter() {
+            let q = document.getElementById('sb').value.toLowerCase();
+            document.querySelectorAll('.c-item').forEach(el => {
+                const name = el.querySelector('.i-name').innerText.toLowerCase();
+                const itemCat = el.getAttribute('data-cat') || '';
+                
+                const matchesSearch = name.includes(q);
+                const matchesCat = (currentCategory === 'all' || itemCat === currentCategory);
+                
+                el.style.display = (matchesSearch && matchesCat) ? 'flex' : 'none';
+            });
+        }
+
+        function handleSearchInput() {
+            document.getElementById('clear-search').style.display = document.getElementById('sb').value.length > 0 ? 'flex' : 'none';
+            filter(); 
+        }
+
+        function clearSearch() {
+            document.getElementById('sb').value = '';
+            document.getElementById('clear-search').style.display = 'none';
+            filter(); document.getElementById('sb').focus(); 
+        }
+
+        function add(id) {
+            const p = db.find(x => x.id === id);
+            const inC = cart.find(x => x.id === id);
+            
+            const roundedPrice = Math.round(Number(p.price) || 0);
+            const roundedCost = Math.round(Number(p.cost) || 0);
+            
+            if (inC) {
+                inC.qty++; 
+            } else {
+                cart.push({id: p.id, name: p.name, qty: 1, price: roundedPrice, origPrice: roundedPrice, cost: roundedCost});
+            }
+            
+            // --- 1. ВИБРООТКЛИК (для мобильных устройств) ---
+            if (navigator.vibrate) {
+                navigator.vibrate(40); // Легкий, четкий толчок
+            }
+
+            // --- 2. ВИЗУАЛЬНАЯ ВСПЫШКА ---
+            // Находим карточку, по которой кликнули, и на 150мс меняем ей фон
+            const clickedElement = event.currentTarget || event.target.closest('.c-item');
+            if (clickedElement && clickedElement.classList.contains('c-item')) {
+                const originalBg = clickedElement.style.background;
+                // Вспышка (используем наш зеленый акцент, но с прозрачностью, чтобы текст читался)
+                clickedElement.style.background = 'var(--bg-success-dim)'; 
+                clickedElement.style.transition = 'none'; // Убираем плавность для резкой вспышки
+                
+                setTimeout(() => {
+                    clickedElement.style.transition = 'background 0.3s'; // Возвращаем плавность затухания
+                    clickedElement.style.background = originalBg || '';
+                }, 150);
+            }
+
+            update();
+        }
+
+        function handleFocus(elem, rowId) {
+            elem.select(); 
+            const alignRow = () => {
+                const row = document.getElementById(rowId);
+                if (row) row.scrollIntoView({behavior: "smooth", block: "center"});
+            };
+            setTimeout(alignRow, 350); 
+            setTimeout(alignRow, 750); 
+        }
+
+        function update() {
+            document.getElementById('cart-list').innerHTML = cart.map((item, idx) => `
+                <div class="cart-row" id="r-${item.id}">
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        
+                        <div style="display: flex; align-items: center; gap: 6px; flex: 1; overflow-x: auto; white-space: nowrap; scrollbar-width: none;">
+                            <span style="color: var(--text-main); font-size: 13px; font-weight: bold;">${item.name}</span>
+                            <span style="color: var(--text-muted); font-size: 11px; font-family: 'Roboto', sans-serif; font-weight: normal;">#${item.id}</span>
+                        </div>
+                        
+                        <div style="display: flex; justify-content: flex-end; align-items: center; width: 110px; flex-shrink: 0;">
+                            <span style="color: var(--text-muted); font-size: 12px; font-family: 'Roboto', sans-serif; text-decoration: ${item.origPrice && item.origPrice !== item.price ? 'line-through' : 'none'};">${item.origPrice ? item.origPrice.toLocaleString('ru-RU') : item.price.toLocaleString('ru-RU')} ₸</span>
+                            <div onclick="rm('${item.id}')" style="color:var(--accent-red); font-size:18px; font-weight:bold; cursor:pointer; margin-left: 10px; line-height: 1; user-select: none;">✕</div>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        
+                        <div class="qty-box">
+                            <button class="q-btn" onclick="qty('${item.id}',-1)">-</button>
+                            <input type="text" inputmode="numeric" class="q-val" value="${item.qty.toLocaleString('ru-RU')}" onfocus="handleFocus(this, 'r-${item.id}')" oninput="cart[${idx}].qty=parseInt(this.value.replace(/\\s/g, ''))||0; total()" onchange="update()">
+                            <button class="q-btn" onclick="qty('${item.id}',1)">+</button>
+                        </div>
+                        
+                        <div style="position: relative; width: 110px; flex-shrink: 0;">
+                            <input type="text" inputmode="numeric" class="p-input" value="${item.price.toLocaleString('ru-RU')}" onfocus="handleFocus(this, 'r-${item.id}')" oninput="cart[${idx}].price=parseFloat(this.value.replace(/\\s/g, '').replace(',', '.'))||0; total()" onchange="update()">
+                            <span style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); color: var(--accent-yellow); font-size: 14px; pointer-events: none; font-family: 'Roboto', sans-serif; font-weight: bold;">₸</span>
+                        </div>
+                    </div>
+
+                </div>`).join('');
+            total();
+        }
+
+        function qty(id, d) { 
+            const i = cart.find(x => x.id === id); 
+            if(i) { 
+                i.qty += d; 
+                if(i.qty <= 0) {
+                    rm(id); 
+                } else { 
+                    update(); // Перерисовываем корзину с новыми цифрами
+                    
+                    // 1. Виброотклик (для Android-устройств)
+                    if (navigator.vibrate) navigator.vibrate(40);
+                    
+                    // 2. Визуальная вспышка нужной строки
+                    const row = document.getElementById('r-' + id);
+                    if (row) {
+                        // Если d > 0 (плюс) — зеленая вспышка, иначе — красная
+                        row.style.background = d > 0 ? 'var(--bg-success-dim)' : 'var(--bg-danger-dim)';
+                        row.style.transition = 'none'; // Резко включаем цвет
+                        
+                        setTimeout(() => {
+                            row.style.transition = 'background 0.3s'; // Плавно гасим
+                            row.style.background = ''; // Возвращаем родной фон панели
+                        }, 150);
+                    }
+                } 
+            } 
+        }
+        function rm(id) { cart = cart.filter(x => x.id !== id); update(); }
+        function total() { document.getElementById('ta').innerText = cart.reduce((a, b) => a + (b.price * b.qty), 0).toLocaleString() + ' ₸'; }
+
+        function initPay(methodCode, methodName) {
+            if (!cart.length) return;
+            pendingMethod = methodCode; 
+            const colors = { 'cash': 'var(--accent-green)', 'qr_kaspi': 'var(--accent-red)', 'installment': '#8e44ad', 'pos_terminal': '#2980b9', 'transfer': '#f39c12' };
+            const activeColor = colors[methodCode] || 'var(--accent-green)';
+            document.querySelector('.receipt-box').style.borderColor = activeColor;
+            document.getElementById('r-method').style.color = activeColor;
+            const btnConfirm = document.getElementById('btn-confirm');
+            btnConfirm.style.background = activeColor;
+            btnConfirm.style.color = methodCode === 'transfer' ? 'var(--text-dark)' : '#fff';
+            document.getElementById('r-title').innerText = mode === 'sale' ? translations[currentLang].txt_sale_confirm : translations[currentLang].txt_return_confirm;
+            document.getElementById('r-method').innerText = translations[currentLang].txt_payment + methodName;
+            document.getElementById('r-items-list').innerHTML = cart.map(c => `<div class="r-item"><span>${c.name}</span><b>${c.qty} x ${c.price.toLocaleString()}</b></div>`).join('');
+            document.getElementById('r-total').innerText = translations[currentLang].txt_total + cart.reduce((a, b) => a + (b.price * b.qty), 0).toLocaleString() + " ₸";
+            document.getElementById('receipt-modal').style.display = 'flex';
+        }
+
+        function cancelTx() { document.getElementById('receipt-modal').style.display = 'none'; }
+
+        async function confirmTx() {
+            const btn = document.getElementById('btn-confirm');
+            btn.disabled = true;
+            const tid = (mode === 'sale' ? 'SL-' : 'RT-') + Math.random().toString(36).substring(7).toUpperCase();
+            const now = new Date();
+            const localTime = now.toLocaleDateString('ru-RU') + ' ' + now.toLocaleTimeString('ru-RU');
+            
+            const p = {
+                tx_id: tid, tx_type: mode, payment_method: pendingMethod, source: "pos_v5.5.0", 
+                created_at: localTime,
+                seller_id: currentUser ? currentUser.uid : "S-XX", 
+                cart: cart.map(c => ({item_id:c.id, item_name:c.name, qty:c.qty, price:c.price, cost_price:c.cost}))
+            };
+
+            try {
+                let queue = JSON.parse(localStorage.getItem('txQueue') || '[]');
+                queue.push(p);
+                localStorage.setItem('txQueue', JSON.stringify(queue));
+                updateQueueCounter();
+
+                const cartTotal = cart.reduce((sum, item) => sum + (item.qty * item.price), 0);
+                const methodMap = { 'cash': 'sum-cash', 'qr_kaspi': 'sum-qr', 'qr': 'sum-qr', 'installment': 'sum-red', 'pos_terminal': 'sum-card', 'card': 'sum-card', 'transfer': 'sum-trans' };
+                const targetId = methodMap[pendingMethod];
+                
+                if (targetId) {
+                    const el = document.getElementById(targetId);
+                    if (el) {
+                        let currentSum = parseInt(el.innerText.replace(/[^\d-]/g, '')) || 0;
+                        currentSum = (mode === 'sale') ? currentSum + cartTotal : currentSum - cartTotal;
+                        el.innerText = currentSum.toLocaleString('ru-RU') + ' ₸';
+                    }
+                }
+                document.getElementById('receipt-modal').style.display = 'none';
+                
+                // ==========================================
+                // НАЧАЛО: Локальное обновление остатков (Optimistic UI)
+                // ==========================================
+                cart.forEach(c => {
+                    // Ищем товар в локальном массиве db
+                    let dbItem = db.find(i => String(i.id) === String(c.id));
+                    if (dbItem) {
+                        let sign = (mode === 'sale') ? -1 : 1; // Продажа: минус, Возврат: плюс
+                        dbItem.stock = (parseFloat(dbItem.stock) || 0) + (c.qty * sign);
+                    }
+                });
+                render(); // Мгновенно перерисовываем каталог с новыми цифрами
+                localStorage.setItem('db_cache', JSON.stringify(db));
+                // ==========================================
+                // КОНЕЦ: Локальное обновление остатков
+                // ==========================================
+
+                cart = []; update(); sm('sale'); 
+                const searchInput = document.getElementById('sb');
+                searchInput.value = ''; searchInput.blur(); filter(); 
+            } catch (e) { alert("ОШИБКА: " + e.message); } 
+            finally { btn.disabled = false; }
+        }
+
+        function updateQueueCounter() {
+            let queue = JSON.parse(localStorage.getItem('txQueue') || '[]');
+            const badge = document.getElementById('queue-counter');
+            const settingsBtn = document.getElementById('btn-settings');
+            if (queue.length > 0) {
+                badge.innerText = queue.length; badge.style.display = 'inline-block';
+                settingsBtn.style.background = 'var(--bg-danger-dim)'; settingsBtn.style.borderColor = 'var(--accent-red)'; settingsBtn.style.color = 'var(--accent-red)';
+            } else {
+                badge.style.display = 'none';
+                settingsBtn.style.background = 'var(--bg-panel)'; settingsBtn.style.borderColor = 'var(--border-light)'; settingsBtn.style.color = 'var(--text-main)';
+            }
+        }
+
+        function moveTxToCacheLocally(tx) {
+            try {
+                const qDate = tx.created_at.split(' ')[0]; 
+                const parts = qDate.split('.');
+                if (parts.length !== 3) return;
+                const localISO = `${parts[2]}-${parts[1]}-${parts[0]}`; 
+                
+                const keys = [
+                    `report_${localISO}_${localISO}_all`,
+                    `report_${localISO}_${localISO}_${tx.seller_id}`
+                ];
+
+                keys.forEach(key => {
+                    let cached = localStorage.getItem(key);
+                    if (cached) {
+                        let reportData = JSON.parse(cached);
+                        let qTotal = tx.cart.reduce((sum, c) => sum + (c.qty * c.price), 0);
+                        let qTime = tx.created_at.split(' ')[1].substring(0,5);
+                        
+                        reportData.push({
+                            type: tx.tx_type,
+                            total: qTotal,
+                            cart: tx.cart.map(c => ({ name: c.item_name, qty: c.qty, price: c.price })),
+                            methodCode: tx.payment_method,
+                            time: qTime,
+                            date: qDate,
+                            seller: tx.seller_id // <-- Добавили это поле
+                        });
+                        localStorage.setItem(key, JSON.stringify(reportData));
+                    }
+                });
+            } catch (e) { console.error("Ошибка переливания кэша", e); }
+        }
+
+        let isSyncing = false; 
+        async function syncQueue() {
+            if (isSyncing || !navigator.onLine) return; 
+            let queue = JSON.parse(localStorage.getItem('txQueue') || '[]');
+            if (queue.length === 0) return; 
+            isSyncing = true;
+            try {
+                const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify(queue[0]) });
+                if ((await res.json()).success) { 
+                    moveTxToCacheLocally(queue[0]); 
+                    queue.shift(); 
+                    localStorage.setItem('txQueue', JSON.stringify(queue)); 
+                    updateQueueCounter(); 
+                }
+            } catch (e) {} finally { isSyncing = false; }
+        }
+        setInterval(syncQueue, 5000);
+
+        async function manualSync() {
+            if (!navigator.onLine) return alert(translations[currentLang].msg_sync_error);
+            let queue = JSON.parse(localStorage.getItem('txQueue') || '[]');
+            if (queue.length === 0) return alert(translations[currentLang].msg_sync_empty);
+            document.getElementById('sync-status').innerText = '⏳';
+            let hasError = false;
+            while(queue.length > 0) {
+                try {
+                    const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify(queue[0]) });
+                    if ((await res.json()).success) { 
+                        moveTxToCacheLocally(queue[0]); 
+                        queue.shift(); 
+                        localStorage.setItem('txQueue', JSON.stringify(queue)); 
+                        updateQueueCounter(); 
+                    }
+                    else { hasError = true; break; }
+                } catch (e) { hasError = true; break; }
+            }
+            document.getElementById('sync-status').innerText = '📡';
+            alert(hasError ? translations[currentLang].msg_sync_error : translations[currentLang].msg_sync_success);
+        }
+
+        function openSettings() { document.getElementById('settings-modal').style.display = 'flex'; }
+        function closeSettings() { document.getElementById('settings-modal').style.display = 'none'; }
+
+        async function forceAppUpdate() {
+            document.getElementById('update-status').innerText = '⏳'; 
+            try {
+                if ('caches' in window) await Promise.all((await caches.keys()).map(k => caches.delete(k)));
+                setTimeout(() => { window.location.reload(true); }, 1000);
+            } catch (e) { window.location.reload(true); }
+        }
+
+        function openReport() {
+            document.getElementById('report-modal').style.display = 'flex';
+            const role = localStorage.getItem('user_role');
+            const controls = document.getElementById('date-range-controls');
+            const titleEl = document.getElementById('rep-header-title');
+            
+            const now = new Date();
+            const offset = now.getTimezoneOffset() * 60000;
+            const localISO = (new Date(now - offset)).toISOString().split('T')[0];
+            
+            document.getElementById('rep-date-start').value = localISO;
+            document.getElementById('rep-date-end').value = localISO;
+
+            if (role === 'manager') {
+                controls.style.display = 'flex';
+                titleEl.innerText = currentLang === 'kz' ? "КЕЗЕҢДІК ЕСЕП" : "ОТЧЕТ ЗА ПЕРИОД";
+            } else {
+                controls.style.display = 'none';
+                titleEl.innerText = (currentLang === 'kz' ? "БҮГІНГІ ЕСЕП: " : "ОТЧЕТ ЗА СЕГОДНЯ: ") + now.toLocaleDateString('ru-RU');
+            }
+            renderReport();
+        }
+
+        function clearReportSearch() {
+            document.getElementById('rep-search').value = '';
+            document.getElementById('rep-clear-search').style.display = 'none';
+            filterReport(); document.getElementById('rep-search').focus();
+        }
+
+        function filterReport() {
+            const q = document.getElementById('rep-search').value.toLowerCase().trim();
+            document.getElementById('rep-clear-search').style.display = q.length > 0 ? 'block' : 'none';
+            document.querySelectorAll('#rep-list .item-wrapper').forEach(el => {
+                el.style.display = el.getAttribute('data-name').includes(q) ? 'block' : 'none';
+            });
+        }
+
+        async function renderReport() {
+            const start = document.getElementById('rep-date-start').value;
+            const end = document.getElementById('rep-date-end').value;
+            const repList = document.getElementById('rep-list');
+            const totalsBox = document.getElementById('rep-totals');
+            const searchInput = document.getElementById('rep-search');
+            
+            const fmt = (d) => d.split('-').reverse().join('.');
+            const serverStart = fmt(start);
+            const serverEnd = fmt(end);
+
+            repList.innerHTML = `<div style="text-align:center; color:var(--accent-yellow); margin-top:30px; font-weight: bold;">⏳ ${translations[currentLang].msg_loading}</div>`;
+
+            let reportDataToRender = [];
+            const cacheKey = `report_${start}_${end}_${currentUser ? currentUser.uid : 'all'}`;
+
+            if (!navigator.onLine) {
+                const cachedReport = localStorage.getItem(cacheKey);
+                if (cachedReport) {
+                    reportDataToRender = JSON.parse(cachedReport);
+                    if (!document.getElementById('rep-header-title').innerText.includes(translations[currentLang].status_offline)) {
+                        document.getElementById('rep-header-title').innerText += translations[currentLang].status_offline;
+                    }
+                } else {
+                    if (!document.getElementById('rep-header-title').innerText.includes(translations[currentLang].status_offline)) {
+                        document.getElementById('rep-header-title').innerText += translations[currentLang].status_offline;
+                    }
+                }
+            } else {
+                try {
+                    let url = `${APPS_SCRIPT_URL}?action=report&date=${serverStart}&endDate=${serverEnd}&t=${Date.now()}`;
+                    if (currentUser && currentUser.role !== 'manager') url += `&seller_id=${currentUser.uid}`;
+
+                    const response = await fetch(url, { redirect: 'follow' });
+                    const data = await response.json();
+                    if (data.error) throw new Error(data.error);
+                    
+                    reportDataToRender = data.report || [];
+                    localStorage.setItem(cacheKey, JSON.stringify(reportDataToRender));
+                } catch (error) {
+                    const cachedReport = localStorage.getItem(cacheKey);
+                    if (cachedReport) {
+                        reportDataToRender = JSON.parse(cachedReport);
+                        if (!document.getElementById('rep-header-title').innerText.includes(translations[currentLang].status_net_err)) {
+                            document.getElementById('rep-header-title').innerText += translations[currentLang].status_net_err;
+                        }
+                    }
+                }
+            }
+
+            let queue = JSON.parse(localStorage.getItem('txQueue') || '[]');
+            if (queue.length > 0) {
+                queue.forEach(qTx => {
+                    if (currentUser && currentUser.role !== 'manager' && qTx.seller_id !== currentUser.uid) return;
+                    let qDate = qTx.created_at.split(' ')[0];
+                    let qTime = qTx.created_at.split(' ')[1].substring(0,5);
+                    if (qDate >= serverStart && qDate <= serverEnd) {
+                        let qTotal = qTx.cart.reduce((sum, c) => sum + (c.qty * c.price), 0);
+                        reportDataToRender.push({
+                            type: qTx.tx_type,
+                            total: qTotal,
+                            cart: qTx.cart.map(c => ({ name: c.item_name, qty: c.qty, price: c.price })),
+                            methodCode: qTx.payment_method,
+                            time: qTime + " ⏳",
+                            date: qDate,
+                            seller: qTx.seller_id
+                        });
+                    }
+                });
+            }
+
+            if (!reportDataToRender || reportDataToRender.length === 0) {
+                repList.innerHTML = `<div style="text-align:center; color:var(--text-muted); margin-top:30px;">${translations[currentLang].msg_no_data}</div>`;
+                totalsBox.innerHTML = '';
+                searchInput.parentElement.style.display = 'none';
+                return;
+            }
+
+            const colors = { 'cash': 'var(--accent-green)', 'qr_kaspi': 'var(--accent-red)', 'installment': '#8e44ad', 'pos_terminal': '#2980b9', 'transfer': '#f39c12' };
+            const names = { 'cash': translations[currentLang].pay_cash, 'qr_kaspi': 'Kaspi QR', 'installment': 'Kaspi Red', 'pos_terminal': translations[currentLang].pay_card, 'transfer': translations[currentLang].pay_trans };
+            let t = { sale: 0, return: 0 };
+            
+            if (true) {
+                searchInput.parentElement.style.display = 'block'; 
+                searchInput.value = ''; searchInput.placeholder = translations[currentLang].search_placeholder;
+
+                let aggregated = {};
+                let tSalesQty = 0, tSalesSum = 0, tReturnsQty = 0, tReturnsSum = 0;
+                const ui = { name: translations[currentLang].report_name, qty: translations[currentLang].report_qty, sum: translations[currentLang].report_sum, sales: translations[currentLang].report_sales, returns: translations[currentLang].report_returns, net: translations[currentLang].report_total_net };
+
+                reportDataToRender.forEach(h => {
+                    let isRet = h.type === 'return';
+                    let sellerId = h.seller || 'Анон'; 
+                    h.cart.forEach(c => {
+                        if (!aggregated[c.name]) aggregated[c.name] = { name: c.name, salesQty: 0, salesSum: 0, returnsQty: 0, returnsSum: 0, sellers: {} };
+                        if (!aggregated[c.name].sellers[sellerId]) aggregated[c.name].sellers[sellerId] = { salesQty: 0, salesSum: 0, returnsQty: 0, returnsSum: 0 };
+                        
+                        if (isRet) { 
+                            aggregated[c.name].returnsQty += c.qty; aggregated[c.name].returnsSum += (c.qty * c.price); 
+                            aggregated[c.name].sellers[sellerId].returnsQty += c.qty; aggregated[c.name].sellers[sellerId].returnsSum += (c.qty * c.price);
+                            tReturnsQty += c.qty; tReturnsSum += (c.qty * c.price); 
+                        } else { 
+                            aggregated[c.name].salesQty += c.qty; aggregated[c.name].salesSum += (c.qty * c.price); 
+                            aggregated[c.name].sellers[sellerId].salesQty += c.qty; aggregated[c.name].sellers[sellerId].salesSum += (c.qty * c.price);
+                            tSalesQty += c.qty; tSalesSum += (c.qty * c.price); 
+                        }
+                    });
+                });
+
+                let sortedItems = Object.values(aggregated).sort((a, b) => (b.salesSum - b.returnsSum) - (a.salesSum - a.returnsSum));
+                let htmlString = `<div class="rep-table-header"><div>${ui.name}</div><div style="text-align: right;">${ui.qty}</div><div style="text-align: right;">${ui.sum}</div></div>`;
+                
+                sortedItems.forEach(item => {
+                    const netQty = item.salesQty - item.returnsQty;
+                    const netSum = item.salesSum - item.returnsSum;
+                    let detailsHtml = '';
+
+                    for (let seller in item.sellers) {
+                        let s = item.sellers[seller];
+                        
+                        if (s.salesQty > 0) {
+                            let avgSale = Math.round(s.salesSum / s.salesQty);
+                            detailsHtml += `
+                                <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px;">
+                                    <span style="color: var(--text-muted);">${ui.sales} (${s.salesQty}) 👤 ${seller} <small>| ${translations[currentLang].report_avg} ${avgSale.toLocaleString()} ₸</small></span>
+                                    <span style="color: var(--accent-green);">${s.salesSum.toLocaleString()}</span>
+                                </div>`;
+                        }
+
+                        if (s.returnsQty > 0) {
+                            let avgReturn = Math.round(s.returnsSum / s.returnsQty);
+                            detailsHtml += `
+                                <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px;">
+                                    <span style="color: var(--text-muted);">${ui.returns} (${s.returnsQty}) 👤 ${seller} <small>| ${translations[currentLang].report_avg} ${avgReturn.toLocaleString()} ₸</small></span>
+                                    <span style="color: var(--accent-red);">-${s.returnsSum.toLocaleString()}</span>
+                                </div>`;
+                        }
+                    }
+
+                    htmlString += `
+                        <div class="item-wrapper" data-name="${item.name.toLowerCase()}">
+                            <div class="item-card" onclick="this.parentElement.classList.toggle('active')">
+                                <div class="swipeable-text" style="font-size: 12px; color: var(--text-main);">${item.name}</div>
+                                <div style="text-align: right; color: var(--text-muted); font-size: 12px;">${netQty}</div>
+                                <div style="text-align: right; font-weight: 700; font-size: 13px; color: ${netSum < 0 ? 'var(--accent-red)' : 'var(--accent-green)'}; display: flex; align-items: center; justify-content: flex-end; gap: 4px;">${netSum.toLocaleString()} <span class="dropdown-icon" style="font-size:8px">▼</span></div>
+                            </div>
+                            <div class="item-details"><div style="padding: 6px 8px;">${detailsHtml}</div></div>
+                        </div>`;
+                });
+
+                repList.innerHTML = htmlString;
+                totalsBox.innerHTML = `
+                    <div style="display: grid; grid-template-columns: 1fr 45px minmax(90px, auto); gap: 8px; font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">
+                        <div>${ui.sales}:</div><div style="text-align: right;">${tSalesQty}</div><div style="text-align: right;">${tSalesSum.toLocaleString()}</div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 45px minmax(90px, auto); gap: 8px; font-size: 12px; color: var(--accent-red); margin-bottom: 4px;">
+                        <div>${ui.returns}:</div><div style="text-align: right;">${tReturnsQty > 0 ? '-' + tReturnsQty : '0'}</div><div style="text-align: right;">${tReturnsSum > 0 ? '-' + tReturnsSum.toLocaleString() : '0'}</div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 45px minmax(90px, auto); gap: 8px; margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--border-focus); align-items: center;">
+                        <div style="font-size: 13px; font-weight: 700; color: var(--text-main);">${ui.net}</div>
+                        <div style="text-align: right; font-size: 12px; font-weight: bold; color: var(--text-muted);">${tSalesQty - tReturnsQty}</div>
+                        <div style="text-align: right; font-size: 15px; font-weight: 900; color: var(--text-main); white-space: nowrap;">${(tSalesSum - tReturnsSum).toLocaleString()} ₸</div>
+                    </div>`;
+            }
+            total();
+        }
+
+        function closeReport() { document.getElementById('report-modal').style.display = 'none'; }
+
+        function displayAppVersion() {
+            // Жесткий Fallback: если Service Worker спит, показываем актуальную версию
+            const fallbackVersion = "5.5.0";
+            document.getElementById('app-version').innerText = "v: " + fallbackVersion;
+            
+            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                const messageChannel = new MessageChannel();
+                messageChannel.port1.onmessage = function(event) {
+                    if (event.data && event.data.version) {
+                        document.getElementById('app-version').innerText = "v: " + event.data.version;
+                    }
+                };
+                navigator.serviceWorker.controller.postMessage({ type: 'GET_VERSION' }, [messageChannel.port2]);
+            }
+        }
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').then(() => {
+                    if (navigator.serviceWorker.controller) displayAppVersion();
+                });
+            });
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                displayAppVersion();
+                if (typeof cart !== 'undefined' && cart.length === 0) window.location.reload(true);
+            });
+        }
+
+        window.addEventListener('load', () => {
+            checkBlockTimer(); 
+            applyLanguage(currentLang); 
+            updateQueueCounter();
+            document.getElementById('google-screen').style.display = 'flex';
+            document.getElementById('pin-screen').style.display = 'none';
+            setTimeout(displayAppVersion, 500); 
+            load();
+        });
+
+        let selectedItemId = null, tempBase64 = null; 
+        function openItemMenu(id) {
+            selectedItemId = id; tempBase64 = null; 
+            const item = db.find(x => x.id === id);
+            document.getElementById('menu-item-name').innerText = item.name;
+            const preview = document.getElementById('photo-preview');
+            document.getElementById('btn-add-cart').style.display = 'block';
+            document.getElementById('btn-save-db').style.display = 'none';
+
+            if (item.img && item.img.length > 5) {
+                let safeUrl = item.img; 
+                const match = item.img.match(/[-\w]{25,}/); 
+                if (match) {
+                    safeUrl = 'https://drive.google.com/thumbnail?id=' + match[0] + '&sz=w800';
+                }
+                
+                preview.innerHTML = `<img src="${safeUrl}" onclick="openFullscreen('${safeUrl}')" onerror="this.onerror=null; this.parentNode.innerHTML='<div style=\\'color:var(--accent-yellow); padding: 15px; border: 1px dashed var(--accent-yellow); border-radius: 8px; font-size: 11px; font-weight: bold;\\'>' + translations[currentLang].photo_err + '</div>';" style="max-width: 100%; max-height: 250px; border-radius: 8px; border: 1px solid var(--border-focus); margin-top: 10px; cursor: zoom-in;">`;
+                
+                document.getElementById('btn-take-photo').style.display = 'none'; 
+                document.getElementById('btn-retake-photo').style.display = 'block';
+            } else {
+                preview.innerHTML = ''; 
+                document.getElementById('btn-take-photo').style.display = 'block'; 
+                document.getElementById('btn-retake-photo').style.display = 'none';
+            }
+            document.getElementById('btn-cancel-modal').innerText = translations[currentLang].btn_close;
+            document.getElementById('item-menu-modal').style.display = 'flex';
+        }
+
+        function handleCancelModal() { if (tempBase64) openItemMenu(selectedItemId); else document.getElementById('item-menu-modal').style.display = 'none'; }
+        function confirmAddFromMenu() { add(selectedItemId); document.getElementById('item-menu-modal').style.display = 'none'; }
+        function triggerCamera() { document.getElementById('camera-input').click(); }
+        function triggerGallery() { document.getElementById('gallery-input').click(); }
+
+        async function handlePhoto(event) {
+            const file = event.target.files[0]; if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.getElementById('resize-canvas');
+                    let width = img.width, height = img.height;
+                    if (width > 800) { height *= 800 / width; width = 800; }
+                    canvas.width = width; canvas.height = height;
+                    canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+                    tempBase64 = canvas.toDataURL('image/jpeg', 0.7);
+                    document.getElementById('photo-preview').innerHTML = `<img src="${tempBase64}" onclick="openFullscreen('${tempBase64}')" style="max-width: 100%; max-height: 250px; border-radius: 8px; border: 1px solid var(--border-focus); margin-top: 10px; cursor: zoom-in;">`;
+                    document.getElementById('btn-add-cart').style.display = 'none'; document.getElementById('btn-save-db').style.display = 'block';
+                    document.getElementById('btn-take-photo').style.display = 'none'; document.getElementById('btn-retake-photo').style.display = 'block';
+                    document.getElementById('btn-cancel-modal').innerText = translations[currentLang].btn_cancel;
+                }; img.src = e.target.result;
+            }; reader.readAsDataURL(file);
+        }
+
+        async function confirmUpload() {
+            if (!navigator.onLine) return alert(translations[currentLang].msg_sync_error);
+            const btnSaveDb = document.getElementById('btn-save-db');
+            btnSaveDb.innerText = "⏳ " + translations[currentLang].btn_saving; btnSaveDb.disabled = true;
+            try {
+                const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'upload_photo', item_id: selectedItemId, base64: tempBase64 }) });
+                if ((await res.json()).success) { btnSaveDb.innerText = "✅ " + translations[currentLang].btn_saved; setTimeout(() => { location.reload(); }, 800); }
+                else { alert(translations[currentLang].err_server); btnSaveDb.innerHTML = '💾 ' + translations[currentLang].btn_save_db; btnSaveDb.disabled = false; }
+            } catch (e) { alert(translations[currentLang].err_network); btnSaveDb.innerHTML = '💾 ' + translations[currentLang].btn_save_db; btnSaveDb.disabled = false; }
+        }
+
+        let fsScale = 1, fsX = 0, fsY = 0, fsStartX = 0, fsStartY = 0, fsInitDist = 0, fsInitScale = 1, isDragging = false;
+        
+        function openFullscreen(src) {
+            const img = document.getElementById('fullscreen-img'); img.src = src; fsScale = 1; fsX = 0; fsY = 0;
+            img.style.transform = `translate(0px, 0px) scale(1)`; document.getElementById('fullscreen-photo').style.display = 'flex';
+            if (!img.dataset.gestures) {
+                img.dataset.gestures = "true";
+                img.addEventListener('touchstart', (e) => { if (e.touches.length === 2) { fsInitDist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY); fsInitScale = fsScale; } else if (e.touches.length === 1) { fsStartX = e.touches[0].pageX - fsX; fsStartY = e.touches[0].pageY - fsY; } }, { passive: false });
+                img.addEventListener('touchmove', (e) => { if (e.cancelable) e.preventDefault(); if (e.touches.length === 2) { fsScale = Math.min(Math.max(1, fsInitScale * (Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY) / fsInitDist)), 5); img.style.transform = `translate(${fsX}px, ${fsY}px) scale(${fsScale})`; } else if (e.touches.length === 1 && fsScale > 1) { fsX = e.touches[0].pageX - fsStartX; fsY = e.touches[0].pageY - fsStartY; img.style.transform = `translate(${fsX}px, ${fsY}px) scale(${fsScale})`; } }, { passive: false });
+                img.addEventListener('wheel', (e) => { e.preventDefault(); const zoomAmount = e.deltaY > 0 ? 0.9 : 1.1; fsScale = Math.min(Math.max(1, fsScale * zoomAmount), 5); if (fsScale === 1) { fsX = 0; fsY = 0; } img.style.transform = `translate(${fsX}px, ${fsY}px) scale(${fsScale})`; }, { passive: false });
+                img.addEventListener('mousedown', (e) => { if (fsScale > 1) { isDragging = true; fsStartX = e.pageX - fsX; fsStartY = e.pageY - fsY; } });
+                window.addEventListener('mousemove', (e) => { if (isDragging && fsScale > 1) { fsX = e.pageX - fsStartX; fsY = e.pageY - fsStartY; img.style.transform = `translate(${fsX}px, ${fsY}px) scale(${fsScale})`; } });
+                window.addEventListener('mouseup', () => { isDragging = false; });
+            }
+        }
+        function closeFullscreen(e) { if (e && e.target.id === 'fullscreen-img' && fsScale > 1) return; forceCloseFs(); }
+        function forceCloseFs() { document.getElementById('fullscreen-photo').style.display = 'none'; fsScale = 1; fsX = 0; fsY = 0; isDragging = false; }
+
+        let barcodeBuffer = ''; let lastKeyTime = Date.now();
+        document.addEventListener('keypress', function(e) {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+            const currentTime = Date.now();
+            if (currentTime - lastKeyTime > 50) barcodeBuffer = '';
+            if (e.key === 'Enter') { if (barcodeBuffer.length > 2) { e.preventDefault(); const item = db.find(i => String(i.barcode) === String(barcodeBuffer)); if (item) { add(item.id); if (navigator.vibrate) navigator.vibrate(50); } barcodeBuffer = ''; } } else barcodeBuffer += e.key;
+            lastKeyTime = currentTime;
+        });
+        
+        // --- МОДУЛЬ УМНОЙ ПРИЕМКИ (ИНВОЙСЫ) ---
+        let parsedInvoiceData = [];
+        let invoiceGroups = {}; 
+
+        function toggleDropdown() {
+            const list = document.getElementById('dropdownList');
+            const header = document.getElementById('dropdownHeader');
+            list.classList.toggle('show');
+            header.classList.toggle('active');
+        }
+
+        function selectCurrency(value) {
+            document.getElementById('dropdownSelectedCode').innerText = value;
+            document.getElementById('invoiceCurrency').value = value;
+            const items = document.querySelectorAll('.currency-minimal-item');
+            items.forEach(item => item.classList.remove('selected'));
+            event.target.classList.add('selected');
+            document.getElementById('dropdownList').classList.remove('show');
+            document.getElementById('dropdownHeader').classList.remove('active');
+            
+            // НОВОЕ: Меняем валюту в шапке таблицы
+            let headerSpan = document.getElementById('dynamicCurrencySpan');
+            if (headerSpan) headerSpan.innerText = value;
+        }
+
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.currency-minimal-container')) {
+                const list = document.getElementById('dropdownList');
+                if (list) list.classList.remove('show');
+                const header = document.getElementById('dropdownHeader');
+                if (header) header.classList.remove('active');
+            }
+        });
+
+        function updateFileNameCompactUI(input) {
+            const fileNameText = document.getElementById('fileNameTextCompact');
+            const containerBox = document.getElementById('fileInputLabel');
+            if (input.files && input.files.length > 0) {
+                fileNameText.innerText = input.files.length > 1 ? translations[currentLang].inc_file_selected + input.files.length : input.files[0].name;
+                fileNameText.classList.remove('file-placeholder-text');
+                fileNameText.style.color = 'var(--text-main)';          
+                containerBox.style.borderColor = 'var(--accent-green)'; 
+                containerBox.style.background = 'var(--bg-success-dim)';  
+                containerBox.style.color = 'var(--text-main)';  
+            } else {
+                fileNameText.innerText = translations[currentLang].inc_file_placeholder;
+                fileNameText.classList.add('file-placeholder-text');
+                fileNameText.style.color = 'var(--text-placeholder)';
+                containerBox.style.borderColor = 'var(--border-focus)';
+                containerBox.style.background = 'var(--bg-body)';
+                containerBox.style.color = 'var(--text-muted)';
+            }
+        }
+
+        function toggleIncomeModule() {
+            const modal = document.getElementById('income-modal');
+            if (modal.style.display === 'none' || modal.style.display === '') {
+                modal.style.display = 'flex';
+            } else {
+                modal.style.display = 'none';
+                document.getElementById('invoicePreviewArea').style.display = 'none';
+                document.getElementById('debug-container').style.display = 'none';
+                document.getElementById('debug-container').innerHTML = '';
+                document.getElementById('parseInvoiceBtn').style.display = 'block'; 
+                
+                const fileInput = document.getElementById('invoiceFileInput');
+                fileInput.value = '';
+                updateFileNameCompactUI(fileInput); 
+                parsedInvoiceData = [];
+            }
+        }
+
+        async function processInvoiceFile() {
+            const fileInput = document.getElementById('invoiceFileInput');
+            if (!fileInput.files.length) return alert(translations[currentLang].inc_no_file);
+
+            parsedInvoiceData = []; 
+            invoiceGroups = {}; 
+            let processingLogs = []; 
+
+            const markers = (invoiceSynonyms['supplier_keywords'] || ["the seller", "vendor", "supplier", "поставщик"]);
+            const excludes = (invoiceSynonyms['exclude'] || ["commercial invoice", "packing list", "invoice", "specification", "sales contract", "contract"]);
+
+            function isSynonym(cellValue, targetKey) {
+                if (!cellValue) return false;
+                const cleanCell = String(cellValue).replace(/\s+/g, '').toLowerCase();
+                const synonymsList = (invoiceSynonyms[targetKey] || []).map(s => s.replace(/\s+/g, '').toLowerCase());
+                return synonymsList.some(syn => syn !== "" && cleanCell.includes(syn));
+            }
+
+            for (let file of fileInput.files) {
+                let fileErrors = [];
+                let itemsInFile = 0;
+                let fileParsedSuccessfully = false;
+                let sheetErrorsList = []; 
+
+                const b64Promise = new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => resolve(e.target.result);
+                    reader.readAsDataURL(file);
+                });
+                const originalBase64 = await b64Promise;
+
+                const dataPromise = new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => resolve(new Uint8Array(e.target.result));
+                    reader.readAsArrayBuffer(file);
+                });
+
+                const arrayBuffer = await dataPromise;
+                let file_doc_no = 'UNKNOWN';
+                let file_supplier = 'UNKNOWN';
+
+                try {
+                    const workbook = XLSX.read(arrayBuffer, {type: 'array'});
+                    
+                    for (let sheetName of workbook.SheetNames) {
+                        const worksheet = workbook.Sheets[sheetName];
+                        const rows = XLSX.utils.sheet_to_json(worksheet, {header: 1});
+                        if (!rows || rows.length === 0) continue;
+
+                        if (file_supplier === 'UNKNOWN') {
+                            for (let i = 0; i < Math.min(10, rows.length); i++) {
+                                let row = rows[i];
+                                if (!row) continue;
+                                for (let j = 0; j < row.length; j++) {
+                                    let cellVal = String(row[j] || "").toLowerCase();
+                                    if (markers.some(m => cellVal.includes(m.toLowerCase()))) {
+                                        for (let k = j + 1; k < row.length; k++) {
+                                            if (row[k] && String(row[k]).trim() !== '') {
+                                                file_supplier = String(row[k]).trim().replace(/^"|"$/g, ''); 
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            if (file_supplier === 'UNKNOWN') {
+                                for (let i = 0; i < Math.min(8, rows.length); i++) {
+                                    let row = rows[i] || [];
+                                    let text = String(row[0] || "").trim();
+                                    if (text && !excludes.some(ex => text.toLowerCase().includes(ex.toLowerCase()))) {
+                                        file_supplier = text.replace(/^"|"$/g, '');
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
+                        if (file_doc_no === 'UNKNOWN') {
+                            for (let i = 0; i < Math.min(20, rows.length); i++) {
+                                let row = rows[i] || [];
+                                for (let j = 0; j < row.length; j++) {
+                                    if (isSynonym(row[j], 'invoice_no')) {
+                                        let val = String(row[j+1] || '').trim();
+                                        if (val && val !== 'UNKNOWN') file_doc_no = val;
+                                    }
+                                }
+                            }
+                        }
+
+                        // НОВОЕ: Если оригинальный номер не найден — ставим заглушку (Дата+Время)
+                        if (file_doc_no === 'UNKNOWN' || file_doc_no === '') {
+                            let now = new Date();
+                            let day = String(now.getDate()).padStart(2, '0');
+                            let month = String(now.getMonth() + 1).padStart(2, '0');
+                            let hours = String(now.getHours()).padStart(2, '0');
+                            let minutes = String(now.getMinutes()).padStart(2, '0');
+                            file_doc_no = `IN-${day}.${month}-${hours}${minutes}`;
+                        }
+
+                        let firstDataRowIdx = -1;
+                        for (let i = 0; i < Math.min(50, rows.length); i++) {
+                            let row = rows[i] || [];
+                            if (row.length === 0) continue;
+
+                            let numCount = row.filter(c => {
+                                let val = String(c).trim().replace(/,/g, '');
+                                return val !== '' && !isNaN(Number(val));
+                            }).length;
+
+                            if (numCount >= 2) {
+                                let firstCol = String(row[0] || '').toUpperCase();
+                                if (!firstCol.includes('TOTAL')) {
+                                    firstDataRowIdx = i;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (firstDataRowIdx > 0) {
+                            let headerRowIdx = firstDataRowIdx - 1;
+                            let colMap = { code: -1, brand: -1, desc: -1, qty: -1, price: -1, cbm: -1, weight: -1 };
+                            
+                            let headerRow = rows[headerRowIdx] || []; // <-- ЭТУ СТРОКУ ОСТАВЛЯЕМ!
+                            
+                            // 1. Читаем системные исключения
+                            let baseKeys = [];
+                            if (invoiceSynonyms && invoiceSynonyms['system_ignore_in_id']) {
+                                baseKeys = invoiceSynonyms['system_ignore_in_id'].map(s => s.toLowerCase().trim());
+                            }
+                            // ЖЕСТКИЙ ПРЕДОХРАНИТЕЛЬ (на случай опечаток в Google Таблице)
+                            ['id', 'qty', 'price', 'cost', 'cbm', 'weight', 'barcode', 'exclude', 'supplier_keywords', 'invoice_no', 'contract_no'].forEach(k => {
+                                if (!baseKeys.includes(k)) baseKeys.push(k);
+                            });
+
+                            // 2. ЗАМЕНЯЕМ varMap НА МАССИВ (чтобы размер не затирался моделью)
+                            let activeCols = [];
+                            
+                            for (let j = 0; j < headerRow.length; j++) {
+                                let val = String(headerRow[j] || '').replace(/[\r\n]+/g, ' ').trim();
+                                
+                                if (val.toLowerCase().includes('total') || val.toLowerCase().includes('итого') || val.toLowerCase().includes('общий')) {
+                                    continue; 
+                                }
+                                
+                                if (colMap.code === -1 && isSynonym(val, 'id')) colMap.code = j;
+                                if (colMap.qty === -1 && isSynonym(val, 'qty')) colMap.qty = j;
+                                if (colMap.price === -1 && isSynonym(val, 'price')) colMap.price = j;
+                                if (colMap.brand === -1 && isSynonym(val, 'brand')) colMap.brand = j;
+                                if (colMap.desc === -1 && isSynonym(val, 'name')) colMap.desc = j;
+                                if (colMap.cbm === -1 && isSynonym(val, 'cbm')) colMap.cbm = j;
+                                if (colMap.weight === -1 && isSynonym(val, 'weight')) colMap.weight = j;
+
+                                // --- ГЛАВНАЯ ЗАЩИТА ОТ СОВПАДЕНИЙ (unitPRice != PR) ---
+                                // Проверяем, не является ли эта колонка системной (цена, количество, инвойс и т.д.)
+                                let isSystemColumn = false;
+                                for (let bk of baseKeys) {
+                                    if (isSynonym(val, bk)) {
+                                        isSystemColumn = true;
+                                        break;
+                                    }
+                                }
+
+                                // Если это Цена или Кол-во, мы намертво блокируем её. Она не попадет в генератор ID!
+                                if (isSystemColumn) continue;
+
+                                if (invoiceSynonyms) {
+                                    for (let key in invoiceSynonyms) {
+                                        let cleanKey = key.trim().toLowerCase();
+                                        
+                                        if (cleanKey === 'system_ignore_in_id') continue;
+                                        
+                                        if (!baseKeys.includes(cleanKey)) {
+                                            if (isSynonym(val, key)) {
+                                                activeCols.push({ key: cleanKey, colIdx: j });
+                                                break; // Нашли совпадение — выходим, чтобы колонка не привязалась к двум ключам сразу
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (colMap.code !== -1 && colMap.qty !== -1 && colMap.price !== -1) {
+                                fileParsedSuccessfully = true; 
+                                
+                                if (!invoiceGroups[file_doc_no]) {
+                                    invoiceGroups[file_doc_no] = { supplier: file_supplier, items: [], originalFiles: [] };
+                                }
+
+                                // --- ИСПРАВЛЕНИЕ 2: ПАМЯТЬ ДЛЯ ОБЪЕДИНЕННЫХ ЯЧЕЕК ---
+                                let lastCode = "UNKNOWN";
+                                let lastBrand = "";
+                                let lastDesc = "";
+                                let varMemory = {}; // НОВОЕ: Память для параметров (размер, вылет и тд)
+
+                                for (let i = firstDataRowIdx; i < rows.length; i++) {
+                                    const row = rows[i];
+                                    if (!row || row.length === 0) continue;
+                                    
+                                    let codeCell = String(row[colMap.code] || '').trim();
+                                    let qty = parseFloat(row[colMap.qty]);
+                                    let price = parseFloat(row[colMap.price]);
+                                    let brandStr = colMap.brand !== -1 ? String(row[colMap.brand] || '').trim() : '';
+                                    let descStr = colMap.desc !== -1 ? String(row[colMap.desc] || '').trim() : '';
+
+                                    // Логика "Протягивания" вниз
+                                    if (codeCell === "" && (!isNaN(qty) || !isNaN(price))) {
+                                        // Если код пустой, но есть цифры -> берем данные из памяти
+                                        codeCell = lastCode;
+                                        if (brandStr === "") brandStr = lastBrand;
+                                        if (descStr === "") descStr = lastDesc;
+                                    } else if (codeCell !== "") {
+                                        // Если код написан, проверяем не конец ли это таблицы
+                                        if (codeCell.toUpperCase().includes('TOTAL')) break; 
+                                        // Запоминаем для следующих пустых строк
+                                        lastCode = codeCell;
+                                        lastBrand = brandStr;
+                                        lastDesc = descStr;
+                                    } else {
+                                        // Если и код пустой, и цифр нет - значит таблица кончилась
+                                        break; 
+                                    }
+                                    
+                                    if (!isNaN(qty) && !isNaN(price)) {
+                                        
+                                        // --- НАЧАЛО НОВОГО БЛОКА ОЧИСТКИ И МАТЕМАТИКИ ---
+                                        let rawCbm = colMap.cbm !== -1 ? (parseFloat((row[colMap.cbm] || '0').toString().replace(',', '.')) || 0) : 0;
+                                        let finalCbm = rawCbm;
+
+                                        if (colMap.cbm !== -1 && qty > 0) {
+                                            let leftVal = parseFloat((row[colMap.cbm - 1] || '0').toString().replace(',', '.')) || 0;
+                                            let rightVal = parseFloat((row[colMap.cbm + 1] || '0').toString().replace(',', '.')) || 0;
+                                            
+                                            if (leftVal > 0 && rawCbm > 0 && Math.abs((leftVal * qty) - rawCbm) < 0.2) {
+                                                finalCbm = leftVal; 
+                                            } else if (rightVal > 0 && rawCbm > 0 && Math.abs((rightVal * qty) - rawCbm) < 0.2) {
+                                                finalCbm = rightVal; 
+                                            } else if (rawCbm === 0) {
+                                                if (leftVal > 0 && leftVal < 1) finalCbm = leftVal;
+                                                else if (rightVal > 0 && rightVal < 1) finalCbm = rightVal;
+                                            }
+                                        }
+                                        
+                                        let finalWeight = colMap.weight !== -1 ? (parseFloat((row[colMap.weight] || '0').toString().replace(',', '.')) || 0) : 0;
+
+                                        // --- РАЗДЕЛЬНАЯ ГЕНЕРАЦИЯ ID И ИМЕНИ ---
+                                        let allowedForName = ['brand', 'name', 'size']; // Что разрешено показывать на кассе
+                                        let excludeFromId = ['brand']; // ОПТИМИЗАЦИЯ: Что НЕ нужно дублировать в ID
+                                        
+                                        let nameParts = [];
+                                        let idParts = [];
+
+                                        // Идем по нашему массиву найденных колонок
+                                        for (let col of activeCols) {
+                                            let colIdx = col.colIdx;
+                                            let key = col.key;
+                                            
+                                            let cellVal = String(row[colIdx] || '').trim();
+                                            let activeVal = "";
+                                            
+                                            // Память столбцов (привязка к номеру колонки)
+                                            if (cellVal !== '') {
+                                                varMemory[colIdx] = cellVal;
+                                                activeVal = cellVal;
+                                            } else if (varMemory[colIdx]) {
+                                                activeVal = varMemory[colIdx];
+                                            }
+                                            
+                                            if (activeVal !== '') {
+                                                // 1. Для короткого Имени на кассе
+                                                if (allowedForName.includes(key)) {
+                                                    nameParts.push(activeVal.toUpperCase());
+                                                }
+                                                
+                                                // 2. Для длинного ID (Если ключ НЕ в списке исключений, добавляем его!)
+                                                if (!excludeFromId.includes(key)) {
+                                                    let idVal = activeVal.toUpperCase().replace(/\*/g, 'X').replace(/\s+/g, '');
+                                                    // Ключ сортировки
+                                                    idParts.push({ sortKey: key.toUpperCase() + colIdx, val: idVal });
+                                                }
+                                            }
+                                        }
+
+                                        // 1. Собираем короткое ИМЯ
+                                        let finalName = nameParts.join(' ').trim();
+                                        if (finalName === "") finalName = codeCell;
+
+                                        // 2. Собираем длинный ID (Сортируем ключи - защита от перестановки колонок)
+                                        idParts.sort((a, b) => a.sortKey.localeCompare(b.sortKey));
+                                        let compositeId = codeCell;
+                                        for (let p of idParts) {
+                                            compositeId += "_" + p.val;
+                                        }
+                                        // ---------------------------------------------
+
+                                        const itemData = {
+                                            doc_no: file_doc_no, 
+                                            category: file_doc_no, // НОВОЕ: Единая категория, равная номеру партии
+                                            supplier: file_supplier, 
+                                            item_id: compositeId, 
+                                            item_name: finalName, 
+                                            qty: qty, 
+                                            cost: price,
+                                            cbm: finalCbm,
+                                            weight: finalWeight,
+                                            staff_id: currentUser ? currentUser.uid : 'Auto-Import' 
+                                        };
+                                        // --- КОНЕЦ НОВОГО БЛОКА ---
+
+                                        parsedInvoiceData.push(itemData);
+                                        invoiceGroups[file_doc_no].items.push(itemData);
+                                        itemsInFile++;
+                                    }
+                                }
+                            } else {
+                                let missing = [];
+                                if (colMap.code === -1) missing.push(translations[currentLang].word_code);
+                                if (colMap.qty === -1) missing.push(translations[currentLang].word_qty);
+                                if (colMap.price === -1) missing.push(translations[currentLang].word_price);
+                                sheetErrorsList.push(translations[currentLang].inc_err_sheet_missing.replace('{0}', sheetName).replace('{1}', headerRowIdx + 1) + missing.join(', '));
+                            }
+                        } else {
+                            sheetErrorsList.push(translations[currentLang].inc_err_sheet_no_table.replace('{0}', sheetName));
+                        }
+                    } 
+                    
+                    if (invoiceGroups[file_doc_no] && fileParsedSuccessfully) {
+                        const alreadyAdded = invoiceGroups[file_doc_no].originalFiles.some(f => f.fileName === file.name);
+                        if (!alreadyAdded) {
+                            invoiceGroups[file_doc_no].originalFiles.push({
+                                fileName: file.name,
+                                fileBase64: originalBase64
+                            });
+                        }
+                    }
+
+                } catch (err) {
+                    console.error("Ошибка чтения файла: " + file.name, err);
+                    fileErrors.push(translations[currentLang].inc_file_corrupted);
+                }
+
+                if (file_doc_no === 'UNKNOWN') fileErrors.push(translations[currentLang].inc_err_no_doc);
+                if (file_supplier === 'UNKNOWN') fileErrors.push(translations[currentLang].inc_err_no_sup);
+                
+                if (!fileParsedSuccessfully) {
+                    fileErrors.push(sheetErrorsList.join('<br>'));
+                } else if (itemsInFile === 0) {
+                    fileErrors.push(translations[currentLang].inc_err_no_items);
+                }
+
+                if (fileErrors.length > 0) {
+                    processingLogs.push(`<div style="color:var(--accent-red); font-size:12px; margin-bottom:4px; padding:6px; border-left:3px solid var(--accent-red); background:var(--bg-hover);">⚠️ <b>${file.name}</b>:<br>${fileErrors.join('<br>')}</div>`);
+                } else {
+                    processingLogs.push(`<div style="color:var(--accent-green); font-size:12px; margin-bottom:4px; padding:6px; border-left:3px solid var(--accent-green); background:var(--bg-hover);">✅ <b>${file.name}</b>: ${translations[currentLang].inc_success.replace('{0}', itemsInFile)}</div>`);
+                }
+            }
+
+            const debugContainer = document.getElementById('debug-container');
+            debugContainer.style.maxHeight = 'none'; 
+            debugContainer.style.overflowY = 'visible';
+            debugContainer.innerHTML = processingLogs.join('');
+            debugContainer.style.display = 'flex';
+
+            if (parsedInvoiceData.length === 0) {
+                document.getElementById('invoicePreviewArea').style.display = 'none';
+                return; 
+            }
+
+            const uniqueDocs = Object.keys(invoiceGroups).filter(k => k !== 'UNKNOWN');
+            const uniqueSuppliers = [...new Set(parsedInvoiceData.map(i => i.supplier))];
+
+            let docUiHtml = '';
+            if (uniqueDocs.length === 1) {
+                docUiHtml = `<input type="text" id="ui-doc-no" value="${uniqueDocs[0]}" style="background:var(--bg-hover); color:var(--accent-yellow); border:1px dashed var(--border-focus); padding:2px 6px; border-radius:3px; font-weight:bold; font-size:13px; width: 140px; outline:none;" title="Можно редактировать">`;
+            } else if (uniqueDocs.length > 1) {
+                docUiHtml = `<span style="color:var(--accent-yellow); font-weight:bold;">${uniqueDocs.join(', ')}</span>`;
+            } else {
+                docUiHtml = `<span style="color:var(--accent-red); font-weight:bold;">${translations[currentLang].inc_err_doc_format}</span>`;
+            }
+
+            document.getElementById('invoiceMetadata').innerHTML = `
+                <span style="color:var(--text-muted); font-weight:normal; font-size:13px;">${translations[currentLang].inc_lbl_sup}</span> 
+                <span style="color:var(--accent-yellow); font-weight:bold; font-size:14px; letter-spacing:0.5px;">${uniqueSuppliers.join(', ')}</span> 
+                
+                <span style="color:var(--border-light); margin:0 10px;">|</span> 
+                
+                <span style="color:var(--text-muted); font-weight:normal; font-size:13px;">${translations[currentLang].inc_lbl_doc}</span> 
+                ${docUiHtml} 
+                
+                <span style="color:var(--border-light); margin:0 10px;">|</span> 
+                
+                <span style="color:var(--text-muted); font-weight:normal; font-size:13px;">${translations[currentLang].inc_lbl_items}</span> 
+                <span style="color:var(--accent-yellow); font-weight:bold; font-size:14px;">${parsedInvoiceData.length}</span>
+            `;
+            
+            document.getElementById('invoiceTableBody').innerHTML = parsedInvoiceData.map(item => `
+                <tr style="border-bottom:1px solid var(--border-light); color:var(--text-main);">
+                    <td style="padding:5px;">${item.item_id}</td>
+                    <td style="padding:5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px;">
+                        ${item.item_name}
+                        ${uniqueDocs.length > 1 ? `<br><span style="font-size:9px; color:var(--text-muted);">[Инвойс: ${item.doc_no}]</span>` : ''}
+                    </td>
+                    <td style="padding:5px;">${item.qty}</td>
+                    <td style="padding:5px;">${item.cbm}</td>
+                    <td style="padding:5px;">${item.weight}</td>
+                    <td style="padding:5px;">${item.cost}</td>
+                </tr>`).join('');
+            
+            document.getElementById('invoicePreviewArea').style.display = 'flex';
+            document.getElementById('parseInvoiceBtn').style.display = 'none';
+        }
+
+        async function sendInvoiceToBackend() {
+            if (parsedInvoiceData.length === 0) return alert(translations[currentLang].inc_empty_cart);
+
+            const docKeys = Object.keys(invoiceGroups);
+            const docInput = document.getElementById('ui-doc-no');
+            
+            if (docKeys.length === 1 && docInput) {
+                const finalDocNo = docInput.value.trim();
+                if (!finalDocNo) return alert(translations[currentLang].inc_doc_empty);
+                if (finalDocNo !== docKeys[0]) {
+                    invoiceGroups[finalDocNo] = invoiceGroups[docKeys[0]];
+                    delete invoiceGroups[docKeys[0]];
+                    invoiceGroups[finalDocNo].items.forEach(i => i.doc_no = finalDocNo);
+                }
+            }
+
+            const btn = document.getElementById('sendInvoiceBtn');
+            const statusContainer = document.getElementById('status-container');
+            const statusBar = document.getElementById('status-bar');
+            const statusText = document.getElementById('status-text');
+            const statusPercent = document.getElementById('status-percent');
+
+            btn.disabled = true; btn.style.opacity = '0.5';
+            statusContainer.style.display = 'block';
+            
+            // Стартуем с 5%
+            let currentDisplayPct = 5;
+            statusBar.style.width = '5%'; statusPercent.innerText = '5%';
+
+            const totalSteps = Object.keys(invoiceGroups).length;
+            let currentStep = 0;
+
+            for (let docNo of Object.keys(invoiceGroups)) {
+                currentStep++;
+                let group = invoiceGroups[docNo];
+                
+                // Высчитываем целевой процент для этого шага (но оставим 5% на финализацию)
+                let targetPct = Math.round((currentStep / totalSteps) * 95);
+
+                statusText.innerText = translations[currentLang].inc_status_db;
+                
+                // ЗАПУСКАЕМ АНИМАЦИЮ ОЖИДАНИЯ СЕРВЕРА
+                let fakeProgress = setInterval(() => {
+                    let remaining = targetPct - currentDisplayPct;
+                    if (remaining > 0) {
+                        // Полоска замедляется по мере приближения к концу
+                        let step = Math.max(1, Math.floor(remaining / 10)); 
+                        currentDisplayPct += step;
+                        statusBar.style.width = currentDisplayPct + '%';
+                        statusPercent.innerText = currentDisplayPct + '%';
+
+                        // Меняем текст, чтобы развлекать и информировать пользователя
+                        if (currentDisplayPct > 20 && currentDisplayPct < 50) statusText.innerText = translations[currentLang].inc_status_write;
+                        if (currentDisplayPct >= 50 && currentDisplayPct < 85) statusText.innerText = translations[currentLang].inc_status_drive;
+                        if (currentDisplayPct >= 85) statusText.innerText = translations[currentLang].inc_status_almost;
+                    }
+                }, 600);
+
+                try {
+                    // НОВОЕ: Генерируем уникальный слепок содержимого инвойса
+                    let fp = "FP_" + group.items.length + "шт_" + group.items.reduce((sum, i) => sum + (Number(i.qty) || 0), 0) + "кол_" + (group.items[0].item_name || "").replace(/\s/g, '').substring(0, 10);
+
+                    const response = await fetch(APPS_SCRIPT_URL, {
+                        method: 'POST',
+                        body: JSON.stringify({ 
+                            action: 'income', 
+                            data: group.items,
+                            files: group.originalFiles, 
+                            docNo: docNo, 
+                            currency: document.getElementById('invoiceCurrency').value,
+                            fingerprint: fp // Передаем слепок на сервер
+                        })
+                    });
+                    
+                    const res = await response.json();
+                    
+                    clearInterval(fakeProgress); // Останавливаем анимацию
+                    
+                    if (!res.success) {
+                        throw new Error(res.error);
+                    }
+                } catch (err) {
+                    clearInterval(fakeProgress); // Останавливаем анимацию при ошибке
+                    statusText.innerText = translations[currentLang].inc_server_err; 
+                    statusText.style.color = "var(--accent-red)";
+                    
+                    let errorMsg = err.message;
+                    
+                    let dupMatch = errorMsg.match(/Накладная с номером (.*?) уже была/i);
+                    if (dupMatch && dupMatch[1]) {
+                        errorMsg = translations[currentLang].server_dup.replace('{0}', dupMatch[1].trim());
+                    } else if (errorMsg.includes("База не привязана")) {
+                        errorMsg = translations[currentLang].server_no_db;
+                    } else if (errorMsg.includes("с точно таким же составом")) {
+                        // НОВОЕ: Перехватываем ошибку цифрового слепка
+                        errorMsg = translations[currentLang].server_dup_fp;
+                    }
+
+                    alert(translations[currentLang].inc_send_err + errorMsg);
+                    btn.disabled = false; btn.style.opacity = '1';
+                    return;
+                }
+            }
+
+            // Жестко ставим 100% только когда сервер ответил УСПЕХОМ
+            statusBar.style.width = '100%'; statusPercent.innerText = '100%';
+            statusText.innerText = translations[currentLang].inc_status_done;
+            statusText.style.color = "var(--accent-green)";
+            
+            setTimeout(() => { 
+                alert(translations[currentLang].inc_all_done); 
+                toggleIncomeModule(); 
+                if (typeof load === 'function') load(); 
+            }, 800);
+            
+            btn.disabled = false; btn.style.opacity = '1';
+        }
+    </script>
+
+    <div id="income-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--bg-overlay); z-index: 10000; justify-content: center; align-items: center; backdrop-filter: blur(3px);">
+        <div style="background: var(--bg-modal); border: 1px solid var(--border-light); border-radius: 8px; width: 95%; max-width: 600px; padding: 20px; color: var(--text-main); max-height: 90vh; display: flex; flex-direction: column; position: relative;">
+            <button onclick="toggleIncomeModule()" style="position: absolute; right: 15px; top: 15px; background: transparent; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer;">✕</button>
+            <h3 style="margin-bottom: 10px; color: var(--accent-green);" data-i18n="income_title">📦 Импорт накладной</h3>
+            
+            <div class="minimal-input-container">
+                <div class="currency-minimal-container">
+                    <div class="currency-minimal-header" id="dropdownHeader" onclick="toggleDropdown()">
+                        <span id="dropdownSelectedCode">USD</span><span class="curr-arrow-mini">▼</span>
+                    </div>
+                    <div class="currency-minimal-list" id="dropdownList">
+                        <div class="currency-minimal-item" onclick="selectCurrency('KZT')">KZT</div>
+                        <div class="currency-minimal-item selected" onclick="selectCurrency('USD')">USD</div>
+                        <div class="currency-minimal-item" onclick="selectCurrency('CNY')">CNY</div>
+                        <div class="currency-minimal-item" onclick="selectCurrency('EUR')">EUR</div>
+                        <div class="currency-minimal-item" onclick="selectCurrency('RUB')">RUB</div>
+                    </div>
+                    <input type="hidden" id="invoiceCurrency" value="USD">
+                </div>
+
+                <div class="file-input-wrapper">
+                    <label for="invoiceFileInput" id="fileInputLabel" class="file-upload-label">
+                        <div class="file-content">
+                            <span style="color: var(--text-muted); font-size: 10px;">📄</span>
+                            <span id="fileNameTextCompact" class="file-placeholder-text">Нажмите для выбора Excel</span>
+                        </div>
+                        <span style="color: var(--text-muted); font-size: 11px;">📎</span>
+                    </label>
+                    <input type="file" id="invoiceFileInput" accept=".csv, .xls, .xlsx" style="display: none;" multiple onchange="updateFileNameCompactUI(this)">
+                </div>
+            </div>
+            
+<button id="parseInvoiceBtn" onclick="processInvoiceFile()" style="background: var(--bg-success-dim); color: var(--accent-green); border: 1px solid var(--accent-green); padding: 12px 15px; border-radius: 4px; cursor: pointer; width: 100%; font-weight: bold; font-size: 14px;" data-i18n="income_parse">ОБРАБОТАТЬ ФАЙЛ</button>
+            
+            <div id="debug-container" style="display: none; margin-top: 15px; flex-direction: column; overflow-y: auto; max-height: 50vh;"></div>
+
+            <div id="invoicePreviewArea" style="display: none; margin-top: 20px; flex-direction: column; overflow: hidden;">
+                <div id="invoiceMetadata" style="margin-bottom: 10px; font-weight: bold; color: var(--accent-yellow); font-size: 13px; text-align: center;"></div>
+                <div style="overflow-y: auto; border: 1px solid var(--border-light); margin-bottom: 15px; flex-grow: 1;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 12px; color: var(--text-main);">
+                        <thead style="background: var(--border-main); position: sticky; top: 0;">
+                            <tr style="border-bottom: 1px solid var(--text-muted); text-align: left;">
+                                <th style="padding: 8px;" data-i18n="income_code">Код</th>
+                                <th style="padding: 8px;" data-i18n="income_name">Наименование</th>
+                                <th style="padding: 8px;" data-i18n="income_qty">Кол-во</th>
+                                <th style="padding: 8px;" data-i18n="income_cbm">Объем (CBM)</th>
+                                <th style="padding: 8px;" data-i18n="income_weight">Вес (кг)</th>
+                                <th style="padding: 8px;">
+    <span data-i18n="income_price">Цена</span> (<span id="dynamicCurrencySpan" style="color: var(--accent-yellow);">USD</span>)
+</th>
+                            </tr>
+                        </thead>
+                        <tbody id="invoiceTableBody"></tbody>
+                    </table>
+                </div>
+                
+                <div id="status-container" style="display: none; margin-bottom: 15px; padding: 10px; background: var(--bg-body); border: 1px solid var(--border-light); border-radius: 4px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 11px;">
+                        <span id="status-text" style="color: var(--accent-green);">Подготовка...</span>
+                        <span id="status-percent" style="color: var(--text-muted);">0%</span>
+                    </div>
+                    <div style="width: 100%; height: 4px; background: var(--border-main); border-radius: 2px; overflow: hidden;">
+                        <div id="status-bar" style="width: 0%; height: 100%; background: var(--accent-green); transition: width 0.3s;"></div>
+                    </div>
+                </div>
+                
+                <button id="sendInvoiceBtn" onclick="sendInvoiceToBackend()" style="background: var(--accent-blue); color: #ffffff; padding: 12px 20px; border: none; border-radius: 4px; width: 100%; cursor: pointer; font-weight: bold;" data-i18n="income_confirm">
+                    ✅ ОПРИХОДОВАТЬ НА СКЛАД
+                </button>
+            </div>
+        </div>
+    </div>
+
+<script>
+        let tokenClient;
+
+        // Эта функция срабатывает, когда страница загрузилась
+        window.onload = function() {
+            tokenClient = google.accounts.oauth2.initTokenClient({
+                // ВАЖНО: Замените эту строку на ваш Client ID из Google Cloud!
+                client_id: '708493033503-uqt150phalgjq131kg51psf8opn27uv0.apps.googleusercontent.com', 
+                
+                // Запрашиваем доступ к таблицам
+                scope: 'https://www.googleapis.com/auth/spreadsheets',
+                
+                // Что делать после успешного входа:
+                callback: (tokenResponse) => {
+                    if (tokenResponse && tokenResponse.access_token) {
+                        // 1. Прячем экран Google
+                        document.getElementById('google-screen').style.display = 'none';
+                        // 2. Показываем Пин-пад
+                        document.getElementById('pin-screen').style.display = 'flex';
+                    }
+                },
+            });
+        };
+
+        // Эта функция срабатывает при клике на синюю кнопку
+        function loginWithGoogle() {
+            tokenClient.requestAccessToken();
+        }
+    </script>
+
+</body>
+</html>
