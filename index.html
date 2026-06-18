@@ -342,15 +342,18 @@
 </head>
 <body>
 
-    <h1>Trade Control POS</h1>
-<p>Trade Control is a web-based Point of Sale (POS) application designed for internal inventory management and daily sales tracking.</p>
-<p><strong>How it works:</strong> The application requires access to your Google Sheets. It reads product data (names, prices, barcodes) from your personal spreadsheet to display them in the POS interface, and writes completed sales transactions directly back into your spreadsheet.</p>
-<p><a href="privacy.html">Privacy Policy</a></p>
+    <body>
 
-    <!-- НОВЫЙ БЛОК: Это экран входа, он виден сразу -->
-    <div id="google-screen" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: #1e1e1e; color: white;">
+    <div id="google-screen" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: #1e1e1e; color: white; padding: 20px; text-align: center;">
+        
+        <div style="max-width: 600px; margin-bottom: 30px; text-align: left; background: rgba(255,255,255,0.1); padding: 20px; border-radius: 8px;">
+            <h2 style="margin-top: 0; color: #f1c40f;">Trade Control POS</h2>
+            <p>Trade Control is a web-based Point of Sale (POS) application designed for internal inventory management and daily sales tracking.</p>
+            <p><strong>How it works:</strong> The application requires access to your Google Sheets. It reads product data (names, prices, barcodes) from your personal spreadsheet to display them in the POS interface, and writes completed sales transactions directly back into your spreadsheet.</p>
+            <p><a href="privacy.html" style="color: #3498db;">Privacy Policy</a></p>
+        </div>
         <h1 style="margin-bottom: 20px;">Вход в Trade Control</h1>
-        <button onclick="loginWithGoogle()" style="padding: 15px 30px; font-size: 16px; background-color: #4285F4; color: white; border: none; border-radius: 5px; cursor: pointer;">
+        <button onclick="loginWithGoogle()" style="padding: 15px 30px; font-size: 16px; background-color: #4285F4; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">
             Войти через Google
         </button>
     </div>
