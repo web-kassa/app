@@ -1093,7 +1093,16 @@
             if (inC) {
                 inC.qty++; 
             } else {
-                cart.push({id: p.id, name: p.name, qty: 1, price: roundedPrice, origPrice: roundedPrice, cost: roundedCost});
+                cart.push({
+    id: p.id, 
+    name: p.name, 
+    qty: 1, 
+    price: roundedPrice, 
+    origPrice: roundedPrice, 
+    cost: roundedCost,
+    stock: parseFloat(p.stock) || 0,
+    min_stock: parseFloat(p.min_stock) || 1
+});
             }
             
             // --- 1. ВИБРООТКЛИК (для мобильных устройств) ---
@@ -1130,8 +1139,35 @@
         }
 
         function update() {
-            document.getElementById('cart-list').innerHTML = cart.map((item, idx) => `
-                <div class="cart-row" id="r-${item.id}">
+            document.getElementById('cart-list').innerHTML = cart.map((item, idx) => {
+                
+                // === НОВЫЙ БЛОК: ПРОВЕРКА КРИТИЧЕСКОГО ОСТАТКА ===
+                let remainingStock = item.stock - item.qty;
+                // Задаем стандартные стили строки
+                let rowBgColor = "var(--bg-panel)";
+                let rowBorder = "1px solid var(--border-main)";
+                let kaspiBtnHtml = "";
+
+                // Если остаток опускается до или ниже критического уровня (по умолчанию 1)
+                let minStockLevel = item.min_stock !== undefined ? item.min_stock : 1;
+                
+                if (remainingStock <= minStockLevel) {
+                    rowBgColor = "rgba(255, 69, 0, 0.05)"; // Слегка красноватый фон
+                    rowBorder = "1px solid var(--accent-red)"; // Красная рамка
+                    
+                    // Добавляем кнопку проверки
+                    kaspiBtnHtml = `
+                        <div style="width: 100%; margin-top: 8px;">
+                            <button onclick="checkKaspiFromCart('${item.id}', this)" style="width: 100%; background: var(--bg-card); color: var(--accent-yellow); border: 1px dashed var(--accent-yellow); padding: 8px; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer; text-transform: uppercase;">
+                                🔍 Проверить резерв Kaspi
+                            </button>
+                        </div>
+                    `;
+                }
+                // ===============================================
+
+                return `
+                <div class="cart-row" id="r-${item.id}" style="background: ${rowBgColor}; border: ${rowBorder}; padding: 6px 10px; display: flex; flex-direction: column; gap: 6px; border-radius: 4px; margin-bottom: 3px; color: var(--text-main);">
                     
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         
@@ -1159,9 +1195,56 @@
                             <span style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); color: var(--accent-yellow); font-size: 14px; pointer-events: none; font-family: 'Roboto', sans-serif; font-weight: bold;">₸</span>
                         </div>
                     </div>
+                    
+                    ${kaspiBtnHtml}
 
-                </div>`).join('');
+                </div>`
+            }).join('');
             total();
+        }
+
+        async function checkKaspiFromCart(itemId, btnElem) {
+            if (!navigator.onLine) return alert("НЕТ ИНТЕРНЕТА");
+            
+            const originalText = btnElem.innerHTML;
+            btnElem.innerHTML = "⏳ Проверка...";
+            btnElem.disabled = true;
+            btnElem.style.opacity = '0.7';
+
+            try {
+                const response = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'check_kaspi', item_id: itemId })
+                });
+                
+                const res = await response.json();
+                
+                if (res.safe === false) {
+                    // Опасность (товар найден в заказах)
+                    btnElem.style.background = 'var(--bg-danger-dim)';
+                    btnElem.style.color = 'var(--accent-red)';
+                    btnElem.style.border = '1px solid var(--accent-red)';
+                    btnElem.innerHTML = `⚠️ ${res.message}`;
+                    // Виброотклик для привлечения внимания
+                    if (navigator.vibrate) navigator.vibrate([100, 50, 100]); 
+                } else if (res.safe === true) {
+                    // Все чисто
+                    btnElem.style.background = 'var(--bg-success-dim)';
+                    btnElem.style.color = 'var(--accent-green)';
+                    btnElem.style.border = '1px solid var(--accent-green)';
+                    btnElem.innerHTML = `✅ ${res.message}`;
+                } else if (res.warning) {
+                    // Нет токена или другая системная заглушка
+                    btnElem.innerHTML = `⚙️ ${res.warning}`;
+                } else {
+                    btnElem.innerHTML = `❌ Ошибка: ${res.error}`;
+                }
+            } catch (e) {
+                alert("Ошибка связи с сервером");
+                btnElem.innerHTML = originalText;
+                btnElem.disabled = false;
+                btnElem.style.opacity = '1';
+            }
         }
 
         function qty(id, d) { 
