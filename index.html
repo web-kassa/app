@@ -340,6 +340,17 @@
 .hb-item span:last-child {
     font-family: 'Roboto', sans-serif !important;
 }
+
+/* --- УМНЫЙ ФОКУС ПРИ ОТКРЫТОЙ КЛАВИАТУРЕ --- */
+        body.keyboard-open .modes,
+        body.keyboard-open .cat-bar,
+        body.keyboard-open .pay-row-5,
+        body.keyboard-open .list-header {
+            display: none !important;
+        }
+        body.keyboard-open .cart-sec {
+            border-top-width: 1px; /* Делаем рамку тоньше для экономии места */
+        }
     </style>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
@@ -1721,12 +1732,24 @@
             setTimeout(displayAppVersion, 500); 
             load();
 
-            // === НАЧАЛО: ФИКС ДЛЯ КЛАВИАТУРЫ iOS SAFARI ===
+            // === НАЧАЛО: ФИКС ДЛЯ КЛАВИАТУРЫ iOS SAFARI (УМНЫЙ ФОКУС) ===
             if (window.visualViewport) {
+                // Запоминаем изначальную высоту экрана телефона
+                const baseHeight = window.innerHeight; 
+                
                 window.visualViewport.addEventListener('resize', () => {
-                    // Принудительно меняем высоту всего приложения на оставшуюся видимую область
-                    document.body.style.height = window.visualViewport.height + 'px';
-                    // Запрещаем системный сдвиг (оттяжку)
+                    const currentHeight = window.visualViewport.height;
+                    document.body.style.height = currentHeight + 'px';
+                    
+                    // Если видимая высота стала меньше 75% (значит, вылезла клавиатура)
+                    if (currentHeight < baseHeight * 0.75) {
+                        document.body.classList.add('keyboard-open'); // Прячем лишние кнопки
+                        document.getElementById('cs').style.maxHeight = '65%'; // Расширяем лимит корзины
+                    } else {
+                        // Клавиатура скрыта - возвращаем всё как было
+                        document.body.classList.remove('keyboard-open');
+                        document.getElementById('cs').style.maxHeight = '40dvh';
+                    }
                     window.scrollTo(0, 0);
                 });
             }
