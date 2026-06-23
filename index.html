@@ -69,7 +69,7 @@
             --text-placeholder: #888888;
             --text-dark: #000000; 
 
-            --accent-yellow: #d4ac0d;
+            --accent-yellow: #9a7b00;
             --accent-green: #27ae60;
             --accent-red: #c0392b;
             --accent-blue: #007bff;
@@ -88,9 +88,11 @@
         /* ========================================= */
 
         * { 
-    /* ваши старые параметры (margin, padding и т.д.) остаются */
-    font-family: 'Roboto Condensed', sans-serif !important; 
-}
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto Condensed', sans-serif !important; 
+        }
         
         html {
             overscroll-behavior: none; /* Запрещаем эффект оттяжки на уровне документа */
@@ -100,7 +102,7 @@
         body { 
             position: fixed; /* Намертво прибиваем приложение к экрану */
             top: 0; left: 0; right: 0; bottom: 0;
-            width: 100%;
+            width: 100vw;
             height: 100dvh; 
             background: var(--bg-body); 
             color: var(--text-main); 
@@ -632,7 +634,16 @@
                 inc_status_drive: "Создаем архив на Google Drive... 📂",
                 inc_status_almost: "Завершаем обработку... Осталось чуть-чуть ⏳",
                 inc_status_done: "✅ Архив создан! Склад обновлен.",
-                server_dup_fp: "Файл с точно таким же составом товаров уже был загружен ранее! Проверьте базу."
+                server_dup_fp: "Файл с точно таким же составом товаров уже был загружен ранее! Проверьте базу.",
+                kaspi_check_btn: "🔍 ПРОВЕРИТЬ РЕЗЕРВ KASPI",
+                kaspi_checking: "⏳ ПРОВЕРКА...",
+                kaspi_err_net: "НЕТ ИНТЕРНЕТА",
+                kaspi_err_server: "ОШИБКА СВЯЗИ С СЕРВЕРОМ",
+                kaspi_no_token: "ТОКЕН KASPI НЕ НАСТРОЕН",
+                kaspi_safe: "В РЕЗЕРВЕ ЧИСТО. МОЖНО ПРОДАВАТЬ",
+                kaspi_danger: "ВНИМАНИЕ! ЗАКАЗАН НА KASPI:",
+                kaspi_pcs: "шт. ОПАСНО!",
+                kaspi_err_api: "ОШИБКА СЕРВЕРА KASPI"
             },
             kz: {
                 btn_sale: "САТУ", btn_return: "ҚАЙТАРУ", search_placeholder: "ІЗДЕУ...",
@@ -709,7 +720,16 @@
                 inc_status_drive: "Google Drive-та архив жасау... 📂",
                 inc_status_almost: "Өңдеуді аяқтау... Сәл қалды ⏳",
                 inc_status_done: "✅ Архив жасалды! Қойма жаңартылды.",
-                server_dup_fp: "Құрамы дәл осындай файл бұрын жүктелген! Базаны тексеріңіз."
+                server_dup_fp: "Құрамы дәл осындай файл бұрын жүктелген! Базаны тексеріңіз.",
+                kaspi_check_btn: "🔍 KASPI РЕЗЕРВІН ТЕКСЕРУ",
+                kaspi_checking: "⏳ ТЕКСЕРІЛУДЕ...",
+                kaspi_err_net: "ИНТЕРНЕТ ЖОҚ",
+                kaspi_err_server: "СЕРВЕРМЕН БАЙЛАНЫС ҚАТЕСІ",
+                kaspi_no_token: "KASPI ТОКЕНІ БАПТАЛМАҒАН",
+                kaspi_safe: "РЕЗЕРВ ТАЗА. САТУҒА БОЛАДЫ",
+                kaspi_danger: "KASPI-ДЕ ТАПСЫРЫС БЕРІЛГЕН:",
+                kaspi_pcs: "дана. ҚАУІПТІ!",
+                kaspi_err_api: "KASPI СЕРВЕРІНІҢ ҚАТЕСІ"
             }
         };
 
@@ -1151,15 +1171,18 @@
                 // Если остаток опускается до или ниже критического уровня (по умолчанию 1)
                 let minStockLevel = item.min_stock !== undefined ? item.min_stock : 1;
                 
+                // Если остаток упал до минимума — включаем тревогу
                 if (remainingStock <= minStockLevel) {
-                    rowBgColor = "rgba(255, 69, 0, 0.05)"; // Слегка красноватый фон
-                    rowBorder = "1px solid var(--accent-red)"; // Красная рамка
+                    // Агрессивный фон (светло-красный в светлой теме, бордовый в темной)
+                    rowBgColor = "var(--bg-danger-dim)"; 
+                    // Толстая красная рамка (2px вместо 1px)
+                    rowBorder = "2px solid var(--accent-red)"; 
                     
-                    // Добавляем кнопку проверки
+                    // Кнопка тоже становится красной и более массивной
                     kaspiBtnHtml = `
                         <div style="width: 100%; margin-top: 8px;">
-                            <button onclick="checkKaspiFromCart('${item.id}', this)" style="width: 100%; background: var(--bg-card); color: var(--accent-yellow); border: 1px dashed var(--accent-yellow); padding: 8px; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer; text-transform: uppercase;">
-                                🔍 Проверить резерв Kaspi
+                            <button onclick="checkKaspiFromCart('${item.id}', this)" style="width: 100%; background: var(--bg-card); color: var(--accent-red); border: 2px dashed var(--accent-red); padding: 10px; border-radius: 4px; font-size: 12px; font-weight: 900; cursor: pointer; text-transform: uppercase; transition: 0.2s;">
+                                ${translations[currentLang].kaspi_check_btn}
                             </button>
                         </div>
                     `;
@@ -1204,10 +1227,10 @@
         }
 
         async function checkKaspiFromCart(itemId, btnElem) {
-            if (!navigator.onLine) return alert("НЕТ ИНТЕРНЕТА");
+            if (!navigator.onLine) return alert(translations[currentLang].kaspi_err_net);
             
             const originalText = btnElem.innerHTML;
-            btnElem.innerHTML = "⏳ Проверка...";
+            btnElem.innerHTML = translations[currentLang].kaspi_checking;
             btnElem.disabled = true;
             btnElem.style.opacity = '0.7';
 
@@ -1220,27 +1243,30 @@
                 const res = await response.json();
                 
                 if (res.safe === false) {
-                    // Опасность (товар найден в заказах)
+                    // Умный поиск цифры (количества штук) в ответе сервера
+                    let match = res.message ? res.message.match(/\((\d+)/) : null;
+                    let qty = match ? match[1] : '!';
+
                     btnElem.style.background = 'var(--bg-danger-dim)';
                     btnElem.style.color = 'var(--accent-red)';
-                    btnElem.style.border = '1px solid var(--accent-red)';
-                    btnElem.innerHTML = `⚠️ ${res.message}`;
-                    // Виброотклик для привлечения внимания
+                    btnElem.style.border = '2px solid var(--accent-red)';
+                    btnElem.innerHTML = `⚠️ ${translations[currentLang].kaspi_danger} ${qty} ${translations[currentLang].kaspi_pcs}`;
                     if (navigator.vibrate) navigator.vibrate([100, 50, 100]); 
                 } else if (res.safe === true) {
-                    // Все чисто
                     btnElem.style.background = 'var(--bg-success-dim)';
                     btnElem.style.color = 'var(--accent-green)';
-                    btnElem.style.border = '1px solid var(--accent-green)';
-                    btnElem.innerHTML = `✅ ${res.message}`;
+                    btnElem.style.border = '2px solid var(--accent-green)';
+                    btnElem.innerHTML = `✅ ${translations[currentLang].kaspi_safe}`;
                 } else if (res.warning) {
-                    // Нет токена или другая системная заглушка
-                    btnElem.innerHTML = `⚙️ ${res.warning}`;
+                    btnElem.style.background = 'var(--bg-hover)';
+                    btnElem.style.color = 'var(--text-main)';
+                    btnElem.style.border = '1px solid var(--border-focus)';
+                    btnElem.innerHTML = `⚙️ ${translations[currentLang].kaspi_no_token}`;
                 } else {
-                    btnElem.innerHTML = `❌ Ошибка: ${res.error}`;
+                    btnElem.innerHTML = `❌ ${translations[currentLang].kaspi_err_api}`;
                 }
             } catch (e) {
-                alert("Ошибка связи с сервером");
+                alert(translations[currentLang].kaspi_err_server);
                 btnElem.innerHTML = originalText;
                 btnElem.disabled = false;
                 btnElem.style.opacity = '1';
