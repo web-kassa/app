@@ -1114,15 +1114,15 @@
                 inC.qty++; 
             } else {
                 cart.push({
-    id: p.id, 
-    name: p.name, 
-    qty: 1, 
-    price: roundedPrice, 
-    origPrice: roundedPrice, 
-    cost: roundedCost,
-    stock: parseFloat(p.stock) || 0,
-    min_stock: parseFloat(p.min_stock) || 1
-});
+                id: p.id, 
+                name: p.name, 
+                qty: 1, 
+                price: roundedPrice, 
+                origPrice: roundedPrice, 
+                cost: roundedCost,
+                stock: parseFloat(p.stock) || 0,
+                min_stock: parseFloat(p.min_stock) || 1
+            });
             }
             
             // --- 1. ВИБРООТКЛИК (для мобильных устройств) ---
@@ -1720,6 +1720,17 @@
             document.getElementById('pin-screen').style.display = 'none';
             setTimeout(displayAppVersion, 500); 
             load();
+
+            // === НАЧАЛО: ФИКС ДЛЯ КЛАВИАТУРЫ iOS SAFARI ===
+            if (window.visualViewport) {
+                window.visualViewport.addEventListener('resize', () => {
+                    // Принудительно меняем высоту всего приложения на оставшуюся видимую область
+                    document.body.style.height = window.visualViewport.height + 'px';
+                    // Запрещаем системный сдвиг (оттяжку)
+                    window.scrollTo(0, 0);
+                });
+            }
+            // === КОНЕЦ ФИКСА ===
         });
 
         let selectedItemId = null, tempBase64 = null; 
