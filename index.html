@@ -899,7 +899,7 @@
             try {
                 const response = await fetch(APPS_SCRIPT_URL, {
                     method: 'POST',
-                    body: JSON.stringify({ action: 'verifyPin', pin: parseInt(val, 10) })
+                    body: JSON.stringify({ api_key: CLIENT_API_KEY, action: 'verifyPin', pin: parseInt(val, 10) })
                 });
 
                 const textRes = await response.text(); 
@@ -1024,7 +1024,7 @@
             if (!navigator.onLine) return; 
             try {
                 // Передаем серверу данные авторизованного пользователя
-                const fetchUrl = `${APPS_SCRIPT_URL}?t=${Date.now()}&uid=${savedUid}&role=${savedRole}`;
+                const fetchUrl = `${APPS_SCRIPT_URL}?action=getInitialData&api_key=${CLIENT_API_KEY}&t=${Date.now()}&uid=${savedUid}&role=${savedRole}`;
                 const res = await fetch(fetchUrl, { redirect: 'follow' });
                 const data = await res.json();
                 if (data.items) db = data.items;
@@ -1254,7 +1254,7 @@
             try {
                 const response = await fetch(APPS_SCRIPT_URL, {
                     method: 'POST',
-                    body: JSON.stringify({ action: 'check_kaspi', item_id: itemId })
+                    body: JSON.stringify({ api_key: CLIENT_API_KEY, action: 'check_kaspi', item_id: itemId })
                 });
                 
                 const res = await response.json();
@@ -1451,7 +1451,7 @@
             if (queue.length === 0) return; 
             isSyncing = true;
             try {
-                const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify(queue[0]) });
+                const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify({ api_key: CLIENT_API_KEY, action: 'syncQueue', transactions: [queue[0]] }) });
                 if ((await res.json()).success) { 
                     moveTxToCacheLocally(queue[0]); 
                     queue.shift(); 
@@ -1470,7 +1470,7 @@
             let hasError = false;
             while(queue.length > 0) {
                 try {
-                    const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify(queue[0]) });
+                    const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify({ api_key: CLIENT_API_KEY, action: 'syncQueue', transactions: [queue[0]] }) });
                     if ((await res.json()).success) { 
                         moveTxToCacheLocally(queue[0]); 
                         queue.shift(); 
@@ -1821,7 +1821,7 @@
             const btnSaveDb = document.getElementById('btn-save-db');
             btnSaveDb.innerText = "⏳ " + translations[currentLang].btn_saving; btnSaveDb.disabled = true;
             try {
-                const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'upload_photo', item_id: selectedItemId, base64: tempBase64 }) });
+                const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify({ api_key: CLIENT_API_KEY, action: 'upload_photo', item_id: selectedItemId, base64: tempBase64 }) });
                 if ((await res.json()).success) { btnSaveDb.innerText = "✅ " + translations[currentLang].btn_saved; setTimeout(() => { location.reload(); }, 800); }
                 else { alert(translations[currentLang].err_server); btnSaveDb.innerHTML = '💾 ' + translations[currentLang].btn_save_db; btnSaveDb.disabled = false; }
             } catch (e) { alert(translations[currentLang].err_network); btnSaveDb.innerHTML = '💾 ' + translations[currentLang].btn_save_db; btnSaveDb.disabled = false; }
@@ -2402,12 +2402,13 @@
                     const response = await fetch(APPS_SCRIPT_URL, {
                         method: 'POST',
                         body: JSON.stringify({ 
+                            api_key: CLIENT_API_KEY,
                             action: 'income', 
                             data: group.items,
                             files: group.originalFiles, 
                             docNo: docNo, 
                             currency: document.getElementById('invoiceCurrency').value,
-                            fingerprint: fp // Передаем слепок на сервер
+                            fingerprint: fp 
                         })
                     });
                     
